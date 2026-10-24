@@ -85,7 +85,7 @@ Los tres gestos humanos que guían el producto: **VER**, **RESPONDER**, **COMPRO
 │   ├── src/
 │   ├── vite.config.ts
 │   └── package.json
-├── docs/                     ADRs, roadmap y viabilidad
+├── docs/                     Guía, roadmap y viabilidad
 ├── docker/
 │   └── start.sh              Arranque por SERVICE (api | worker)
 ├── Dockerfile                Multi-stage: targets api y worker
@@ -231,7 +231,6 @@ Copia `.env.example` a `.env`. Las principales:
 
 - [Guía del sistema](docs/guia-del-sistema.md) — arquitectura, protocolo anti-manipulación y pitch
 - [Viabilidad](docs/viabilidad.md) — qué cabe antes del deadline y qué se difiere
-- [ADRs](docs/adr/) — decisiones con contexto y consecuencias
 - [Roadmap](docs/roadmaps/) — seis stages iterables
 
 ## Deploy
