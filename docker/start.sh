@@ -1,22 +1,10 @@
 #!/usr/bin/env bash
 #
-# Arranque del contenedor. Un solo script para los targets api y worker;
-# solo cambia SERVICE.
+# Arranque del contenedor: la API.
 #
-# El worker corre como proceso separado de la API: la llave de firma nunca
-# queda en el proceso que atiende el dashboard.
+# La captura de evidencia corre en el host con eBPF, no en el
+# contenedor. Ver docs/BACKEND.md.
 set -Eeuo pipefail
 
-case "${SERVICE:-worker}" in
-  api)
-    # exec reemplaza el shell: las señales llegan directo a Node.
-    exec node dist/main.js
-    ;;
-  worker)
-    exec node dist/worker.js
-    ;;
-  *)
-    echo "[start] SERVICE desconocido: ${SERVICE}" >&2
-    exit 1
-    ;;
-esac
+# exec reemplaza el shell: las señales llegan directo a Node.
+exec node dist/main.js

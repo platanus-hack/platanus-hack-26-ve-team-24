@@ -1,7 +1,12 @@
 import 'reflect-metadata';
-import { Logger } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+
+// La API se reconstruye según docs/BACKEND.md: ingesta de la captura
+// kernel (eBPF), sellado y anclaje. Hasta entonces esto solo verifica
+// el toolchain (rspack, oxlint, oxfmt).
+@Module({})
+class AppModule {}
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);

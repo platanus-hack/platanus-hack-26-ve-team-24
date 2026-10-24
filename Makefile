@@ -16,7 +16,7 @@ help:
 	@echo "    make build-web     Build front (Vite+)"
 	@echo ""
 	@echo "  Contenedores (Podman/Docker):"
-	@echo "    make up            Levantar api + worker + postgres"
+	@echo "    make up            Levantar api + postgres"
 	@echo "    make down          Parar servicios"
 	@echo "    make logs          Ver logs"
 	@echo "    make ps            Ver estado"

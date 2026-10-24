@@ -1,8 +1,7 @@
 # Producción/demo — Podman.
 #
-# Dos contenedores de aplicación:
-#   api    -> Nest con HTTP, SSE y estáticos
-#   worker -> daemons sin HTTP
+# Un contenedor de aplicación:
+#   api -> Nest con HTTP y SSE
 #
 # Fedora + SELinux enforcing: los volúmenes llevan :z (compartido) o :Z
 # (exclusivo). Sin eso, el contenedor no puede leer ni escribir.
@@ -60,21 +59,5 @@ services:
       retries: 3
       start_period: 20s
 
-  worker:
-    build:
-      context: .
-      target: worker
-    image: localhost/trust-worker:latest
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      SERVICE: worker
-    depends_on:
-      - postgres
-    volumes:
-      # :z porque api y worker podrían compartir este volumen en el futuro.
-      - casdata:/app/data/cas:z
-
 volumes:
   pgdata:
-  casdata:

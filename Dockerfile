@@ -1,12 +1,10 @@
 # Imagen de PRODUCCIÓN de Trust.
 #
-# Dos targets que comparten capas:
-#   api    -> dist/main.js    (Nest: HTTP + SSE + estáticos del front)
-#   worker -> dist/worker.js  (daemons, sin HTTP)
+# Un target:
+#   api -> dist/main.js (Nest: HTTP + SSE)
 #
 # Build:
-#   podman build --target api    -t localhost/trust-api    .
-#   podman build --target worker -t localhost/trust-worker .
+#   podman build -t localhost/trust-api .
 #
 # Compatible con Podman/Buildah: solo usa multi-stage y COPY --from.
 
@@ -30,7 +28,7 @@ COPY web/package.json web/
 RUN pnpm install --frozen-lockfile
 
 # ---------- build ----------
-# Backend con rspack (dist/main.js y dist/worker.js) y front con Vite+.
+# Backend con rspack (dist/main.js) y front con Vite+.
 FROM deps AS build
 COPY . .
 RUN pnpm build && pnpm build:web
@@ -53,20 +51,13 @@ COPY --from=build /app/web/dist ./web/dist
 COPY --from=build /app/package.json ./package.json
 
 COPY docker/start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh && mkdir -p /app/data/cas
-VOLUME ["/app/data/cas"]
+RUN chmod +x /usr/local/bin/start.sh
 
 # ---------- api ----------
-# Nest sirve la API, el stream SSE y el build estático de Vite+.
+# Nest sirve la API y el stream SSE.
 FROM runtime AS api
 ENV SERVICE=api
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["/usr/local/bin/start.sh"]
-
-# ---------- worker ----------
-# Sin puertos: la trust zone no habla HTTP con el mundo.
-FROM runtime AS worker
-ENV SERVICE=worker
 CMD ["/usr/local/bin/start.sh"]

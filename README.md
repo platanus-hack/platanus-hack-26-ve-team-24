@@ -58,7 +58,7 @@ Los tres gestos humanos que guían el producto: **VER**, **RESPONDER**, **COMPRO
 | Capa | Tecnología | Por qué |
 |---|---|---|
 | Backend | NestJS 12 + ESM | El equipo lo domina; DI y módulos claros |
-| Build backend | rspack (dos bundles) | `main.js` (API) y `worker.js` (daemons) |
+| Build backend | rspack (un bundle) | `main.js` (API) |
 | Frontend | React 19 + Vite+ 1.4 | Build rápido, una sola URL servida por Nest |
 | Estilos | Tailwind CSS 4 | UI en horas, no en días |
 | Lenguaje | TypeScript 6 | **Fijado en 6**: TS 7 (`tsgo`) rompe los decoradores de Nest |
@@ -75,20 +75,15 @@ Los tres gestos humanos que guían el producto: **VER**, **RESPONDER**, **COMPRO
 ```text
 .
 ├── src/                      Backend NestJS
-│   ├── main.ts               API HTTP + SSE + estáticos
-│   ├── worker.ts             Daemons sin HTTP
-│   ├── app.module.ts
-│   ├── worker.module.ts
-│   └── core/
-│       └── health/           GET /health
+│   └── main.ts               API — se reconstruye según docs/BACKEND.md
 ├── web/                      Front React con Vite+
 │   ├── src/
 │   ├── vite.config.ts
 │   └── package.json
-├── docs/                     Guía, roadmap y viabilidad
+├── docs/                     BACKEND.md — la nueva arquitectura
 ├── docker/
-│   └── start.sh              Arranque por SERVICE (api | worker)
-├── Dockerfile                Multi-stage: targets api y worker
+│   └── start.sh              Arranque de la API
+├── Dockerfile                Multi-stage: target api
 ├── Dockerfile.dev
 ├── docker-compose.yml
 ├── docker-compose.dev.yml
@@ -101,14 +96,13 @@ Los tres gestos humanos que guían el producto: **VER**, **RESPONDER**, **COMPRO
 └── vitest.config.ts
 ```
 
-### Dos procesos, una imagen
+### Un proceso, una imagen
 
 ```text
-api    -> dist/main.js    Nest con HTTP, SSE y el build estático
-worker -> dist/worker.js  sealer, batcher, anchor y witnesses, sin HTTP
+api -> dist/main.js  Nest con HTTP y SSE
 ```
 
-El worker no abre puertos. La llave de firma nunca vive en el proceso que atiende el dashboard.
+La captura de evidencia no corre en el back: corre en el host con eBPF. Ver [docs/BACKEND.md](docs/BACKEND.md).
 
 ## Requisitos
 
@@ -151,7 +145,7 @@ make up-dev
 | `make typecheck` | `tsc --noEmit` |
 | `make check-web` | `vp check` del front |
 | `make test` | Vitest |
-| `make up` | Levanta api + worker + postgres |
+| `make up` | Levanta api + postgres |
 | `make logs` | Logs de contenedores |
 | `make down` | Para los contenedores |
 | `make clean` | Baja y borra volúmenes |
@@ -229,9 +223,7 @@ Copia `.env.example` a `.env`. Las principales:
 
 ## Documentación
 
-- [Guía del sistema](docs/guia-del-sistema.md) — arquitectura, protocolo anti-manipulación y pitch
-- [Viabilidad](docs/viabilidad.md) — qué cabe antes del deadline y qué se difiere
-- [Roadmap](docs/roadmaps/) — seis stages iterables
+- [BACKEND.md](docs/BACKEND.md) — la nueva arquitectura del back: captura kernel (eBPF), sellado, anclaje y verificación
 
 ## Deploy
 

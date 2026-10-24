@@ -42,17 +42,3 @@ services:
       VITE_API_URL: http://localhost:3000
     depends_on:
       - api
-
-  worker:
-    build:
-      context: .
-      target: dev
-      dockerfile: Dockerfile.dev
-    image: localhost/trust-dev:latest
-    # En dev el worker se compila y arranca; no necesita watch.
-    command: sh -c "pnpm build && node dist/worker.js"
-    volumes:
-      - .:/app:z
-      - /app/node_modules
-    depends_on:
-      - postgres
