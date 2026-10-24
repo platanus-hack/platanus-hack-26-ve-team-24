@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-24T00:00:00Z",
+  "title": "Design System: COMPROBAR",
+  "extensions": {
+    "colorMeta": {
+      "enamel": { "role": "neutral", "displayName": "Midnight Enamel", "canonical": "#0b1230", "tonalRamp": ["#030510", "#070c22", "#0b1230", "#121b42", "#2b3a72", "#6577b5", "#b9c3e6", "#eef1f8"] },
+      "cobalt": { "role": "primary", "displayName": "Chain Cobalt", "canonical": "#1e5bff", "tonalRamp": ["#0a1f66", "#1748cc", "#1e5bff", "#3a70ff", "#6b92ff", "#93b3ff", "#c4d6ff", "#e8efff"] },
+      "green": { "role": "secondary", "displayName": "Verified Green", "canonical": "#22b14c", "tonalRamp": ["#0a3a19", "#0f5a26", "#178a3a", "#22b14c", "#4ccd70", "#62dc88", "#a7edbc", "#e0f8e8"] },
+      "scarlet": { "role": "secondary", "displayName": "Altered Scarlet", "canonical": "#e21d2d", "tonalRamp": ["#4a070d", "#7a0d17", "#b0141f", "#e21d2d", "#f0525e", "#ff8088", "#ffb5ba", "#ffe5e7"] },
+      "amber": { "role": "secondary", "displayName": "Deleted Amber", "canonical": "#ffc20e", "tonalRamp": ["#4d3a00", "#806000", "#b38900", "#e0aa00", "#ffc20e", "#ffd34d", "#ffe48f", "#fff6d6"] },
+      "porcelain": { "role": "neutral", "displayName": "Porcelain", "canonical": "#ffffff", "tonalRamp": ["#0b1230", "#3d4a78", "#6577b5", "#b9c3e6", "#d6dcf0", "#eef1f8", "#f7f8fc", "#ffffff"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Verdict Title", "purpose": "Barlow Condensed 700 uppercase; verdict and loading titles only." },
+      "headline": { "displayName": "Station Name", "purpose": "Interchange name and proof toggle." },
+      "title": { "displayName": "Section Title", "purpose": "Form label and section headings." },
+      "body": { "displayName": "Reading", "purpose": "Public Sans sentences and station details." },
+      "label": { "displayName": "State Word", "purpose": "Uppercase condensed state words, buttons and language toggle." },
+      "hash": { "displayName": "Hash", "purpose": "JetBrains Mono for hashes, payloads and the session ID." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Rail draw (900ms) and station entrance (520ms, 38ms stagger, capped at 14). Disabled under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Cobalt submit button joined to the session field.",
+      "html": "<button class=\"ds-btn-primary\">COMPROBAR</button>",
+      "css": ".ds-btn-primary { min-height: 48px; padding: 0 16px; background: #1e5bff; color: #fff; border: 0; border-radius: 0; font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-size: 1.25rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: background-color 0.15s; } .ds-btn-primary:hover { background: #3a70ff; } .ds-btn-primary:active { background: #1748cc; } .ds-btn-primary:focus-visible { outline: 3px solid #93b3ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Sample Chip",
+      "kind": "chip",
+      "refersTo": "chip-sample",
+      "description": "Outlined square chip that runs a synthetic sample session.",
+      "html": "<button class=\"ds-chip\">Intact sample</button>",
+      "css": ".ds-chip { min-height: 44px; padding: 0 12px; background: transparent; color: #fff; border: 2px solid #6577b5; border-radius: 0; font-family: 'Public Sans Variable', system-ui, sans-serif; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background-color 0.15s, border-color 0.15s; } .ds-chip:hover { border-color: #fff; background: #121b42; } .ds-chip:focus-visible { outline: 3px solid #93b3ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Session Input",
+      "kind": "input",
+      "refersTo": "input-session",
+      "description": "Mono session ID field on the enamel-deep well.",
+      "html": "<input class=\"ds-input\" placeholder=\"session-id\" />",
+      "css": ".ds-input { min-height: 48px; padding: 0 12px; background: #070c22; color: #fff; border: 2px solid #6577b5; border-radius: 0; font-family: 'JetBrains Mono Variable', ui-monospace, monospace; font-size: 1rem; } .ds-input::placeholder { color: rgba(185,195,230,0.7); } .ds-input:focus-visible { outline: 3px solid #93b3ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Language Switch",
+      "kind": "nav",
+      "refersTo": "language-switch-active",
+      "description": "ES/EN toggle pair; the active option inverts to porcelain.",
+      "html": "<div class=\"ds-lang\"><button aria-pressed=\"true\">ES</button><button aria-pressed=\"false\">EN</button></div>",
+      "css": ".ds-lang { display: flex; border: 2px solid #6577b5; } .ds-lang button { min-height: 44px; min-width: 44px; padding: 0 12px; background: transparent; color: #b9c3e6; border: 0; font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-size: 1.125rem; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; } .ds-lang button[aria-pressed='true'] { background: #fff; color: #0b1230; } .ds-lang button:focus-visible { outline: 3px solid #93b3ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Verdict Plate (altered)",
+      "kind": "custom",
+      "refersTo": "verdict-altered",
+      "description": "Signage-plate verdict banner in the state ink with inner keyline and porcelain roundel.",
+      "html": "<section class=\"ds-plate\"><div class=\"ds-roundel\"><svg viewBox=\"0 0 24 24\" width=\"32\" height=\"32\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2\"/><path d=\"m15 9-6 6\"/><path d=\"m9 9 6 6\"/></svg></div><h1>ALTERED</h1><p>One event no longer matches its seal.</p></section>",
+      "css": ".ds-plate { position: relative; display: grid; grid-template-columns: 48px 1fr; gap: 12px 12px; align-items: center; padding: 16px 20px 32px; background: #e21d2d; color: #fff; } .ds-plate::after { content: ''; position: absolute; inset: 6px; border: 2px solid color-mix(in srgb, currentColor 60%, transparent); pointer-events: none; } .ds-roundel { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 9999px; background: #fff; color: #e21d2d; } .ds-plate h1 { margin: 0; font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-size: 2.25rem; font-weight: 700; line-height: 0.95; letter-spacing: 0.025em; } .ds-plate p { grid-column: 1 / -1; margin: 0; font-family: 'Public Sans Variable', system-ui, sans-serif; font-size: 1rem; line-height: 1.375; }"
+    },
+    {
+      "name": "Stations (intact, altered, missing)",
+      "kind": "custom",
+      "refersTo": "verdict-altered",
+      "description": "The three station markers: ringed circle, scarlet diamond, dashed amber out-of-service circle, each with icon and label.",
+      "html": "<ol class=\"ds-line\"><li><i class=\"ds-ok\"></i><span>Station 1</span><b class=\"ds-ok-l\">Intact</b></li><li><i class=\"ds-alt\"></i><span>Station 2</span><b class=\"ds-alt-l\">Altered</b></li><li><i class=\"ds-miss\"></i><span>Station 3</span><b class=\"ds-miss-l\">Missing</b></li></ol>",
+      "css": ".ds-line { position: relative; list-style: none; margin: 0; padding: 0; width: 280px; background: #0b1230; color: #fff; font-family: 'Public Sans Variable', system-ui, sans-serif; } .ds-line li { position: relative; display: flex; justify-content: space-between; align-items: center; min-height: 56px; padding: 8px 0 8px 56px; } .ds-line i { position: absolute; left: 8px; top: 16px; display: block; box-sizing: border-box; width: 24px; height: 24px; background: #0b1230; } .ds-line i.ds-ok { border-radius: 9999px; border: 5px solid #fff; } .ds-line i.ds-alt { left: 22px; width: 20px; height: 20px; background: #e21d2d; border: 3px solid #fff; transform: rotate(45deg); } .ds-line i.ds-miss { left: 20px; border-radius: 9999px; border: 3px dashed #ffc20e; } .ds-line b { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-size: 1.125rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; } .ds-ok-l { color: #62dc88; } .ds-alt-l { color: #ff8088; } .ds-miss-l { color: #ffc20e; }"
+    },
+    {
+      "name": "Proof Panel",
+      "kind": "card",
+      "refersTo": "proof-panel",
+      "description": "Porcelain technical-proof block with a condensed toggle and mono hash.",
+      "html": "<section class=\"ds-proof\"><button>CLOSE PROOF</button><p class=\"ds-k\">Recomputed root</p><p class=\"ds-hash\">9f2c41ab77e0d35c8b61a4f0e92d17c3</p></section>",
+      "css": ".ds-proof { background: #fff; color: #0b1230; padding-bottom: 20px; } .ds-proof button { display: flex; align-items: center; width: 100%; min-height: 56px; padding: 0 20px; background: transparent; border: 0; color: inherit; font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-size: 1.5rem; font-weight: 600; letter-spacing: 0.025em; text-align: left; cursor: pointer; } .ds-proof button:focus-visible { outline: 3px solid #1e5bff; outline-offset: 2px; } .ds-k { margin: 0 20px; font-family: 'Public Sans Variable', system-ui, sans-serif; font-size: 0.875rem; font-weight: 600; } .ds-hash { margin: 4px 20px 0; font-family: 'JetBrains Mono Variable', ui-monospace, monospace; font-size: 0.75rem; line-height: 1.625; word-break: break-all; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Midnight Transit Line",
+    "overview": "A session is a transit line. Each event is a station in order, the anchor is the interchange, and a missing station cuts the line. The ground is midnight-blue enamel; the technical proof sits on porcelain-white panels like a printed timetable; line inks carry state. The look is wayfinding signage, built to be read at a glance on a phone reached by QR. The build refuses the dark-green-and-red security dashboard and the crypto neon look.\n\nDensity is compact and mobile-first (390px is the design width). Every edge is square except the circles that are stations. There is no gloss and no shadow: the enamel is matte by design, and depth comes from flat tonal planes, hairlines and the porcelain swap.",
+    "keyCharacteristics": [
+      "Signature move: the session drawn as a vertical line of stations. Altered (scarlet) and missing (dashed amber) stations push the line sideways with 45-degree jogs, and the line ends in a 45-degree bend into the anchor interchange circle.",
+      "State is a line ink: green verified, scarlet altered, amber deleted, cobalt for the chain and for primary actions.",
+      "State is never colour alone: every state pairs a colour with an icon, a shape and a text label.",
+      "Porcelain panels are reserved for technical proof (hashes, payloads, anchor facts).",
+      "Condensed transit sans for labels and verdicts, humanist sans for reading, mono only for hashes and IDs."
+    ],
+    "rules": [
+      { "name": "The Ink Means State Rule", "body": "Green, scarlet and amber appear only to state a verdict, a station, a check or a flagged hash. Never as decoration or hover accent.", "section": "colors" },
+      { "name": "The Never Colour Alone Rule", "body": "Every state carries an icon, a shape and a label as well as its ink: check, octagon-X and triangle for verdicts; ringed circle, scarlet diamond and dashed circle for stations; dashed against solid rail.", "section": "colors" },
+      { "name": "The Porcelain Is Proof Rule", "body": "Porcelain surfaces hold technical evidence only. Controls and narrative stay on enamel.", "section": "colors" },
+      { "name": "The Dark-Ground Text Rule", "body": "On enamel, state text uses the -text variants; the pure inks are for fills, markers and rails.", "section": "colors" },
+      { "name": "The Mono Is For Hashes Rule", "body": "JetBrains Mono carries hashes, payloads and the ID field only; it never labels or decorates.", "section": "typography" },
+      { "name": "The Words Are Condensed Rule", "body": "State words and verdicts are Barlow Condensed uppercase; sentences are Public Sans sentence case.", "section": "typography" },
+      { "name": "The Flat Enamel Rule", "body": "No shadows, gradients or glow. A surface is raised by tone or by a hairline, never lit.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do express every state as ink plus icon plus label; keep altered as diamond and scarlet, missing as dashed amber.",
+      "Do keep proof (hashes, payloads, anchor facts) on porcelain and everything else on enamel.",
+      "Do draw new structure with straight verticals and 45-degree jogs, and keep circles for stations.",
+      "Do keep corners square and the surface flat; use tone and 2px hairlines to separate.",
+      "Do use -text ink variants for text on enamel and keep touch targets at 44px or more.",
+      "Do honour prefers-reduced-motion and prefers-contrast: more (enamel-line lifts to #8f9fd6, chalk to white)."
+    ],
+    "donts": [
+      "Don't use state inks for decoration, or use cobalt to signal a verdict.",
+      "Don't convey state by colour alone.",
+      "Don't add shadows, gloss, gradients or neon glow.",
+      "Don't round buttons, panels or inputs; do not use mono for labels.",
+      "Don't reuse this system for the PWA manifest and service worker, the Consola del Caos, or the logo: they are not yet part of it and need their own decisions."
+    ]
+  }
+}

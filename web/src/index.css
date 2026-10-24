@@ -1,1 +1,177 @@
 @import "tailwindcss";
+@import "@fontsource/barlow-condensed/500.css";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource-variable/public-sans";
+@import "@fontsource-variable/jetbrains-mono";
+
+@theme {
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-sans: "Public Sans Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+
+  /* Esmalte azul medianoche: el suelo y sus planos */
+  --color-enamel-950: #070c22;
+  --color-enamel: #0b1230;
+  --color-enamel-raised: #121b42;
+  --color-enamel-line: #2b3a72;
+  --color-enamel-edge: #6577b5;
+
+  /* Porcelana: papel del panel de prueba */
+  --color-porcelain: #ffffff;
+  --color-porcelain-dim: #eef1f8;
+  --color-ink: #0b1230;
+  --color-ink-soft: #3d4a78;
+
+  --color-chalk: #b9c3e6;
+
+  /* Tintas de línea: cada una significa un estado */
+  --color-cobalt: #1e5bff;
+  --color-cobalt-text: #93b3ff;
+  --color-green: #22b14c;
+  --color-green-text: #62dc88;
+  --color-scarlet: #e21d2d;
+  --color-scarlet-text: #ff8088;
+  --color-amber: #ffc20e;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--color-enamel);
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--color-enamel);
+    color: var(--color-porcelain);
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    -webkit-text-size-adjust: 100%;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+      env(safe-area-inset-left);
+  }
+
+  ::selection {
+    background: var(--color-amber);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-cobalt-text);
+    outline-offset: 2px;
+  }
+
+  .on-porcelain :focus-visible {
+    outline-color: var(--color-cobalt);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-enamel-line) transparent;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+/* La línea: un riel vertical con estaciones. Un hueco corta el riel. */
+.rail {
+  --rail-x: 1.25rem;
+  --rail-w: 0.5rem;
+  position: relative;
+  animation: rail-draw 900ms var(--ease-out-expo) backwards;
+}
+
+.rail-seg {
+  position: absolute;
+  left: calc(var(--rail-x) - var(--rail-w) / 2);
+  width: var(--rail-w);
+  top: 0;
+  bottom: 0;
+  background: var(--color-cobalt);
+}
+
+.rail-seg[data-cut="true"] {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--color-amber) 0 0.5rem,
+    transparent 0.5rem 0.9rem
+  );
+}
+
+.rail-jog {
+  left: calc(var(--rail-x) + 0.75rem - var(--rail-w) / 2);
+  top: 0.75rem;
+  bottom: 0.75rem;
+}
+
+.rail-seg[data-tone="altered"] {
+  background: var(--color-scarlet);
+}
+
+.rail-seg[data-start="true"] {
+  top: 1.5rem;
+  border-radius: 999px 999px 0 0;
+}
+
+.rail-seg[data-end="true"] {
+  bottom: auto;
+  height: 1.5rem;
+  border-radius: 0 0 999px 999px;
+}
+
+.station-in {
+  animation: station-in 520ms var(--ease-out-expo) backwards;
+  animation-delay: calc(min(var(--i, 0), 14) * 38ms);
+}
+
+@keyframes rail-draw {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes station-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail,
+  .station-in {
+    animation: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-enamel-line: #8f9fd6;
+    --color-chalk: #ffffff;
+  }
+}
+
+/* Placa de señalética: filete interior que enmarca el veredicto. */
+.plate {
+  position: relative;
+}
+
+.plate::after {
+  content: "";
+  position: absolute;
+  inset: 0.375rem;
+  border: 2px solid color-mix(in srgb, currentColor 60%, transparent);
+  pointer-events: none;
+}

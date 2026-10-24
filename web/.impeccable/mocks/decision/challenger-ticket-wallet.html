@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:390px;height:844px;overflow:hidden;background:#fff;color:#14284B;font:500 14px/1.3 'Archivo Narrow',sans-serif;padding:14px}
+.top{display:flex;justify-content:space-between;background:#14284B;color:#fff;padding:9px 12px;font:700 13px 'Archivo Narrow';letter-spacing:.14em}
+.field{margin:12px 0;border:1.5px solid #14284B;display:flex}.field span{flex:1;padding:9px;font:400 13px 'Courier Prime',monospace;color:#5B3A9C}.field b{background:#D8262F;color:#fff;padding:9px 12px;font:700 12px 'Archivo Narrow';letter-spacing:.1em}
+.cp{display:grid;grid-template-columns:44px 1fr 86px;border:1.5px solid #14284B;border-bottom-style:dashed;margin-bottom:8px;position:relative;background:#fff}
+.cp i{background:#14284B;color:#fff;font:700 20px 'Archivo Narrow';font-style:normal;display:grid;place-items:center}
+.cp div{padding:8px 10px}.cp b{display:block;font:700 12px 'Archivo Narrow';letter-spacing:.12em}
+.cp code{font:400 13px 'Courier Prime',monospace;color:#5B3A9C}
+.cp em{font:700 11px 'Archivo Narrow';font-style:normal;letter-spacing:.1em;display:grid;place-items:center;border-left:1.5px dashed #14284B}
+.void{border-color:#D8262F}.void::after{content:'VOID';position:absolute;right:10px;top:8px;border:3px solid #D8262F;color:#D8262F;font:700 22px 'Archivo Narrow';letter-spacing:.14em;padding:0 8px;transform:rotate(-8deg)}
+.void code{text-decoration:line-through}
+.missing{border:1.5px dashed #D8262F;color:#D8262F;padding:14px;text-align:center;font:700 12px 'Archivo Narrow';letter-spacing:.12em;margin-bottom:8px}
+</style></head><body>
+<div class="top"><span>AUDGENTIC</span><span>CUPONES 7 – 11</span></div>
+<div class="field"><span>s_c04e77b2</span><b>COMPROBAR</b></div>
+<div class="cp"><i>07</i><div><b>READ_FILE</b><code>customers.csv</code></div><em>VÁLIDO</em></div>
+<div class="cp void"><i>08</i><div><b>POST</b><code>internal-api/export</code></div><em></em></div>
+<div class="missing">CUPÓN 09 NO PRESENTE · BORRADO</div>
+<div class="cp"><i>10</i><div><b>DELETE_FILE</b><code>agent.log</code></div><em>VÁLIDO</em></div>
+<div class="cp"><i>11</i><div><b>EXIT</b><code>0</code></div><em>VÁLIDO</em></div>
+</body></html>
