@@ -25,6 +25,9 @@ async function importPack(pack: IdentityPack): Promise<number> {
 
 export function IdentityImport() {
   const [message, setMessage] = useState<string | null>(null);
+  // The server only hands out these keys on the memory ledger; in chain mode the route answers 404,
+  // so showing the button offered a path that could never work.
+  const fromServer = process.env.NEXT_PUBLIC_LEDGER_MODE === 'memory';
 
   async function run(load: () => Promise<IdentityPack>) {
     setMessage(null);
@@ -37,19 +40,26 @@ export function IdentityImport() {
 
   return (
     <div className="mt-8 flex flex-col gap-6">
-      <Button
-        onClick={() => {
-          void run(async () => {
-            const response = await fetch('/api/dev/ledger/identities');
-            if (!response.ok) throw new Error('identities unavailable');
-            return (await response.json()) as IdentityPack;
-          });
-        }}
-      >
-        Import from this server
-      </Button>
+      {fromServer ? (
+        <Button
+          onClick={() => {
+            void run(async () => {
+              const response = await fetch('/api/dev/ledger/identities');
+              if (!response.ok) throw new Error('identities unavailable');
+              return (await response.json()) as IdentityPack;
+            });
+          }}
+        >
+          Import from this server
+        </Button>
+      ) : (
+        <p className="max-w-[65ch] text-body text-ink-muted">
+          This deployment runs on the live ledger, so the demo keys are not served from it. Upload
+          the pack file instead.
+        </p>
+      )}
       <label className="flex flex-col gap-2 text-body">
-        Or upload demo-pack/identities.json
+        {fromServer ? 'Or upload' : 'Upload'} demo-pack/identities.json
         <input
           type="file"
           accept=".json"
