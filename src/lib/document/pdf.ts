@@ -174,12 +174,12 @@ export async function buildSheetPdf(sheet: Sheet, payload: DocPayload): Promise<
   let y = header(page, fonts, sheet.kicker, sheet.title);
 
   if (sheet.issuer) {
-    page.drawText('EMITIDA POR', { x: MARGIN, y, size: 8, font: fonts.bold, color: MUTED });
+    page.drawText('Emitida por', { x: MARGIN, y, size: 9, font: fonts.bold, color: MUTED });
     y = paragraph(page, fonts.bold, sheet.issuer.name, { y: y - 16, size: 15 });
     y = paragraph(page, fonts.mono, sheet.issuer.did, { y: y - 2, size: 7, color: MUTED }) - 14;
   }
   if (sheet.subject) {
-    page.drawText('A FAVOR DE', { x: MARGIN, y, size: 8, font: fonts.bold, color: MUTED });
+    page.drawText('A favor de', { x: MARGIN, y, size: 9, font: fonts.bold, color: MUTED });
     y = paragraph(page, fonts.bold, sheet.subject, { y: y - 20, size: 20 }) - 12;
   }
 
@@ -238,7 +238,7 @@ export async function buildHistoryPdf(
     'Todas selladas juntas, firmadas por cada empleador',
     'Historial laboral',
   );
-  page.drawText('A FAVOR DE', { x: MARGIN, y, size: 8, font: fonts.bold, color: MUTED });
+  page.drawText('A favor de', { x: MARGIN, y, size: 9, font: fonts.bold, color: MUTED });
   y = paragraph(page, fonts.bold, history.subject, { y: y - 20, size: 20 }) - 14;
 
   for (const [index, entry] of history.entries.entries()) {
