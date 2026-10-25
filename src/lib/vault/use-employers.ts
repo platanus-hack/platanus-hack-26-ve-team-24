@@ -32,6 +32,6 @@ export function useEmployers(): EmployerList {
 }
 
 export function employerName(list: EmployerList, account: string): string {
-  if (list.status !== 'ready') return 'your employer';
-  return list.issuers.find((issuer) => issuer.account === account)?.name ?? 'your employer';
+  if (list.status !== 'ready') return 'tu empleador';
+  return list.issuers.find((issuer) => issuer.account === account)?.name ?? 'tu empleador';
 }

@@ -85,11 +85,11 @@ describe('verifyPresentation', () => {
     expect(rowsOf(events)).toEqual(allVerified());
 
     const measured = events.filter((e) => e.status === 'VERIFIED').map((e) => e.measured);
-    expect(measured[0]).toMatch(/^[\d,]+ bytes · 8 hidden$/);
+    expect(measured[0]).toMatch(/^[\d.]+ bytes · 8 ocultos$/);
     expect(measured[1]).toBe(ISSUER_NAME);
     expect(measured[2]).toMatch(/^ES256 · [\d.]+ ms$/);
-    expect(measured[3]).toMatch(/^key 0x.{2}… · bound$/);
-    expect(measured[4]).toBe('block 1,204');
+    expect(measured[3]).toMatch(/^clave 0x.{2}… · vinculada$/);
+    expect(measured[4]).toBe('bloque 1.204');
   });
 
   it('fails at TOKEN when a disclosure is altered', async () => {

@@ -5,8 +5,8 @@ export default function OnboardingPage() {
   return (
     <>
       <PageHeader
-        title="Set up your organization"
-        lead="Make a signing key on this device, then ask the consortium to accredit you. Issuing unlocks once enough members approve."
+        title="Configura tu organización"
+        lead="Crea una clave de firma en este dispositivo y pide al consorcio que te acredite. Podrás emitir cuando aprueben suficientes miembros."
       />
       <div className="mt-10">
         <Onboarding />

@@ -60,7 +60,7 @@ describe('syncRequest', () => {
     expect(acked).toHaveLength(0);
     expect(await store.getRequest(request.id)).toMatchObject({
       status: 'REJECTED',
-      error: 'This certificate is not bound to your key',
+      error: 'Esta constancia no está ligada a tu clave',
     });
   });
 

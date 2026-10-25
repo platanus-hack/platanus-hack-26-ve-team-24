@@ -12,11 +12,11 @@ export default function CertificatePage({ params }: PageProps<'/vault/c/[id]'>) 
   return (
     <>
       <PageHeader
-        title="Your certificate"
-        lead="You can see every claim in it. Anyone you share it with sees only what you choose."
+        title="Tu constancia"
+        lead="Tú ves todos sus datos. Quien la reciba ve solo lo que tú elijas."
       />
       <div className="mt-10">
-        <Suspense fallback={<p role="status">Opening the certificate…</p>}>
+        <Suspense fallback={<p role="status">Abriendo la constancia…</p>}>
           <CertificateForId params={params} />
         </Suspense>
       </div>

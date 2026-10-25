@@ -16,7 +16,7 @@ export function POST(req: Request, { params }: { params: Promise<{ id: string }>
       where: { id, status: 'PENDING' },
       data: { status: 'DECLINED' },
     });
-    if (count === 0) throw new HttpError(409, 'NOT_PENDING', 'This request was already handled');
+    if (count === 0) throw new HttpError(409, 'NOT_PENDING', 'Esta solicitud ya fue atendida');
     return Response.json({ status: 'DECLINED' });
   });
 }

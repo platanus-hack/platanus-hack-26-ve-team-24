@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const reader = getLedgerReader();
     const [issuer, keys] = await Promise.all([reader.issuer(parsed.account), reader.keys(parsed.account)]);
     if (issuer.status === 'NONE' && keys.length === 0) {
-      return Response.json({ error: 'DID_NOT_FOUND', message: 'No such DID' }, { status: 404 });
+      return Response.json({ error: 'DID_NOT_FOUND', message: 'Ese DID no existe' }, { status: 404 });
     }
     return Response.json(buildDidDocument(did, issuer, keys));
   });

@@ -22,13 +22,13 @@ export async function respondWithLedger(run: () => Promise<Response>): Promise<R
   } catch (error) {
     if (error instanceof LedgerUnreachableError) {
       return Response.json(
-        { error: 'LEDGER_UNREACHABLE', message: 'The ledger is not answering right now' },
+        { error: 'LEDGER_UNREACHABLE', message: 'El registro no responde en este momento' },
         { status: 503 },
       );
     }
     // Rethrowing here produced Next's HTML error page, which the browser then reported as an
     // unreachable ledger. A JSON 500 at least keeps the failure legible.
     console.error('ledger gateway failed', error);
-    return Response.json({ error: 'INTERNAL', message: 'Something went wrong' }, { status: 500 });
+    return Response.json({ error: 'INTERNAL', message: 'Algo salió mal' }, { status: 500 });
   }
 }

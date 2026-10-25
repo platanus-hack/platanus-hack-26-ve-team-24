@@ -11,7 +11,7 @@ export function POST(req: Request, { params }: { params: Promise<{ id: string }>
       where: { id: isId(id) ? id : '' },
       data: { deliveryJwe: null },
     });
-    if (count === 0) throw new HttpError(404, 'NOT_FOUND', 'Unknown request');
+    if (count === 0) throw new HttpError(404, 'NOT_FOUND', 'Solicitud desconocida');
     return Response.json({});
   });
 }

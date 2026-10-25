@@ -60,7 +60,7 @@ export function QrBlock({
 
   return (
     <div className="flex flex-col items-start gap-3">
-      <div className="border-4 border-ink bg-white p-2">
+      <div className="border-4 border-ink bg-paper p-2">
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element -- data URL from a local QR render
           <img
@@ -80,7 +80,7 @@ export function QrBlock({
             void copyValue();
           }}
         >
-          {copied ? 'Copied' : 'Copy link'}
+          {copied ? 'Copiado' : 'Copiar enlace'}
         </Button>
       ) : null}
     </div>

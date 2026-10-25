@@ -1,30 +1,37 @@
-import type { NetworkState } from '@/lib/ledger/types';
+import type { RowStatus } from '@/components/ui/check-list';
+import type { IssuerInfo, IssuerStatus, NetworkState } from '@/lib/ledger/types';
 
-// the four members are the four line inks; the letter keeps it from being colour alone
-const INKS = [
-  { bg: 'bg-line-red', letter: 'R' },
-  { bg: 'bg-line-blue', letter: 'B' },
-  { bg: 'bg-line-green', letter: 'G' },
-  { bg: 'bg-line-yellow', letter: 'Y' },
-] as const;
+const sameAccount = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
-export function inkOf(state: NetworkState, account: string) {
-  const index = state.members.findIndex(
-    (member) => member.account.toLowerCase() === account.toLowerCase(),
-  );
-  return index === -1 ? null : INKS[index % INKS.length];
-}
-
-// decorative: blocks have no proposer on Sepolia, so the ink rotates with the block number
-export function blockInk(blockNumber: number) {
-  return INKS[blockNumber % INKS.length]!;
-}
-
+// las huellas las ancla un empleador; los votos, un miembro
 export function nameOf(state: NetworkState, account: string): string {
-  return (
-    state.members.find((member) => member.account.toLowerCase() === account.toLowerCase())?.name ??
-    'Unknown'
+  const named = [...state.issuers, ...state.members].find(
+    (entry) => entry.name !== '' && sameAccount(entry.account, account),
   );
+  return named?.name ?? 'Desconocido';
 }
 
-export { formatAge as ageLabel } from '@/lib/ledger/format';
+// cada estado lleva palabra + marca + color (la marca la dibuja Chip)
+const ISSUER_CHIP: Record<IssuerStatus, RowStatus> = {
+  ACTIVE: 'VERIFIED',
+  PENDING: 'PENDING',
+  SUSPENDED: 'FAILED',
+  NONE: 'NOT_EXAMINED',
+};
+
+const ISSUER_LABEL: Record<IssuerStatus, string> = {
+  ACTIVE: 'Acreditado',
+  PENDING: 'Pendiente',
+  SUSPENDED: 'Suspendido',
+  NONE: 'Sin solicitud',
+};
+
+export function issuerStatusView(issuer: IssuerInfo): { chip: RowStatus; label: string } {
+  const label = ISSUER_LABEL[issuer.status];
+  return {
+    chip: ISSUER_CHIP[issuer.status],
+    label: issuer.status === 'PENDING' ? `${label} ${issuer.approvals}/${issuer.quorum}` : label,
+  };
+}
+
+export { formatAge as ageLabel, formatBlock, formatBlockNumber } from '@/lib/ledger/format';

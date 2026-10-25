@@ -11,12 +11,12 @@ export interface RequestRow {
 /** Another employer's request, or a missing or expired one, is simply "not found". */
 function assertOwn(row: RequestRow | null, account: string, now: Date): asserts row is RequestRow {
   if (!row || row.employer !== account || isExpired(row.expiresAt, now)) {
-    throw new HttpError(404, 'NOT_FOUND', 'Unknown request');
+    throw new HttpError(404, 'NOT_FOUND', 'Solicitud no encontrada');
   }
 }
 
 function assertPending(row: RequestRow) {
-  if (row.status !== 'PENDING') throw new HttpError(409, 'NOT_PENDING', 'This request was already handled');
+  if (row.status !== 'PENDING') throw new HttpError(409, 'NOT_PENDING', 'Esta solicitud ya fue atendida');
 }
 
 export function assertCanDeliver(
@@ -27,7 +27,7 @@ export function assertCanDeliver(
 ): void {
   assertOwn(row, account, now);
   assertPending(row);
-  if (!employerActive) throw new HttpError(403, 'NOT_ACCREDITED', 'Your organization is not accredited');
+  if (!employerActive) throw new HttpError(403, 'NOT_ACCREDITED', 'Tu organización no está acreditada');
 }
 
 export function assertCanDecline(row: RequestRow | null, account: string, now = new Date()): void {

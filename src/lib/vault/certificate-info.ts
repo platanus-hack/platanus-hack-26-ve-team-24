@@ -1,5 +1,10 @@
 import { decodePresentation, type DecodedPresentation } from '@/lib/credential/present';
-import type { VaultCertificate } from './types';
+import type { RequestKind, VaultCertificate } from './types';
+
+export const KIND_LABEL: Record<RequestKind, string> = {
+  CURRENT: 'Empleo actual',
+  PAST: 'Empleo anterior',
+};
 
 export interface CertificateInfo {
   decoded: DecodedPresentation;

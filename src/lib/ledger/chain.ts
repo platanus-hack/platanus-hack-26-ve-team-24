@@ -126,7 +126,7 @@ async function guard<T>(run: () => Promise<T>): Promise<T> {
     return await run();
   } catch (error) {
     if (!isTransportFailure(error)) throw error;
-    throw new LedgerUnreachableError('The Sepolia RPC did not answer', { cause: error });
+    throw new LedgerUnreachableError('El registro no respondió', { cause: error });
   }
 }
 

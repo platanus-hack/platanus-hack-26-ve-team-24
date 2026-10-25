@@ -30,9 +30,9 @@ export async function createShare(
   deps: ShareFlowDeps,
   args: { certificate: VaultCertificate; reveal: ClaimName[]; aud: string; ttlSec: number },
 ): Promise<CreatedShare> {
-  if (args.reveal.length === 0) throw new Error('Choose at least one claim to show');
+  if (args.reveal.length === 0) throw new Error('Elige al menos un dato para mostrar');
   const holder = await deps.loadSigner(args.certificate.keyName);
-  if (!holder) throw new NoKeyError('The key for this certificate is not on this device');
+  if (!holder) throw new NoKeyError('La clave de esta constancia no está en este dispositivo');
 
   const presentation = await deps.present({
     credential: args.certificate.sdJwt,

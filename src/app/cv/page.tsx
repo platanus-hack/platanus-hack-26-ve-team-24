@@ -6,11 +6,11 @@ export default function CvPage() {
   return (
     <>
       <PageHeader
-        title="Your Verified CV"
-        lead="Attach every certificate you own. Each one is checked against the ledger, then joined into one history. Files are read in your browser and never uploaded."
+        title="Tu CV verificado"
+        lead="Adjunta todas tus constancias. Cada una se comprueba contra el Registro y luego se une en un solo historial. Los archivos se leen en tu navegador y nunca se suben."
       />
       <div className="mt-10">
-        <Suspense fallback={<p role="status">Opening…</p>}>
+        <Suspense fallback={<p role="status">Abriendo…</p>}>
           <CvPortal />
         </Suspense>
       </div>

@@ -11,18 +11,18 @@ export function DemoImport() {
   async function onFile(file: File) {
     try {
       const count = await importDemoPack(await file.text());
-      setMessage(`Imported ${count} certificate${count === 1 ? '' : 's'}.`);
+      setMessage(`${count} ${count === 1 ? 'constancia importada' : 'constancias importadas'}.`);
     } catch {
-      setMessage('That file is not a demo pack.');
+      setMessage('Ese archivo no es un paquete de demostración.');
     }
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <DropZone label="Drop vault.json here" accept=".json" onFile={(file) => void onFile(file)} />
+      <DropZone label="Suelta vault.json aquí" accept=".json" onFile={(file) => void onFile(file)} />
       {message && <p role="status" className="font-bold">{message}</p>}
       <div>
-        <LinkButton href="/vault">Open the vault</LinkButton>
+        <LinkButton href="/vault">Abrir la bóveda</LinkButton>
       </div>
     </div>
   );

@@ -50,7 +50,7 @@ export async function POST(request: Request) {
   try {
     limit(request);
   } catch {
-    return Response.json({ error: 'RATE_LIMITED', message: 'Too many requests' }, { status: 429 });
+    return Response.json({ error: 'RATE_LIMITED', message: 'Demasiadas solicitudes' }, { status: 429 });
   }
   const text = await request.text();
   if (text.length > MAX_BODY_BYTES) return fail(null, -32600, 'Request too large');
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     // The server's env is broken, not the caller's request: say so, and name the variable only.
     if (error instanceof BundlerConfigError) return fail(id, -32603, error.message);
     if (error instanceof z.ZodError) return fail(id, -32602, 'Invalid params');
-    return fail(id, -32603, 'The ledger is busy');
+    return fail(id, -32603, 'El registro está ocupado');
   }
 }
 

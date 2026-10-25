@@ -1,10 +1,10 @@
 {
   "quorum": 2,
   "members": [
-    "Chamber of Commerce (demo)",
+    "Cámara de Comercio (demo)",
     "Banco Demo",
     "Universidad Demo",
-    "Ministry of Labour (demo)"
+    "Ministerio del Trabajo (demo)"
   ],
-  "employers": ["Orinoco Logistics (demo)", "Tepuy Coffee (demo)", "Lago Shipyards (demo)"]
+  "employers": ["Logística Orinoco (demo)", "Café Tepuy (demo)", "Astilleros del Lago (demo)"]
 }

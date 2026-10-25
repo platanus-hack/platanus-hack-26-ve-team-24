@@ -1,9 +1,10 @@
 @import 'tailwindcss';
 
 /*
- * Constancia: Chromatic Interference.
- * White modernist ground, ink, four pure line inks used only as fine vertical line fields.
- * Square corners, 2-4px ink rules, no shadows, no gradients as decoration.
+ * Constancia: Programa de identidad.
+ * Venezuelan modernist identity program: pure white, black, one institutional marigold.
+ * The five-segment mark is the verifier. Square corners, 2-4px black rules, strict grid,
+ * no shadows, no gradients, no decorative greys.
  */
 @theme {
   /* only the world's colours exist: no default palette to reach for */
@@ -13,47 +14,44 @@
   --shadow-*: initial;
   --inset-shadow-*: initial;
   --drop-shadow-*: initial;
-  --color-paper: #f7f6f2;
-  --color-white: #ffffff;
-  --color-ink: #111111;
-  --color-ink-muted: #55534e; /* 7:1 on paper */
-  --color-rule: #cfccc2; /* hairline between rows */
-  /* line inks: pure, for line fields, flooded bands and chips. Never body text. */
-  --color-line-red: #e4002b;
-  --color-line-blue: #0047bb;
-  --color-line-green: #00a651;
-  --color-line-yellow: #ffd100; /* never text */
-  /* text-safe darks, AA on paper */
-  --color-red-text: #b0001f;
-  --color-green-text: #00703a;
-  --color-focus: #0047bb;
+  --color-paper: #ffffff;
+  --color-ink: #0a0a0a;
+  --color-ink-muted: #4d4d4d; /* 8.4:1 on paper, 4.9:1 on marigold */
+  --color-rule: #d4d4d4; /* hairline between rows, never text */
+  /* the institutional colour: owns whole regions, never small text */
+  --color-marigold: #f2b705;
+  /* verdict colours: only on states, AA with paper text and as text on paper */
+  --color-ok: #00703a;
+  --color-fail: #b0001f;
+  --color-focus: #0a0a0a;
 
-  /* Archivo carries both voices: expanded + heavy for display, normal width for text */
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-red-hat-mono), ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
-  /* display ~56px at 390 → 104px at 1440; body measure stays 65-75ch */
-  --text-display: clamp(3.5rem, 1.7rem + 5.6vw, 6.5rem);
+  /* display ~52px at 390 → 96px at 1440; body measure stays 65-75ch */
+  --text-display: clamp(3.25rem, 1.75rem + 4.6vw, 6rem);
   --text-display--line-height: 0.95;
-  --text-display--letter-spacing: -0.03em;
+  --text-display--letter-spacing: -0.035em;
   --text-display--font-weight: 800;
-  --text-headline: clamp(2rem, 1.3rem + 2.4vw, 3.5rem);
+  --text-headline: clamp(2rem, 1.4rem + 2vw, 3.25rem);
   --text-headline--line-height: 1;
-  --text-headline--letter-spacing: -0.025em;
+  --text-headline--letter-spacing: -0.03em;
   --text-headline--font-weight: 800;
   --text-title: 1.5rem;
   --text-title--line-height: 1.2;
   --text-title--font-weight: 700;
+  --text-lead: 1.375rem;
+  --text-lead--line-height: 1.4;
   --text-body: 1.0625rem;
   --text-body--line-height: 1.55;
-  --text-small: 0.875rem;
+  --text-small: 0.9375rem;
   --text-small--line-height: 1.45;
 
   /* spacing keeps Tailwind's 4px scale; sections breathe on 24 / 48 / 96, headings get more above than below */
-  --spacing-gutter: clamp(1.25rem, 4.4vw, 4rem);
+  --spacing-gutter: clamp(1.25rem, 4.4vw, 3.5rem);
 
-  /* one authored motion: 600ms exponential ease-out, no bounce */
+  /* one authored motion: segments close in steps, exponential ease-out, no bounce */
   --ease-resolve: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -61,6 +59,8 @@
   :root {
     color-scheme: light;
     scrollbar-color: var(--color-ink) var(--color-paper);
+    accent-color: var(--color-ink);
+    caret-color: var(--color-ink);
   }
 
   html {
@@ -77,8 +77,8 @@
   }
 
   ::selection {
-    background: var(--color-ink);
-    color: var(--color-paper);
+    background: var(--color-marigold);
+    color: var(--color-ink);
   }
 
   :focus-visible {
@@ -90,6 +90,12 @@
     text-decoration-line: underline;
     text-underline-offset: 0.2em;
     text-decoration-thickness: 2px;
+  }
+
+  /* evita palabras sueltas en la última línea del texto corrido */
+  p,
+  li {
+    text-wrap: pretty;
   }
 
   code,
@@ -106,122 +112,31 @@
   }
 }
 
-/* ───────────── LineField: layered vertical line fields ─────────────
- * Four layers (red, blue, green, ink) of 3px lines on a 24px pitch, offset 0/6/12/18px,
- * read as one fine field of alternating colours (6px pitch, ≥4px for projectors).
- * Only transforms move. Offsets are rounded to whole pixels so lines never shimmer at rest.
- *   --lf-lock   0..1   how far the layers have converged (1 = aligned)
- *   --px        -4..4  pointer position in whole steps (parallax)
- *   --flood-origin     transform-origin of the resolving flood (default left edge)
+/* ───────────── Seal: the five-segment mark ─────────────
+ * A C on a 6×6 module grid, one segment per check, in check order.
+ * Segments change state in place; they never move or reorder.
  */
 @layer components {
-  .line-field {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    background: var(--color-paper);
-    --lf-lock: 0;
+  .seal-seg {
+    transition:
+      background-color 240ms var(--ease-resolve),
+      border-color 240ms var(--ease-resolve);
+    transition-delay: calc(var(--seg-i, 0) * var(--seal-stagger, 0ms));
   }
 
-  .lf-layer {
-    position: absolute;
-    inset: 0 -48px;
-    background-image: repeating-linear-gradient(90deg, var(--lf-ink) 0 3px, transparent 3px 24px);
-    transform: translate3d(
-      round(
-        calc((var(--lf-offset) + var(--px, 0) * var(--lf-k)) * (1 - var(--lf-lock)) * 1px),
-        1px
-      ),
-      0,
-      0
-    );
-    transition: transform 600ms var(--ease-resolve);
-    will-change: transform;
-  }
-  .lf-layer:nth-child(1) {
-    --lf-ink: var(--color-line-red);
-    --lf-offset: 0;
-    --lf-k: 3;
-  }
-  .lf-layer:nth-child(2) {
-    --lf-ink: var(--color-line-blue);
-    --lf-offset: 6;
-    --lf-k: 2;
-  }
-  .lf-layer:nth-child(3) {
-    --lf-ink: var(--color-line-green);
-    --lf-offset: 12;
-    --lf-k: 1;
-  }
-  .lf-layer:nth-child(4) {
-    --lf-ink: var(--color-ink);
-    --lf-offset: 18;
-    --lf-k: 0;
+  /* checking: the segment blinks in two hard steps, no shimmer on a projector */
+  .seal-seg[data-status='CHECKING'],
+  .chip-checking {
+    animation: seal-blink 0.8s steps(2, jump-none) infinite;
   }
 
-  /* scanning without a progress value: layers drift one full pitch at different speeds */
-  .line-field[data-state='scanning'][data-progress='none'] .lf-layer {
-    /* whole-pixel steps keep every line crisp on a projector while it scans */
-    animation: lf-drift var(--lf-drift, 4s) steps(24) infinite;
-    transition: none;
-  }
-  .lf-layer:nth-child(1) {
-    --lf-drift: 3s;
-  }
-  .lf-layer:nth-child(2) {
-    --lf-drift: 4.5s;
-  }
-  .lf-layer:nth-child(3) {
-    --lf-drift: 6s;
-  }
-  .lf-layer:nth-child(4) {
-    --lf-drift: 9s;
-  }
-  .line-field[data-visible='false'] .lf-layer {
-    animation-play-state: paused;
-  }
-
-  /* a file dragged anywhere over the page: every field locks into alignment */
-  html[data-dragging='true'] .line-field {
-    --lf-lock: 1;
-  }
-
-  .lf-flood {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: var(--lf-flood, var(--color-line-green));
-    transform: scaleX(0);
-    transform-origin: var(--flood-origin, 0 50%);
-    transition: transform 600ms var(--ease-resolve);
-  }
-  .line-field[data-state='resolved-ok'] .lf-flood {
-    --lf-flood: var(--color-line-green);
-    transform: scaleX(1);
-  }
-  .line-field[data-state='resolved-fail'] .lf-flood {
-    --lf-flood: var(--color-line-red);
-    transform: scaleX(1);
-  }
-  .line-field[data-state='resolved-unavailable'] .lf-flood {
-    --lf-flood: var(--color-line-yellow);
-    transform: scaleX(1);
-  }
-  /* unavailable is yellow with ink hatching so it never reads as success or failure */
-  .line-field[data-state='resolved-unavailable'] .lf-flood::after {
-    content: '';
-    position: absolute;
-    inset: 0;
+  /* not examined / unavailable: an open, dashed segment */
+  .seal-open {
     background-image: repeating-linear-gradient(
-      90deg,
-      var(--color-ink) 0 2px,
-      transparent 2px 12px
+      45deg,
+      currentColor 0 2px,
+      transparent 2px 8px
     );
-  }
-
-  .lf-content {
-    position: relative;
-    z-index: 2;
   }
 
   /* Timeline gap: the interval where the spine is broken */
@@ -229,54 +144,38 @@
     background-image: repeating-linear-gradient(45deg, var(--color-ink) 0 2px, transparent 2px 9px);
   }
 
-  /* CheckRow chip: three tiny line layers that interfere while checking */
-  .chip-lines {
-    background-image:
-      repeating-linear-gradient(90deg, var(--color-line-red) 0 2px, transparent 2px 8px),
-      repeating-linear-gradient(90deg, var(--color-line-blue) 0 2px, transparent 2px 8px),
-      repeating-linear-gradient(90deg, var(--color-line-green) 0 2px, transparent 2px 8px);
-    background-position:
-      0 0,
-      3px 0,
-      6px 0;
-    animation: chip-drift 1.2s steps(8) infinite;
+  /* Verdict field: the colour wipes in once, from the seal outward */
+  .verdict-field {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 600ms var(--ease-resolve);
+  }
+  .verdict-field[data-resolved='true'] {
+    clip-path: inset(0 0 0 0);
   }
 }
 
-/* DropZone: the whole page reacts to a dragged file. Unlayered so it beats the bg-white utility. */
+/* DropZone: the whole page reacts to a dragged file. Unlayered so it beats the bg-paper utility. */
 html[data-dragging='true'] .dropzone:not([data-disabled]) {
   background: var(--color-ink);
   color: var(--color-paper);
-  outline: 4px solid var(--color-ink);
+  outline: 4px solid var(--color-marigold);
   outline-offset: 6px;
 }
 
-@keyframes lf-drift {
-  to {
-    translate: 24px 0;
+@keyframes seal-blink {
+  50% {
+    opacity: 0.35;
   }
 }
 
-@keyframes chip-drift {
-  to {
-    background-position:
-      8px 0,
-      11px 0,
-      14px 0;
-  }
-}
-
-/* reduced motion: static lines, instant resolution, no parallax */
+/* reduced motion: instant changes, no blinking */
 @media (prefers-reduced-motion: reduce) {
-  .lf-layer {
-    transform: translate3d(round(calc(var(--lf-offset) * (1 - var(--lf-lock)) * 1px), 1px), 0, 0);
-    transition: none;
-    animation: none !important;
-  }
-  .lf-flood {
+  .seal-seg,
+  .verdict-field {
     transition: none;
   }
-  .chip-lines {
+  .seal-seg[data-status='CHECKING'],
+  .chip-checking {
     animation: none;
   }
 }

@@ -140,17 +140,17 @@ describe('chain account client', () => {
     const client = await createChainAccountClient({ signer });
     const error = await client.revoke(`0x${'ab'.repeat(32)}`).catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(LedgerWriteError);
-    expect((error as LedgerWriteError).message).toBe('Your signing key is not an owner of this account');
+    expect((error as LedgerWriteError).message).toBe('Tu clave de firma no está autorizada en esta cuenta');
     expect((error as LedgerWriteError).technical).toContain('AA24');
   });
 
   // The EntryPoint's own error codes each name a different broken piece. A single generic sentence
   // for every one of them is what made the accreditation failure unreadable.
   test.each([
-    ['AA31 paymaster deposit too low', 'The consortium paymaster is out of gas money'],
-    ['AA33 reverted (or OOG)', 'The ledger rejected the operation'],
-    ['AA21 didn\u2019t pay prefund', 'This account has no funds for gas'],
-    ['AA25 invalid account nonce', 'Two operations from this device collided'],
+    ['AA31 paymaster deposit too low', 'El consorcio se quedó sin fondos para cubrir las operaciones'],
+    ['AA33 reverted (or OOG)', 'El registro rechazó la operación'],
+    ['AA21 didn\u2019t pay prefund', 'Esta cuenta no tiene fondos para la operación'],
+    ['AA25 invalid account nonce', 'Dos operaciones de este dispositivo chocaron'],
   ])('the technical text %s becomes its own sentence', async (technical, expected) => {
     const { signer } = await generateSigner();
     vi.stubGlobal(

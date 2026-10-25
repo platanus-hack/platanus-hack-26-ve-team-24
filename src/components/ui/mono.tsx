@@ -53,16 +53,16 @@ export function Mono({
       <button
         type="button"
         title={value}
-        className="font-mono text-small border-2 border-ink bg-white px-2 py-1 min-h-12 hover:bg-ink hover:text-paper transition-colors duration-150"
+        className="font-mono text-small border-2 border-ink bg-paper px-2 py-1 min-h-12 hover:bg-ink hover:text-paper transition-colors duration-150"
         onClick={() => {
           void copyValue();
         }}
       >
         {copied ? (
-          'Copied'
+          'Copiado'
         ) : (
           <>
-            <span className="sr-only">Copy </span>
+            <span className="sr-only">Copiar </span>
             {text}
           </>
         )}

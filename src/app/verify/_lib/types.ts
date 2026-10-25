@@ -8,10 +8,10 @@ export interface LoadedInput {
   text: string;
   kind: InputKind;
   origin: InputOrigin;
-  shareId?: string; // set when the text came from a share link: the id is what left the browser, never the key
+  shareId?: string; // viene de un enlace para compartir: sale el id, nunca la clave
 }
 
-/** The exact request the lookup sent, for the "What left your browser" receipt. */
+/** La petición exacta que hizo la consulta, para el recibo «Lo que salió de tu navegador». */
 export interface RecordedRequest {
   url: string;
   method: 'POST';
@@ -28,11 +28,11 @@ export interface RowView {
 }
 
 export const CHECK_LABELS: Record<CheckCode, string> = {
-  TOKEN: 'Certificate',
-  ISSUER: 'Employer accredited',
-  SIGNATURE: 'Employer’s signature',
-  HOLDER: 'Bound to its holder',
-  LEDGER: 'Ledger record',
+  TOKEN: 'Constancia',
+  ISSUER: 'Acreditado',
+  SIGNATURE: 'Firma',
+  HOLDER: 'Titular',
+  LEDGER: 'Registro',
 };
 
 export const MAX_INPUT_BYTES = 256 * 1024;

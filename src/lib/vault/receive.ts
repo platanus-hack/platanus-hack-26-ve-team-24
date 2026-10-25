@@ -36,12 +36,12 @@ async function receiveDelivery(
   request: VaultRequest,
   jwe: string,
 ): Promise<void> {
-  if (!request.encPrivateKey) throw new RejectedError('The key for this request is missing');
+  if (!request.encPrivateKey) throw new RejectedError('Falta la clave de esta solicitud');
   const sdJwt = await deps.decrypt(jwe, request.encPrivateKey);
 
   const signer = await deps.loadSigner(request.keyName);
   if (!signer || !sameKey(signer.jwk, boundKeyOf(sdJwt))) {
-    throw new RejectedError('This certificate is not bound to your key');
+    throw new RejectedError('Esta constancia no está ligada a tu clave');
   }
 
   const verdict = await deps.verify(sdJwt);
@@ -85,7 +85,7 @@ export async function syncRequest(deps: ReceiveDeps, request: VaultRequest): Pro
     await deps.store.putRequest({
       ...request,
       status: rejected ? 'REJECTED' : request.status,
-      error: rejected ? caught.message : 'Could not open the delivery yet. Trying again.',
+      error: rejected ? caught.message : 'Aún no se pudo abrir la entrega. Lo intentamos de nuevo.',
     });
   }
 }

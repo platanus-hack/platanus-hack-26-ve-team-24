@@ -5,8 +5,8 @@ export default function VaultPage() {
   return (
     <>
       <PageHeader
-        title="Your vault"
-        lead="Your vault lives in this browser. The keys are made here and never leave."
+        title="Tu bóveda"
+        lead="Tu bóveda vive en este navegador. Las claves se crean aquí y nunca salen de él."
       />
       <div className="mt-10">
         <VaultHome />

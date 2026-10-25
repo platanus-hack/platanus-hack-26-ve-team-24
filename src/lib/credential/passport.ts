@@ -61,16 +61,16 @@ function parseCv(input: string): string[] | string {
   try {
     parsed = JSON.parse(input);
   } catch {
-    return 'This is not a Verified CV file';
+    return 'Esto no es un archivo de CV verificado';
   }
   const { type, v, presentations } = (parsed ?? {}) as Record<string, unknown>;
   if (type !== 'constancia-cv' || v !== 1 || !Array.isArray(presentations)) {
-    return 'This is not a Verified CV file';
+    return 'Esto no es un archivo de CV verificado';
   }
   if (presentations.length === 0 || presentations.length > MAX_ENTRIES) {
-    return `A Verified CV holds between 1 and ${MAX_ENTRIES} certificates`;
+    return `Un CV verificado contiene entre 1 y ${MAX_ENTRIES} constancias`;
   }
-  if (!presentations.every((p) => typeof p === 'string')) return 'The CV entries are malformed';
+  if (!presentations.every((p) => typeof p === 'string')) return 'Las entradas del CV están mal formadas';
   return presentations as string[];
 }
 

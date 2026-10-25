@@ -16,7 +16,7 @@ async function isActive(account: `0x${string}`): Promise<boolean> {
     return (await getLedgerReader().issuer(account)).status === 'ACTIVE';
   } catch (error) {
     if (!(error instanceof LedgerUnreachableError)) throw error;
-    throw new HttpError(503, 'LEDGER_UNREACHABLE', 'The ledger cannot be reached right now');
+    throw new HttpError(503, 'LEDGER_UNREACHABLE', 'El registro no responde en este momento');
   }
 }
 
@@ -33,7 +33,7 @@ export function POST(req: Request, { params }: { params: Promise<{ id: string }>
       where: { id, status: 'PENDING' },
       data: { status: 'ISSUED', deliveryJwe: jwe },
     });
-    if (count === 0) throw new HttpError(409, 'NOT_PENDING', 'This request was already handled');
+    if (count === 0) throw new HttpError(409, 'NOT_PENDING', 'Esta solicitud ya fue atendida');
     return Response.json({ status: 'ISSUED' });
   });
 }

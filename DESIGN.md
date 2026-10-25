@@ -1,67 +1,71 @@
 ---
 name: Constancia
-description: Employment letters that prove themselves. Fields of fine pure-colour lines resolve into one solid colour when a certificate is examined; hidden claims are solid bars.
+description: Employment letters that prove themselves. A modernist identity program in white, black and one institutional marigold; a five-segment C is the verifier.
 colors:
-  paper: "#F7F6F2"
-  white: "#FFFFFF"
-  ink: "#111111"
-  ink-muted: "#55534E"
-  rule: "#CFCCC2"
-  line-red: "#E4002B"
-  line-blue: "#0047BB"
-  line-green: "#00A651"
-  line-yellow: "#FFD100"
-  red-text: "#B0001F"
-  green-text: "#00703A"
-  focus: "#0047BB"
+  paper: "#ffffff"
+  ink: "#0a0a0a"
+  ink-muted: "#4d4d4d"
+  rule: "#d4d4d4"
+  marigold: "#f2b705"
+  ok: "#00703a"
+  fail: "#b0001f"
+  focus: "#0a0a0a"
 typography:
   display:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(3.5rem, 1.7rem + 5.6vw, 6.5rem)"
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "clamp(3.25rem, 1.75rem + 4.6vw, 6rem)"
     fontWeight: 800
     lineHeight: 0.95
-    letterSpacing: "-0.03em"
-    fontVariation: "'wdth' 125"
+    letterSpacing: "-0.035em"
   headline:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(2rem, 1.3rem + 2.4vw, 3.5rem)"
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "clamp(2rem, 1.4rem + 2vw, 3.25rem)"
     fontWeight: 800
     lineHeight: 1
-    letterSpacing: "-0.025em"
-    fontVariation: "'wdth' 125"
+    letterSpacing: "-0.03em"
   title:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 700
     lineHeight: 1.2
+  lead:
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.375rem"
+    fontWeight: 400
+    lineHeight: 1.4
   body:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.0625rem"
     fontWeight: 400
     lineHeight: 1.55
-  small:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.875rem"
-    fontWeight: 400
+  label:
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.9375rem"
+    fontWeight: 700
     lineHeight: 1.45
+  wordmark:
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.0625rem"
+    fontWeight: 800
+    letterSpacing: "0.32em"
   mono:
-    fontFamily: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontFamily: "Red Hat Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
     fontSize: "0.92em"
     fontWeight: 400
-    fontFeature: "'tnum'"
+    fontFeature: "'tnum' 1"
 rounded:
   none: "0px"
 spacing:
-  "2": "8px"
-  "4": "16px"
-  "6": "24px"
-  "12": "48px"
-  "24": "96px"
-  gutter: "clamp(1.25rem, 4.4vw, 4rem)"
+  gutter: "clamp(1.25rem, 4.4vw, 3.5rem)"
+  row: "16px"
+  block: "24px"
+  group: "48px"
+  section: "96px"
 components:
   button-primary:
     backgroundColor: "{colors.ink}"
     textColor: "{colors.paper}"
+    typography: "{typography.body}"
     rounded: "{rounded.none}"
     padding: "0 24px"
     height: "48px"
@@ -71,183 +75,199 @@ components:
   button-secondary:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.ink}"
+    typography: "{typography.body}"
     rounded: "{rounded.none}"
     padding: "0 24px"
     height: "48px"
   button-secondary-hover:
     backgroundColor: "{colors.ink}"
     textColor: "{colors.paper}"
-  field-input:
-    backgroundColor: "{colors.white}"
+  button-disabled:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.ink-muted}"
+    rounded: "{rounded.none}"
+    height: "48px"
+  input:
+    backgroundColor: "{colors.paper}"
     textColor: "{colors.ink}"
+    typography: "{typography.body}"
     rounded: "{rounded.none}"
     padding: "8px 12px"
     height: "48px"
-  panel:
-    backgroundColor: "{colors.white}"
+  drop-slot:
+    backgroundColor: "{colors.paper}"
     textColor: "{colors.ink}"
     rounded: "{rounded.none}"
     padding: "24px"
-  check-chip-verified:
-    backgroundColor: "{colors.line-green}"
+  drop-slot-dragging:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.paper}"
+  seal-region:
+    backgroundColor: "{colors.marigold}"
     textColor: "{colors.ink}"
+    padding: "40px {spacing.gutter}"
+  verdict-valid:
+    backgroundColor: "{colors.ok}"
+    textColor: "{colors.paper}"
+    typography: "{typography.display}"
+  verdict-invalid:
+    backgroundColor: "{colors.fail}"
+    textColor: "{colors.paper}"
+    typography: "{typography.display}"
+  verdict-unavailable:
+    backgroundColor: "{colors.marigold}"
+    textColor: "{colors.ink}"
+    typography: "{typography.display}"
+  chip:
+    backgroundColor: "{colors.paper}"
     rounded: "{rounded.none}"
     size: "36px"
-  check-chip-failed:
-    backgroundColor: "{colors.line-red}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    size: "36px"
-  check-chip-unavailable:
-    backgroundColor: "{colors.line-yellow}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    size: "36px"
-  verdict-mark:
-    backgroundColor: "{colors.white}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    size: "112px"
+  claim-hidden:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.paper}"
+    typography: "{typography.label}"
+    padding: "8px 12px"
 ---
 
 # Design System: Constancia
 
 ## Overview
 
-**Creative North Star: "Chromatic Interference"**
+**Creative North Star: "Programa de identidad"**
 
-Caracas kinetic op-art (the Cruz-Diez and Soto lineage) as a grammar, never a copy of a piece. Fields of fine, pure-colour vertical lines interfere at rest, shifting colour with the viewer's position, and resolve into one solid colour when a credential is examined. The page is a white modernist ground with ink rules; colour is earned and arrives as a verdict. The interface refuses the crypto look (neon on black, chain imagery), the government-portal look (grey forms, stamp overload) and the SaaS template (purple gradients, icon-tile grids, glass).
+Constancia is drawn as an institution with an identity manual, in the lineage of Venezuelan modernist identity programs of the 1960s and 70s: banks, museums, the Caracas Metro. The whole system rests on one geometric mark, a C built from five segments on a 6x6 module grid, and that mark is not decoration: it is the verifier. Each segment is one check, in fixed order (Constancia, Acreditado, Firma, Titular, Registro), and it changes state in place. It never moves, never reorders.
 
-Density is calm and large: type is heavy and expanded, rules are 2 to 4px ink, targets are at least 48px, because the verifier is shown on a projector to a room. Operate surfaces (`/employer`, `/verify`) keep the same world with more restraint; the line field is a material used in a few places, not wallpaper.
+The palette is two values plus one colour. Pure white paper and near-black ink carry everything; an institutional marigold owns whole regions (the seal column, the closing footer band, the "no se puede verificar ahora" verdict) and is never used for small text. Green and red exist only to report a verdict. Structure comes from black rules at 2, 3 and 4px, a strict 12-column grid and square corners everywhere. There are no shadows, no gradients and no rounded corners; the Tailwind theme resets `--radius-*`, `--shadow-*` and the default colour palette so they cannot be reached for.
+
+Density is calm and projector-safe: body text never below 17px, targets at least 48px, one focal piece per screen. Operate surfaces (`/verify`, `/vault`, `/cv`, `/employer`, `/ledger`) inherit the same world with more restraint: the marigold seal column appears where a check result is the subject, and white with black rules elsewhere.
 
 **Key Characteristics:**
-- Four pure inks appear only as vertical line fields, flooded bands, chips and the unavailable plate; blue is also the focus ring. Text is ink or a text-safe dark.
-- Every state is a word plus a drawn mark plus colour. Never colour alone.
-- Square corners, flat surfaces, hairline and ink rules. No shadows, no gradients as decoration, no glass.
-- One motion family, owned by the line field: parallax at rest, stepped drift or check-by-check convergence while scanning, then the 600ms exponential ease-out flood, no bounce. Elsewhere only 150ms colour inversions.
+- One mark, five segments, one check per segment; state changes in place.
+- White, black, one marigold; verdict green and red only on states.
+- Square corners, black rules of 2 / 3 / 4px, no shadows, no gradients.
+- Heavy neo-grotesk display, mono only for hashes and IDs.
+- State is never colour alone: every state carries a word and a drawn mark.
 
 ## Colors
 
-A white modernist ground and ink, with four pure line inks held back for the moment of resolution.
+Two values and one institutional colour, plus two verdict darks that only ever speak about a result.
 
 ### Primary
-- **Ink** (#111111): text, 2 to 4px rules, borders, the primary button, the fourth line layer. The system's structural colour.
-
-### Secondary
-
-The line inks. Never body text.
-
-- **Signal Red** (#E4002B): the red line layer; floods the verdict band on NOT AUTHENTIC; FAILED chip.
-- **Interference Blue** (#0047BB): the blue line layer; also the focus ring.
-- **Resolve Green** (#00A651): the green line layer; floods on AUTHENTIC; VERIFIED chip.
-- **Caution Yellow** (#FFD100): the unavailable flood and chip. Never text.
+- **Institutional Marigold** (marigold): the program's colour. It fills whole regions: the 5/12 seal column on the landing and on `/verify`, the closing footer band, the UNAVAILABLE verdict field, status notices, the CHECKING and UNAVAILABLE chips, and text selection. Text on marigold is always ink.
 
 ### Neutral
-- **Paper** (#F7F6F2): the page ground and the gap colour between lines.
-- **White** (#FFFFFF): form controls, panels, the white gap cut into a line field (drop slot).
-- **Muted Ink** (#55534E): secondary text, hints, placeholders (7:1 on paper).
-- **Rule** (#CFCCC2): hairlines between rows and receipt entries.
-- **Red Text** (#B0001F) and **Green Text** (#00703A): AA text-safe darks, used only for the FAILED and VERIFIED words and error messages.
+- **Paper White** (paper): the page and every surface. Also the text colour on ink and on verdict fields.
+- **Program Black** (ink): all text, every structural rule, primary buttons, filled seal segments, the inverted "Muestra un dato" band, the hidden-claim bar and the focus ring.
+- **Secondary Grey** (ink-muted): secondary text only: hints, details, measured values, placeholders, and the disabled state. 8.4:1 on paper, 4.9:1 on marigold. Never a fill.
+- **Hairline** (rule): 2px separators between rows inside a list that is already framed by black rules, and the quiet panel border. Never text.
+
+### Verdict
+- **Verdict Green** (ok): VERIFIED chips and the VÁLIDA verdict field; also status words in text on paper.
+- **Verdict Red** (fail): FAILED chips, the NO VÁLIDA verdict field, field error borders and error text.
 
 ### Named Rules
-**The Pure Ink Rule.** Pure red, green and yellow are lines and floods. Text uses ink, muted ink or the two dark variants. Yellow is never text and never a thin line on paper.
-**The Resolution Rule.** Colour is the last thing that arrives. A resolved state always carries its word and its drawn mark (check, cross, bang, dash); a colour-blind reader loses nothing.
+**The Two Values and One Colour Rule.** Paper, ink and marigold are the world. Green and red appear only where a result is being reported; there are no decorative greys, tints or extra accents, and the theme does not expose any.
+
+**The Marigold Region Rule.** Marigold owns areas, not details: a column, a band, a verdict field, a status notice, a state chip. It never colours text, rules or icons, and text set on it is always ink.
 
 ## Typography
 
-**Display Font:** Archivo (variable, `wdth` axis, with system sans fallback)
-**Body Font:** Archivo, normal width
-**Label/Mono Font:** Geist Mono, for IDs, hashes, DIDs and measured values only
+**Display Font:** Schibsted Grotesk (with ui-sans-serif, system-ui)
+**Body Font:** Schibsted Grotesk
+**Label/Mono Font:** Red Hat Mono, for hashes, DIDs, IDs and measured values only
 
-**Character:** One family in two voices: expanded and heavy for verdicts and headings, plain width for reading. Mono is data, not decoration.
+**Character:** a neo-grotesk with point of view, set extra-bold and tight for display so a headline reads like a sign; the same family at regular weight carries body text. Mono is data, not voice.
 
 ### Hierarchy
-- **Display** (800, clamp 56px to 104px, 0.95, -0.03em, width 125): the landing hero and the verdict word (the verdict uses Headline under 640px).
-- **Headline** (800, clamp 32px to 56px, 1.0, -0.025em, width 125): PageHeader titles (a 4px ink rule below, nothing above), section headings, the drop-slot label.
-- **Title** (24px, 1.2): check labels at 700 and normal width; Panel, CheckList and Receipt titles at 800 and width 125.
-- **Body** (400, 17px, 1.55): paragraphs and detail lines, at most 65ch.
-- **Small** (400, 14px, 1.45): hints, footnotes, the employer line. Field labels and status words are bold; status words are uppercase with wide tracking (0.025em).
-- **Mono** (400, 0.92em, tabular numerals): credential IDs, hashes, measured values.
-
-Width 125 is `font-stretch: expanded`, set alongside the size on every display, headline and expanded title; the size tokens alone render at normal width.
+- **Display** (800, clamp 52px to 96px, 0.95, -0.035em): the landing headline and the verdict word. Measure capped near 12ch, balanced.
+- **Headline** (800, clamp 32px to 52px, 1, -0.03em): section titles, page headers, the footer call, the verdict word on small screens. Capped near 18ch.
+- **Title** (700, 24px, 1.2): check-row labels, panel and receipt titles, timeline employers.
+- **Lead** (400, 22px, 1.4): the one paragraph under a display or headline. 40 to 60ch.
+- **Body** (400, 17px, 1.55): running text, capped at 65ch, `text-wrap: pretty`.
+- **Label** (700, 15px): field labels, legend entries, receipt keys. Status words use it in uppercase with wide tracking; that is the only uppercase in the system besides the wordmark.
+- **Mono** (Red Hat Mono, 0.92em, tabular numerals): hashes, keys and IDs, middle-shortened when long, with copy-on-click where useful.
 
 ### Named Rules
-**The Data Is Mono Rule.** Mono appears only on values a person might copy or compare. Prose never goes mono.
+**The Status Word Rule.** Uppercase, bold, tracked small text is reserved for a state word printed next to its chip or segment (VERIFICADO, FALLÓ, NO DISPONIBLE). It never sits above a heading as a label.
+
+**The Mono Is Data Rule.** Red Hat Mono appears only on machine values. Headings, buttons and prose never use it.
 
 ## Layout
 
-Single-column reading flow inside a 72rem container with a fluid gutter (20px to 64px, the `gutter` spacing token). Spacing keeps Tailwind's numeric 4px steps (2, 4, 6, 12, 24 = 8, 16, 24, 48, 96px) and `gutter` is the only named spacing utility. Rhythm is 24 / 48 / 96px: tight inside a group, generous between groups, more space above a heading than below it. Check rows are separated by 2px ink rules; receipt rows and quiet panels use the 2px Rule hairline. Nothing is boxed per row. Breakpoints are Tailwind's defaults (640, 768, 1024, 1280, 1536px), plus the Receipt stacking below 480px; at 390px check rows stack (index, chip, label, then status and measured value). Line pitch is 6px (3px line, 3px gap), above the 4px projector floor.
+A strict 12-column modular grid at `md` and up. Signature split: a 5/12 marigold seal column, full height, holding the mark and its numbered legend, beside a 7/12 white content column. Horizontal padding is one fluid gutter (20px at 390 to 56px wide); the content column adds 64px at `lg`.
+
+Spacing keeps Tailwind's 4px scale and breathes on 24 / 48 / 96: rows pad 16 to 24px, groups separate by 48px, landing sections pad 96px top and bottom. Headings get more space above than below. Lists are tabular: numbered rows with fixed columns (index, chip, label, status) separated by 2px black rules, closed with a 2px bottom rule. Below `md` the split stacks, the seal shrinks (320 to 176px on the landing, 256 to 144px in `/verify`) and the nav wraps under the wordmark.
+
+**The Fixed Position Rule.** Rows, segments and checks keep their position through every state. Results replace in place; nothing reorders or slides to announce a change.
 
 ## Elevation & Depth
 
-Flat. Depth is conveyed by ink rules, a white panel on a paper ground, and the line field itself. The theme removes the named shadow and radius scales. `rounded-none`, `rounded-full`, arbitrary values and Tailwind's default `text-*` sizes still compile and are off-system: do not use them.
+Completely flat. There are no shadows of any kind; the theme resets `--shadow-*`, `--inset-shadow-*` and `--drop-shadow-*`. Hierarchy comes from rule weight (4px for a frame or a section break, 3px for a control, 2px for a row), from inversion (an ink band, an ink hidden-claim bar, an inverted drop slot while dragging) and from marigold regions.
 
-### Named Rules
-**The Flat Rule.** Surfaces never lift. A state change is a colour inversion (ink to paper) or a flood, never a shadow.
+**The Rule Weight Rule.** Depth is drawn, not cast: a heavier black rule means a more important boundary. A section starts with a 4px top rule; rows inside it divide with 2px.
 
 ## Shapes
 
-Square. Every box is a rectangle with a 2px, 3px or 4px ink border (hairline `Rule` for quiet blocks). Marks are drawn square-capped strokes on a 20px grid. The chip is a 36px square; the verdict mark is a white square with a 4px ink border (80px, 112px from 640px).
+Square everywhere: zero radius on buttons, inputs, panels, chips, the drop slot and the seal segments (`--radius-*` is reset). Lines are square-capped and miter-joined, including drawn marks (check, cross, exclamation, dash, plus/minus). Hatching at 45 degrees is the one texture: it marks a failed seal segment and a gap in the employment timeline. Dashed borders mean "open": an unavailable or unexamined segment, an unexamined chip, a disabled control.
 
 ## Components
 
+### Seal (signature)
+The five-segment C on a 6x6 grid, painted with `currentColor` so the parent's text colour draws it. Stroke scales with size (size / 32, minimum 2px). Segment states: outlined (pending), filled (checking, verified, done), 45-degree hatched (failed), dashed (unavailable), dashed at 40% (not examined). Checking blinks in two hard steps (0.8s). Changes animate background and border in 240ms on the resolve ease, staggered by segment index (120ms on the landing close). Under reduced motion, changes are instant and nothing blinks. The **legend** below it is a five-column numbered list, each entry under a 4px rule, printing the state word once a state exists.
+
+### Wordmark
+The closed seal at 24px beside CONSTANCIA in extra-bold body size, tracked 0.32em. Top-left of every nav, sitting under a 2px ink rule.
+
+### Verdict
+A 4px ink frame. Inside, a field in green (VÁLIDA), red (NO VÁLIDA) or marigold (NO SE PUEDE VERIFICAR AHORA) holds a 112px seal and the verdict word at display size. The colour wipes in once from the seal side, a 600ms `clip-path` on the resolve ease, then a status region announces it. Reason and issuer sit below a 4px rule. This is the page's one motion.
+
 ### Buttons
-- **Shape:** rectangle, 3px ink border, 48px minimum height, 24px side padding.
-- **Primary:** ink fill, paper text. **Secondary:** paper fill, ink text. **Quiet:** no border, underline on hover.
-- **Hover:** primary and secondary invert (150ms colour). **Disabled:** 40% opacity, no pointer events. **Focus:** global 3px blue ring offset 3px.
+- **Shape:** square (0px), 3px ink border, 48px minimum height, 24px horizontal padding, bold body text.
+- **Primary:** ink fill, paper text.
+- **Secondary:** paper fill, ink text.
+- **Hover:** the two invert into each other (150ms colour transition). Focus is the global 3px ink outline offset 3px.
+- **Quiet:** transparent border, underline on hover.
+- **Disabled:** dashed ink-muted border, paper fill, ink-muted text, no pointer events. Disabled is drawn as "open", never only faded.
 
-### Fields
-- **Style:** 2px ink border, white fill, 48px minimum height, labels above in bold small, placeholder in muted ink.
-- **Error:** the border turns red-text, the message carries a drawn cross, announced with `role="alert"`. Hint and error live inside the label so they are read with the control.
+### Inputs / Fields
+- **Style:** 2px ink border, paper fill, square, 48px minimum, 8px by 12px padding, body size. Bold label above, ink-muted hint below.
+- **Focus:** global 3px ink outline.
+- **Error:** border turns fail red; a bold red message with a drawn square-capped cross, announced as an alert.
 
-### Panel
-- White fill with a 2px ink border and 24px padding (quiet tone: transparent fill, hairline rule border). Never nested inside another panel.
+### Drop slot
+A paper field with a 4px ink border and an extra-bold label. When a file is dragged anywhere over the page it inverts to ink with paper text and a 4px marigold outline at 6px offset. Disabled: dashed ink-muted border and ink-muted text (the same open treatment as buttons), not-allowed cursor.
 
-### Mono
-- Middle-shortened hashes (10 chars, ellipsis, 8 chars). With copy, the whole value is one button that announces "Copy", shows the full value on hover and "Copied" for 1.5s.
+### Check list and chips
+Numbered rows on 2px ink rules: index, a 36px square chip with a drawn 3px mark, a title-size label with ink-muted detail, and on the right the uppercase status word plus the measured value in mono. Chip fills: paper (pending), marigold blinking (checking), green with check (verified), red with cross (failed), marigold with exclamation (unavailable), dashed muted with dash (not examined), ink with check (done).
 
-### Disclosure
-- A native `details` with a 2px top rule and a square plus mark that loses its vertical stroke when open. Used for "Technical details".
+### Claim list
+Two-column rows on 2px ink rules. Shown claims sit in a 2px ink box. Hidden claims are a solid ink bar reading OCULTO, and their value never reaches the DOM. Toggleable claims use a 32px square with a 3px border that fills ink with a check when shared.
 
-### Line Field (signature)
-- Four layers of 3px lines on a 24px pitch (red, blue, green, ink), offset so they read as one field of alternating colours. Only transforms move. At rest the layers shift with the pointer in whole-pixel steps. Scanning drifts the layers in whole-pixel steps, or, given a progress of 0 to 5, converges them one check at a time. Resolved states flood a solid colour across the band in 600ms: green (ok), red (fail), yellow with ink hatching (unavailable). Reduced motion: static lines, instant change. A file dragged anywhere over the page locks every field into alignment and inverts the drop slot.
+### Navigation
+Wordmark left, four bold links right (Verificar, Empleadores, Bóveda, Registro), 48px targets, no underline at rest, underline on hover. A 2px ink rule closes the bar. On small screens the links wrap under the wordmark in small size.
 
-### Check Row (signature)
-- Index, a 36px chip, the label with its detail, and the status word with the measured value on the right. The chip interferes (three small line layers) while CHECKING and resolves to a solid square with a mark: check on green, cross on red, bang on yellow, dash on dashed paper (not examined), check on ink (done). CheckList is not a live region; the verifier page owns per-check announcements.
-
-### Verdict (signature)
-- A resolved band under a 4px ink border: a white mark square and a huge expanded word over a flooded line field, then the reason and the employer name on white. It mounts as lines and floods once; the result is announced through an `sr-only` status region. The unavailable word sits on a solid yellow plate so it stays legible over the hatching.
-
-### Drop Zone
-- A white gap with a 4px ink border, intended to sit inside a line field. Keyboard and file-input fallback, credential files (.sdjwt, .json, .txt). The drop slot label reads as an action ("Drop a certificate to check it"). Drops outside the slot are swallowed so the browser never navigates to the file.
-
-### Claim List
-- One row per claim. **Shown:** an open line field with the value in ink on a white plate. **Hidden:** the row's field resolved into a solid ink bar with the word "Hidden"; the value is never rendered, never blurred. **On/off:** a square toggle with a 3px ink border, a drawn mark when on, , 48px target. State is never colour alone.
+### Containers
+Panels: 2px ink border, 24px padding, title in extra-bold title size; a quiet tone swaps the border for the hairline. Receipts: a 4px top rule, then label/value rows on hairlines, values in mono where they are machine data. Disclosures: 2px top rule, bold summary, a drawn plus that loses its vertical stroke when open.
 
 ### Timeline
-- A vertical ink spine; each entry carries the check chip (solid square and mark once VERIFIED), employer, title, dates and the status word. A gap is a hatched interval labelled "Gap · N months"; an overlap doubles the spine and is labelled "Overlap".
-
-### QR Block
-- Black on white, square, 4px ink border, 224px growing to 320px, with the label underneath and an optional Copy link. Sized to scan from a phone at 1280x720 on a projector.
-
-### Landing band (signature)
-- The first viewport is the line field at full bleed between two 4px ink rules, in the lower half. The drop slot is a white gap cut into the right of the band; the primary and outline buttons and the employer link sit on a paper plate on the left so no text ever sits on bare lines. At rest the band shifts with the pointer; on a drop it locks into alignment (scanning at progress 5) and the page moves to the verifier. Headline: display size, expanded, left, at most three lines.
-
-### Receipt
-- A ledger: a 4px ink rule, an expanded 800 title at Title size, rows of label and value separated by hairlines, mono for identifiers, muted rows for what was not sent or stored.
+A 3px ink spine through the centre of the chip column. Overlapping employment doubles the spine; a gap breaks it with a hatched 2px-bordered block labelled "Sin empleo · N meses".
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use the four inks only as lines, floods, chips and the unavailable plate (blue is also the focus ring), and text only in ink, muted ink, red-text or green-text.
-- **Do** pair every resolved state with its word and its mark.
-- **Do** keep line offsets on whole pixels and use `steps()` for any drift: `steps(24)` on the layers, `steps(8)` on the chip (no shimmer at 1280x720).
-- **Do** keep targets at 48px or more and body text at 17px or more; this is read from across a room.
-- **Do** put the line field behind the one thing being decided (the drop slot, the verdict), and leave the rest on paper.
+- **Do** keep every surface on paper, ink and marigold; use ok and fail only on verdicts, chips and status words.
+- **Do** give marigold whole regions (the 5/12 seal column, a band, a verdict field) and set only ink on it.
+- **Do** frame and divide with black rules: 4px for frames and section breaks, 3px for controls, 2px for rows.
+- **Do** print every state as a word plus a drawn mark, and keep it in its fixed position.
+- **Do** use the resolve ease (cubic-bezier(0.16, 1, 0.3, 1)) for the seal and the verdict wipe, and make both instant under reduced motion.
+- **Do** keep body text at 17px or more and every target at 48px or more.
+- **Do** set hashes, keys and IDs in Red Hat Mono with tabular numerals, shortened in the middle when long.
 
 ### Don't:
-- **Don't** use shadows, rounded corners, gradient text, glass or glow.
-- **Don't** use yellow as text, or pure red or green as small text on paper.
-- **Don't** put wallpaper-density line fields behind running text.
-- **Don't** animate anything outside the line field beyond 150ms colour changes. No bounce, no entrance animation on every section.
-- **Don't** show wallet, gas or seed-phrase words outside a "Technical details" disclosure.
+- **Don't** use rounded corners, shadows or gradients; the theme deliberately does not provide them.
+- **Don't** set marigold as text, rule or icon colour, or put white text on marigold.
+- **Don't** introduce greys beyond ink-muted (secondary text) and rule (hairlines), or use either as a fill.
+- **Don't** place an uppercase label or kicker above a heading; uppercase tracking is for status words only.
+- **Don't** reorder, slide or reflow checks to show progress; segments and rows change state in place.
+- **Don't** show a state through colour alone, or a disabled control through opacity alone.
+- **Don't** use glyph or icon-font icons; marks are drawn square-capped SVG strokes.

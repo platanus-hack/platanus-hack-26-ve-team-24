@@ -50,5 +50,5 @@ test('a refused account lookup is not reported as a busy ledger', async () => {
   const error = await createChainAccountClient({ signer }).catch((caught: unknown) => caught);
 
   expect(error).toBeInstanceOf(LedgerWriteError);
-  expect((error as LedgerWriteError).message).toBe('This device could not prove its account');
+  expect((error as LedgerWriteError).message).toBe('Este dispositivo no pudo demostrar su cuenta');
 });

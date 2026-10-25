@@ -1,23 +1,25 @@
 import Link from 'next/link';
+import { Wordmark } from '@/components/ui/wordmark';
 
 const LINKS = [
-  { href: '/verify', label: 'Verify' },
-  { href: '/employer', label: 'Employers' },
-  { href: '/vault', label: 'Vault' },
-  { href: '/ledger', label: 'Ledger' },
+  { href: '/verify', label: 'Verificar' },
+  { href: '/employer', label: 'Empleadores' },
+  { href: '/vault', label: 'Bóveda' },
+  { href: '/ledger', label: 'Registro' },
 ];
 
 export function SiteNav() {
   return (
-    <header className="flex flex-wrap items-center justify-between gap-x-8 gap-y-2 border-b-2 border-ink px-gutter py-4">
-      <Link href="/" className="font-display text-title font-extrabold font-stretch-expanded no-underline">
-        Constancia
-      </Link>
-      <nav aria-label="Main">
-        <ul className="flex flex-wrap gap-x-6 gap-y-1">
+    <header className="flex flex-col gap-3 border-b-2 border-ink px-gutter py-4 md:flex-row md:items-center md:justify-between md:py-5">
+      <Wordmark />
+      <nav aria-label="Principal">
+        <ul className="flex justify-between gap-x-4 md:gap-x-8">
           {LINKS.map((link) => (
             <li key={link.href}>
-              <Link href={link.href} className="font-bold">
+              <Link
+                href={link.href}
+                className="inline-flex min-h-12 items-center text-small font-bold no-underline hover:underline md:text-body"
+              >
                 {link.label}
               </Link>
             </li>

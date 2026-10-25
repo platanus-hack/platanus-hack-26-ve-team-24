@@ -30,7 +30,7 @@ export const REVEAL_TEMPLATES: Record<
 
 const CLAIM_NAMES = new Set<string>(REVEAL_TEMPLATES.full);
 
-/** Message is a human sentence, shown as the TOKEN failure. */
+/** El mensaje es una frase en español: se muestra como fallo de la comprobación «Constancia». */
 export class TokenError extends Error {}
 
 type JsonObject = Record<string, unknown>;
@@ -46,12 +46,12 @@ function parseDisclosure(encoded: string): ParsedDisclosure {
   try {
     decoded = JSON.parse(new TextDecoder().decode(fromB64u(encoded)));
   } catch {
-    throw new TokenError('A disclosure is not readable');
+    throw new TokenError('Uno de los datos no se puede leer');
   }
   const [, name, value] = Array.isArray(decoded) && decoded.length === 3 ? decoded : [];
   const validValue = ['string', 'number', 'boolean'].includes(typeof value);
   if (typeof name !== 'string' || !CLAIM_NAMES.has(name) || !validValue) {
-    throw new TokenError('A disclosure is malformed or names an unknown claim');
+    throw new TokenError('Uno de los datos está mal formado o no es un dato conocido');
   }
   return { digest: sha256B64u(encoded), name: name as ClaimName, value };
 }
@@ -60,7 +60,7 @@ const parseSegment = (segment: string, what: string): JsonObject => {
   try {
     return parseJsonSegment(segment);
   } catch {
-    throw new TokenError(`The ${what} is not readable`);
+    throw new TokenError(`${what} no se puede leer`);
   }
 };
 
@@ -109,28 +109,28 @@ export interface DecodedPresentation {
 
 function decodeKeyBinding(jwt: string): NonNullable<DecodedPresentation['keyBinding']> {
   const parts = splitJws(jwt);
-  if (!parts) throw new TokenError('The key-binding signature is malformed');
+  if (!parts) throw new TokenError('La firma del titular está mal formada');
   return {
     jwt,
-    header: parseSegment(parts[0], 'key-binding header'),
-    payload: parseSegment(parts[1], 'key-binding payload'),
+    header: parseSegment(parts[0], 'El encabezado de la firma del titular'),
+    payload: parseSegment(parts[1], 'El contenido de la firma del titular'),
   };
 }
 
 export function decodePresentation(s: string): DecodedPresentation {
   const segments = s.trim().split('~');
-  if (segments.length < 2) throw new TokenError('This is not a Constancia certificate');
+  if (segments.length < 2) throw new TokenError('Esto no es una constancia');
   const [issuerJwt, ...disclosures] = segments;
   const kbJwt = disclosures.pop() ?? '';
 
   const parts = splitJws(issuerJwt);
-  if (!parts) throw new TokenError('This is not a Constancia certificate');
-  const header = parseSegment(parts[0], 'certificate header');
-  const payload = parseSegment(parts[1], 'certificate body');
+  if (!parts) throw new TokenError('Esto no es una constancia');
+  const header = parseSegment(parts[0], 'El encabezado de la constancia');
+  const payload = parseSegment(parts[1], 'El contenido de la constancia');
 
   const digests = (payload.credentialSubject as { _sd?: unknown } | undefined)?._sd;
   if (!Array.isArray(digests) || !digests.every((d) => typeof d === 'string')) {
-    throw new TokenError('The certificate does not list its claims');
+    throw new TokenError('La constancia no enumera sus datos');
   }
   const listed = new Set<string>(digests);
 
@@ -139,9 +139,9 @@ export function decodePresentation(s: string): DecodedPresentation {
   for (const encoded of disclosures) {
     const disclosure = parseDisclosure(encoded);
     if (!listed.has(disclosure.digest)) {
-      throw new TokenError('A disclosed value was changed after the employer signed it');
+      throw new TokenError('Un dato mostrado se cambió después de que el empleador lo firmó');
     }
-    if (seen.has(disclosure.digest)) throw new TokenError('A disclosure appears twice');
+    if (seen.has(disclosure.digest)) throw new TokenError('Un dato aparece dos veces');
     seen.add(disclosure.digest);
     claims[disclosure.name] = disclosure.value;
   }

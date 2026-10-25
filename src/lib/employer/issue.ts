@@ -6,6 +6,7 @@ import type { TxResult } from '../ledger/account-types';
 import { LedgerWriteError } from '../ledger/account-types';
 import { formatBlock, shortHash } from '../ledger/format';
 import type { IssuedLogEntry } from './issued-log';
+import { REQUEST_KIND_LABELS } from './record-fields';
 
 export type IssueStepId = 'OPENED' | 'SIGNED' | 'ANCHORED' | 'DELIVERED' | 'DISCARDED';
 export type StepStatus = 'CHECKING' | 'DONE' | 'FAILED';
@@ -81,22 +82,22 @@ export async function runIssue(
   };
 
   try {
-    emit('OPENED', 'DONE', { measured: `${request.employeeRef} · ${request.kind}` });
+    emit('OPENED', 'DONE', { measured: `${request.employeeRef} · ${REQUEST_KIND_LABELS[request.kind]}` });
 
     if (!progress.credential) {
       emit('SIGNED', 'CHECKING');
-      progress.credential = await attempt('SIGNED', 'The certificate could not be signed on this device', () =>
+      progress.credential = await attempt('SIGNED', 'No se pudo firmar la constancia en este dispositivo', () =>
         deps.sign(record, request.signJwk),
       );
     }
     const { credential } = progress;
     emit('SIGNED', 'DONE', {
-      measured: `ES256 · key ${shortHash(credential.keyId)} · ${kb(byteLength(credential.sdJwt))}`,
+      measured: `ES256 · clave ${shortHash(credential.keyId)} · ${kb(byteLength(credential.sdJwt))}`,
     });
 
     if (!progress.anchor) {
       emit('ANCHORED', 'CHECKING');
-      progress.anchor = await attempt('ANCHORED', 'The ledger did not accept the record', async () => {
+      progress.anchor = await attempt('ANCHORED', 'El registro no aceptó la huella', async () => {
         try {
           return { blockNumber: (await deps.anchor(credential.credentialHash)).blockNumber };
         } catch (error) {
@@ -109,24 +110,24 @@ export async function runIssue(
       });
     }
     emit('ANCHORED', 'DONE', {
-      measured: `${progress.anchor.blockNumber === null ? 'already recorded' : formatBlock(progress.anchor.blockNumber)} · fee 0`,
+      measured: progress.anchor.blockNumber === null ? 'ya estaba en el registro' : formatBlock(progress.anchor.blockNumber),
     });
 
     if (!progress.delivered) {
       emit('DELIVERED', 'CHECKING');
-      await attempt('DELIVERED', 'The certificate could not be delivered. Nothing was lost.', async () => {
+      await attempt('DELIVERED', 'No se pudo entregar la constancia. No se perdió nada.', async () => {
         progress.jwe ??= await deps.encrypt(credential.sdJwt, request.encJwk);
         await deps.deliver(request.id, progress.jwe);
       });
       progress.delivered = true;
     }
     emit('DELIVERED', 'DONE', {
-      measured: `${kb(byteLength(progress.jwe ?? ''))} · only the holder can read it`,
+      measured: `${kb(byteLength(progress.jwe ?? ''))} · solo el titular puede leerla`,
     });
 
     if (!progress.finished) {
       emit('DISCARDED', 'CHECKING');
-      await attempt('DISCARDED', 'The local issued list could not be updated', () =>
+      await attempt('DISCARDED', 'No se pudo actualizar la lista de emitidas en este dispositivo', () =>
         deps.record({
           credentialHash: credential.credentialHash,
           keyId: credential.keyId,
@@ -138,7 +139,7 @@ export async function runIssue(
       deps.discard();
       progress.finished = true;
     }
-    emit('DISCARDED', 'DONE', { measured: 'form cleared · hash kept on this device' });
+    emit('DISCARDED', 'DONE', { measured: 'formulario vacío · la huella queda en este dispositivo' });
     return progress;
   } catch (error) {
     return fail(error);

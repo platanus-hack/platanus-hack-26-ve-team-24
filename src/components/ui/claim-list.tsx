@@ -1,7 +1,6 @@
 'use client';
 
 import { MARK } from './check-list';
-import { LineField } from './line-field';
 
 export interface ClaimView {
   name: string;
@@ -17,17 +16,13 @@ function ClaimControl({ claim, onToggle }: { claim: ClaimView; onToggle?: Toggle
   if (claim.state === 'hidden') {
     return (
       <span className="block bg-ink px-3 py-2 text-center text-small font-bold tracking-wide text-paper uppercase">
-        Hidden
+        Oculto
       </span>
     );
   }
 
   if (claim.state === 'shown') {
-    return (
-      <LineField className="border-2 border-ink p-1.5">
-        <span className="block bg-white px-3 py-2 text-ink">{claim.value}</span>
-      </LineField>
-    );
+    return <span className="block border-2 border-ink bg-paper px-3 py-2 text-ink">{claim.value}</span>;
   }
 
   const on = claim.state === 'on';
@@ -35,7 +30,7 @@ function ClaimControl({ claim, onToggle }: { claim: ClaimView; onToggle?: Toggle
     <button
       type="button"
       aria-pressed={on}
-      aria-label={`${on ? 'Shared' : 'Share'} ${claim.label}`}
+      aria-label={`${on ? 'Compartido' : 'Compartir'}: ${claim.label}`}
       onClick={() => {
         onToggle?.(claim.name, !on);
       }}
@@ -57,7 +52,7 @@ function ClaimControl({ claim, onToggle }: { claim: ClaimView; onToggle?: Toggle
           </svg>
         ) : null}
       </span>
-      {on ? 'Shared' : 'Share'}
+      {on ? 'Compartido' : 'Compartir'}
     </button>
   );
 }

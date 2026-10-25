@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Constancia · Papel de seguridad</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1440px; height: 900px; overflow: hidden; background: #e9efe8; color: #1d3b33;
+    font-family: Georgia, "Times New Roman", serif; padding: 28px; }
+  .sheet { position: relative; height: 100%; border: 3px solid #1d3b33; outline: 1px solid #1d3b33; outline-offset: 6px;
+    background:
+      repeating-radial-gradient(circle at 82% 46%, transparent 0 9px, rgba(180,70,107,.28) 9px 10px),
+      repeating-linear-gradient(115deg, transparent 0 5px, rgba(29,59,51,.10) 5px 6px);
+    display: grid; grid-template-columns: 1fr 440px; grid-template-rows: 64px 1fr 120px; }
+  nav { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
+    border-bottom: 1px solid #1d3b33; background: #e9efe8; font: 600 15px "Helvetica Neue", Arial, sans-serif; letter-spacing: .08em; }
+  nav .links { display: flex; gap: 32px; }
+  .serial { color: #c8102e; font: 700 18px "Courier New", monospace; letter-spacing: .2em; }
+  main { padding: 56px 48px; display: grid; align-content: center; gap: 24px; background: linear-gradient(#e9efe8, #e9efe8) left / 78% 100% no-repeat; }
+  .denom { font-size: 15px; font-family: "Helvetica Neue", Arial, sans-serif; letter-spacing: .3em; font-weight: 700; }
+  h1 { font-size: 96px; line-height: .95; font-weight: 400; letter-spacing: -.02em; max-width: 12ch; }
+  .lead { font-size: 22px; line-height: 1.4; max-width: 38ch; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .window { margin: 56px 48px 24px 0; border: 2px solid #1d3b33; background: rgba(255,255,255,.72);
+    display: grid; place-content: center; text-align: center; gap: 12px; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .window strong { font-size: 26px; }
+  .window small { font-size: 15px; }
+  .rosette { width: 200px; height: 200px; margin: 0 auto 8px; border-radius: 50%;
+    background: repeating-conic-gradient(#b4466b 0 2deg, transparent 2deg 9deg); -webkit-mask: radial-gradient(circle, transparent 38%, #000 39%); mask: radial-gradient(circle, transparent 38%, #000 39%); }
+  .foot { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; padding: 0 48px;
+    border-top: 1px solid #1d3b33; background: #e9efe8; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .btn { height: 56px; padding: 0 28px; display: grid; place-content: center; font-weight: 700; font-size: 17px; border: 2px solid #1d3b33; }
+  .btn.primary { background: #1d3b33; color: #e9efe8; }
+  .micro { margin-left: auto; font: 11px "Courier New", monospace; letter-spacing: .1em; opacity: .7; }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <nav><span>CONSTANCIA</span><span class="serial">Nº CT-0048213</span><span class="links"><span>Verificar</span><span>Empleadores</span><span>Bóveda</span><span>Registro</span></span></nav>
+    <main>
+      <p class="denom">DOCUMENTO VERIFICABLE · CONSORCIO</p>
+      <h1>Constancias que se prueban solas.</h1>
+      <p class="lead">Un banco comprueba un solo dato en segundos. Todo lo demás queda oculto.</p>
+    </main>
+    <div class="window"><div class="rosette" aria-hidden="true"></div><strong>Suelta una constancia</strong><small>para verificarla aquí</small></div>
+    <div class="foot">
+      <span class="btn primary">Verificar una constancia</span>
+      <span class="btn">Abrir mi bóveda</span>
+      <span style="text-decoration:underline">Soy empleador</span>
+      <span class="micro">SHA-256 9F2C·41A0·E7B3·0D58 · BLOQUE 7 214 905</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -5,8 +5,8 @@ export default function EmployerPage() {
   return (
     <>
       <PageHeader
-        title="Employer"
-        lead="Issue employment certificates that prove themselves. Your signing key stays on this device."
+        title="Empleador"
+        lead="Emite constancias de trabajo que se prueban solas. Tu clave de firma no sale de este dispositivo."
       />
       <div className="mt-10">
         <EmployerHome />

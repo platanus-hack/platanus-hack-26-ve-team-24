@@ -1,18 +1,21 @@
 import type { Metadata } from 'next';
+import { SiteNav } from '@/app/_landing/site-nav';
 import { PageHeader } from '@/components/ui/page-header';
 import { LedgerView } from './_components/ledger-view';
 
-export const metadata: Metadata = { title: 'Consortium ledger · Constancia' };
+export const metadata: Metadata = { title: 'Registro del consorcio · Constancia' };
 
 export default function LedgerPage() {
   return (
-    <main className="mx-auto max-w-6xl px-gutter py-12">
-      <PageHeader
-        title="Consortium ledger"
-        kicker="Consortium ledger"
-        lead="The public record of who may issue, and the fingerprints of what they issued."
-      />
-      <LedgerView />
-    </main>
+    <>
+      <SiteNav />
+      <main className="mx-auto w-full max-w-6xl px-gutter py-12">
+        <PageHeader
+          title="Registro del consorcio"
+          lead="El registro público de quién puede emitir constancias y de las huellas de lo que emitió."
+        />
+        <LedgerView />
+      </main>
+    </>
   );
 }

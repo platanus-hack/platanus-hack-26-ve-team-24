@@ -1,31 +1,35 @@
 import type { NetworkState } from '@/lib/ledger/types';
-import { blockInk } from '../_lib/format';
+import { formatBlockNumber } from '../_lib/format';
 
-// Last 16 Sepolia blocks as vertical lines. The ink is decorative (it rotates with the block number).
+// Los últimos 16 bloques como celdas fijas; el más reciente queda relleno en tinta.
 export function BlockStrip({ state }: { state: NetworkState }) {
+  const first = state.blocks.at(0);
+  const last = state.blocks.at(-1);
   return (
-    <figure>
-      <ol
-        aria-label="Last blocks"
-        className="flex h-40 items-stretch gap-1 border-y-4 border-ink bg-white px-2"
-      >
-        {state.blocks.map((block) => {
-          const ink = blockInk(block.number);
-          return (
-            <li
-              key={block.number}
-              title={`Block ${block.number}`}
-              className={`flex-1 border-x-2 border-ink ${ink.bg}`}
-            >
-              <span className="sr-only">
-                Block {block.number}, {block.txCount} transactions
-              </span>
-            </li>
-          );
-        })}
+    <figure className="flex h-full flex-col gap-3">
+      <ol aria-label="Últimos bloques" className="flex min-h-28 flex-1 items-stretch gap-1">
+        {state.blocks.map((block) => (
+          <li
+            key={block.number}
+            title={`Bloque ${formatBlockNumber(block.number)}`}
+            className={`flex-1 border-2 border-ink ${block.number === last?.number ? 'bg-ink' : 'bg-paper'}`}
+          >
+            <span className="sr-only">
+              Bloque {formatBlockNumber(block.number)}, {block.txCount}{' '}
+              {block.txCount === 1 ? 'operación' : 'operaciones'}
+            </span>
+          </li>
+        ))}
       </ol>
-      <figcaption className="mt-3 text-small text-ink-muted">
-        A new block about every {state.blockTimeSec} seconds.
+      {first && last ? (
+        <div aria-hidden="true" className="flex justify-between text-small">
+          <code>{formatBlockNumber(first.number)}</code>
+          <code className="font-bold">{formatBlockNumber(last.number)}</code>
+        </div>
+      ) : null}
+      <figcaption className="text-small text-ink-muted">
+        Un bloque nuevo cada {state.blockTimeSec} segundos, aproximadamente. El más reciente va en
+        negro.
       </figcaption>
     </figure>
   );

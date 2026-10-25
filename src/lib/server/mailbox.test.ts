@@ -80,7 +80,7 @@ describe('rateLimit', () => {
     const opts = { limit: 2, windowMs: 1000 };
     rateLimit(req('9.9.9.9'), 't', opts, 0);
     rateLimit(req('9.9.9.9'), 't', opts, 1);
-    expect(() => rateLimit(req('9.9.9.9'), 't', opts, 2)).toThrow(/Too many/);
+    expect(() => rateLimit(req('9.9.9.9'), 't', opts, 2)).toThrow(/Demasiados/);
     expect(() => rateLimit(req('9.9.9.9'), 't', opts, 1001)).not.toThrow();
     expect(() => rateLimit(req('8.8.8.8'), 't', opts, 2)).not.toThrow();
   });

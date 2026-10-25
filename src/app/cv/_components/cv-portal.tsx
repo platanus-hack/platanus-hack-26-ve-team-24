@@ -5,21 +5,35 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/check-list';
 import { DropZone } from '@/components/ui/drop-zone';
-import { LineField } from '@/components/ui/line-field';
 import { Panel } from '@/components/ui/panel';
-import { Timeline } from '@/components/ui/timeline';
 import { vaultStore } from '@/lib/vault/browser';
-import { canJoin, ENTRY_ROW_STATUS, entryNote, timelineItems, timelineOf, type CvEntry } from '@/lib/vault/cv-entries';
+import { KIND_LABEL } from '@/lib/vault/certificate-info';
+import { canJoin, ENTRY_ROW_STATUS, entryNote, PRESENT, timelineOf, type CvEntry, type EntryStatus } from '@/lib/vault/cv-entries';
 import { useCvEntries } from '@/lib/vault/use-cv-entries';
 import type { VaultCertificate } from '@/lib/vault/types';
 import { CvBuilder } from './cv-builder-view';
+import { CvHistory } from './cv-history';
 
-const STATUS_WORD = {
-  VERIFIED: 'Verified',
-  FAILED: 'Failed',
-  UNAVAILABLE: 'Unavailable',
-  UNBOUND: 'Not yours to join',
-} as const;
+const STATUS_WORD: Record<EntryStatus, string> = {
+  VERIFIED: 'Verificada',
+  FAILED: 'Falló',
+  UNAVAILABLE: 'No disponible',
+  UNBOUND: 'De otra bóveda',
+};
+
+const STATUS_TONE: Record<EntryStatus, string> = {
+  VERIFIED: 'text-ok',
+  FAILED: 'text-fail',
+  UNAVAILABLE: 'text-ink',
+  UNBOUND: 'text-fail',
+};
+
+const SECTION_TITLE = 'font-display text-title font-extrabold';
+
+function entryDates(entry: CvEntry): string {
+  const end = entry.endDate ?? (entry.employedNow ? PRESENT : undefined);
+  return [entry.startDate, end].filter(Boolean).join(' – ');
+}
 
 function EntryRow({
   entry,
@@ -32,20 +46,18 @@ function EntryRow({
 }) {
   const note = entryNote(entry);
   return (
-    <li className="grid grid-cols-[2.25rem_1fr_auto] items-start gap-x-4 border-t-2 border-ink py-4">
+    <li className="grid grid-cols-[2.25rem_1fr] items-start gap-x-4 gap-y-3 border-t-2 border-ink py-4 sm:grid-cols-[2.25rem_1fr_auto]">
       <Chip status={ENTRY_ROW_STATUS[entry.status]} />
       <div>
         <p className="text-title font-bold">{entry.employer}</p>
-        <p className="text-body">
-          {[entry.jobTitle, [entry.startDate, entry.endDate ?? (entry.employedNow ? 'present' : undefined)].filter(Boolean).join(' – ')]
-            .filter(Boolean)
-            .join(' · ')}
+        <p className="text-body">{[entry.jobTitle, entryDates(entry)].filter(Boolean).join(' · ')}</p>
+        <p className={`text-small font-bold tracking-wide uppercase ${STATUS_TONE[entry.status]}`}>
+          {STATUS_WORD[entry.status]}
         </p>
-        <p className="text-small font-bold uppercase tracking-wide">{STATUS_WORD[entry.status]}</p>
         {note && <p className="max-w-[65ch] text-small text-ink-muted">{note}</p>}
       </div>
       {canJoin(entry) && (
-        <label className="flex min-h-12 items-center gap-2 font-bold">
+        <label className="col-start-2 flex min-h-12 items-center gap-3 font-bold sm:col-start-3">
           <input
             type="checkbox"
             className="size-5 accent-ink"
@@ -54,7 +66,7 @@ function EntryRow({
               onToggle(event.target.checked);
             }}
           />
-          In my CV
+          En mi CV
         </label>
       )}
     </li>
@@ -63,7 +75,7 @@ function EntryRow({
 
 function VaultPicker({ certificates, onPick }: { certificates: VaultCertificate[]; onPick: (certificate: VaultCertificate) => void }) {
   if (certificates.length === 0) {
-    return <p className="text-body text-ink-muted">Your vault has no certificates yet.</p>;
+    return <p className="text-body">Tu bóveda aún no tiene constancias.</p>;
   }
   return (
     <ul className="flex flex-wrap gap-3">
@@ -75,7 +87,7 @@ function VaultPicker({ certificates, onPick }: { certificates: VaultCertificate[
               onPick(certificate);
             }}
           >
-            {certificate.employerName} · {certificate.kind === 'CURRENT' ? 'Current' : 'Past'}
+            {certificate.employerName} · {KIND_LABEL[certificate.kind]}
           </Button>
         </li>
       ))}
@@ -97,7 +109,7 @@ export function CvPortal() {
       const requested = certificates.find((certificate) => certificate.id === addParam);
       if (requested && !handledParam.current) {
         handledParam.current = true;
-        void add(requested.sdJwt, requested.keyName);
+        await add(requested.sdJwt, requested.keyName);
       }
     })();
   }, [addParam, add]);
@@ -105,23 +117,23 @@ export function CvPortal() {
   const timeline = timelineOf(cv.included);
 
   return (
-    <div className="flex flex-col gap-12">
-      <section aria-labelledby="attach-title" className="flex flex-col gap-6">
-        <h2 id="attach-title" className="font-display text-title font-extrabold font-stretch-expanded">
-          Attach your certificates
-        </h2>
-        <LineField>
+    <div className="flex flex-col gap-16">
+      <section aria-labelledby="attach-title" className="grid border-4 border-ink lg:grid-cols-12">
+        <div className="flex flex-col gap-6 bg-marigold p-6 lg:col-span-7">
+          <h2 id="attach-title" className={SECTION_TITLE}>
+            Adjunta tus constancias
+          </h2>
           <DropZone
             multiple
             accept=".sdjwt,.txt"
-            label="Drop .sdjwt files here"
-            hint="Read in this browser. Nothing is uploaded."
+            label="Suelta aquí tus archivos .sdjwt"
+            hint="Se leen en este navegador. No se sube nada."
             disabled={cv.busy}
             onFiles={(files) => void cv.attachFiles(files)}
           />
-        </LineField>
-        <div>
-          <h3 className="mb-3 font-bold text-small">Pick from your vault</h3>
+        </div>
+        <div className="flex flex-col gap-4 p-6 lg:col-span-5">
+          <h3 className="font-bold">O elige de tu bóveda</h3>
           <VaultPicker
             certificates={vaultCertificates}
             onPick={(certificate) => void cv.add(certificate.sdJwt, certificate.keyName)}
@@ -131,8 +143,8 @@ export function CvPortal() {
 
       {cv.entries.length > 0 && (
         <section aria-labelledby="entries-title">
-          <h2 id="entries-title" className="mb-4 font-display text-title font-extrabold font-stretch-expanded">
-            Attached
+          <h2 id="entries-title" className={`mb-4 ${SECTION_TITLE}`}>
+            Adjuntas
           </h2>
           <ul className="border-b-2 border-ink" aria-live="polite">
             {cv.entries.map((entry) => (
@@ -150,8 +162,8 @@ export function CvPortal() {
       )}
 
       {timeline.items.length > 0 && (
-        <Panel title="Your history">
-          <Timeline items={timelineItems(timeline)} gaps={timeline.gaps} overlaps={timeline.overlaps} />
+        <Panel title="Tu historial">
+          <CvHistory timeline={timeline} />
         </Panel>
       )}
 

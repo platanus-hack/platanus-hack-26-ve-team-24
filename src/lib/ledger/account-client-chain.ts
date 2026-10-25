@@ -35,8 +35,8 @@ async function lookupAccount(jwk: P256Jwk, salt: bigint): Promise<AccountLookup>
     const status = response?.status;
     throw new LedgerWriteError(
       status !== undefined && status >= 400 && status < 500
-        ? 'This device could not prove its account'
-        : 'The ledger is busy, try again in a moment',
+        ? 'Este dispositivo no pudo demostrar su cuenta'
+        : 'El registro está ocupado. Inténtalo de nuevo en un momento',
       `account lookup failed (${status ?? 'no reply'})`,
     );
   }
@@ -49,24 +49,24 @@ async function lookupAccount(jwk: P256Jwk, salt: bigint): Promise<AccountLookup>
 function explain(error: BundlerRpcError): LedgerWriteError {
   const technical = error.message;
   const human = /AA31|deposit too low/i.test(technical)
-    ? 'The consortium paymaster is out of gas money'
+    ? 'El consorcio se quedó sin fondos para cubrir las operaciones'
     : /AA33|reverted/i.test(technical)
-      ? 'The ledger rejected the operation'
+      ? 'El registro rechazó la operación'
       : /AA21|prefund/i.test(technical)
-        ? 'This account has no funds for gas'
+        ? 'Esta cuenta no tiene fondos para la operación'
         : /AA25|nonce/i.test(technical)
-          ? 'Two operations from this device collided'
+          ? 'Dos operaciones de este dispositivo chocaron'
           : /AA34|paymaster signature/i.test(technical)
-            ? 'The consortium paymaster rejected this operation'
+            ? 'El consorcio rechazó cubrir esta operación'
             : /AA24|invalid signature|signature error/i.test(technical)
-              ? 'Your signing key is not an owner of this account'
+              ? 'Tu clave de firma no está autorizada en esta cuenta'
               : /gas price|above the cap/i.test(technical)
-                ? 'The network is expensive right now, try again in a few minutes'
+                ? 'La red está saturada. Inténtalo de nuevo en unos minutos'
                 : /rate limited/i.test(technical)
-                  ? 'Too many requests, wait a moment and try again'
+                  ? 'Demasiadas solicitudes. Espera un momento e inténtalo de nuevo'
                   : /network error|not confirmed/i.test(technical)
-                    ? 'The ledger is busy, try again in a moment'
-                    : 'The ledger did not accept that';
+                    ? 'El registro está ocupado. Inténtalo de nuevo en un momento'
+                    : 'El registro no aceptó la operación';
   return new LedgerWriteError(human, technical);
 }
 

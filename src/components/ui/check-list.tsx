@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
 
 export const ROW_STATUS = {
-  PENDING: 'Pending',
-  CHECKING: 'Checking…',
-  VERIFIED: 'Verified',
-  FAILED: 'Failed',
-  UNAVAILABLE: 'Unavailable',
-  NOT_EXAMINED: 'Not examined',
-  DONE: 'Done',
+  PENDING: 'Pendiente',
+  CHECKING: 'Comprobando…',
+  VERIFIED: 'Verificado',
+  FAILED: 'Falló',
+  UNAVAILABLE: 'No disponible',
+  NOT_EXAMINED: 'No examinado',
+  DONE: 'Listo',
 } as const;
 
 export type RowStatus = keyof typeof ROW_STATUS;
@@ -16,10 +16,10 @@ export type RowStatus = keyof typeof ROW_STATUS;
 // State is never colour alone: each resolved chip has its own mark and the row prints the status word.
 const CHIP: Record<RowStatus, string> = {
   PENDING: 'border-ink bg-paper',
-  CHECKING: 'chip-lines border-ink bg-paper',
-  VERIFIED: 'border-ink bg-line-green text-ink',
-  FAILED: 'border-ink bg-line-red text-ink',
-  UNAVAILABLE: 'border-ink bg-line-yellow text-ink',
+  CHECKING: 'chip-checking border-ink bg-marigold',
+  VERIFIED: 'border-ok bg-ok text-paper',
+  FAILED: 'border-fail bg-fail text-paper',
+  UNAVAILABLE: 'border-ink bg-marigold text-ink',
   NOT_EXAMINED: 'border-dashed border-ink-muted bg-paper text-ink-muted',
   DONE: 'border-ink bg-ink text-paper',
 };
@@ -27,8 +27,8 @@ const CHIP: Record<RowStatus, string> = {
 const WORD: Record<RowStatus, string> = {
   PENDING: 'text-ink-muted',
   CHECKING: 'text-ink',
-  VERIFIED: 'text-green-text',
-  FAILED: 'text-red-text',
+  VERIFIED: 'text-ok',
+  FAILED: 'text-fail',
   UNAVAILABLE: 'text-ink',
   NOT_EXAMINED: 'text-ink-muted',
   DONE: 'text-ink',
@@ -69,7 +69,7 @@ export function CheckList({ title, children }: { title?: string; children: React
   return (
     <section>
       {title ? (
-        <h2 className="mb-4 font-display text-title font-extrabold font-stretch-expanded">
+        <h2 className="mb-4 font-display text-title font-extrabold">
           {title}
         </h2>
       ) : null}
@@ -99,14 +99,14 @@ export function CheckRow({
       aria-current={status === 'CHECKING' ? 'step' : undefined}
       className="grid grid-cols-[2rem_2.25rem_1fr] items-start gap-x-4 gap-y-1 border-t-2 border-ink py-4 sm:grid-cols-[2rem_2.25rem_1fr_auto]"
     >
-      <span className="tnum pt-1.5 font-mono text-small text-ink-muted">{index}</span>
+      <span className="tnum pt-1 text-body font-bold">{index}</span>
       <Chip status={status} />
       <div>
         <p className="text-title font-bold">{label}</p>
         {detail ? <p className="mt-1 max-w-[65ch] text-body text-ink-muted">{detail}</p> : null}
         {href ? (
           <a href={href} target="_blank" rel="noopener noreferrer" className="text-small font-bold">
-            View on explorer
+            Ver en el explorador
           </a>
         ) : null}
       </div>

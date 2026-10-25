@@ -62,7 +62,7 @@ describe('createCv', () => {
       appUrl: 'https://x.example',
     };
     await expect(createCv(deps, { selections: [], aud: 'a', ttlSec: 3600 })).rejects.toThrow();
-    await expect(createCv(deps, { selections: [one], aud: 'a', ttlSec: 3600 })).rejects.toThrow(/key/);
+    await expect(createCv(deps, { selections: [one], aud: 'a', ttlSec: 3600 })).rejects.toThrow(/clave/);
   });
 });
 
@@ -73,8 +73,8 @@ describe('preview', () => {
     const timeline = previewTimeline([undated.selection, dated.selection]);
     const items = timelineItems(timeline);
     expect(items.map((item) => item.id)).toEqual([dated.selection.entry.id, undated.selection.entry.id]);
-    expect(items[0]).toMatchObject({ title: 'Logistics Analyst', start: '2020-03-01', end: 'present' });
-    expect(items[1]).toMatchObject({ note: 'dates hidden', start: undefined });
+    expect(items[0]).toMatchObject({ title: 'Logistics Analyst', start: '2020-03-01', end: 'actualidad' });
+    expect(items[1]).toMatchObject({ note: 'fechas ocultas', start: undefined });
     expect(revealsName([dated.selection, undated.selection])).toBe(false);
     expect(revealsName([{ ...dated.selection, reveal: ['familyName'] }])).toBe(true);
   });

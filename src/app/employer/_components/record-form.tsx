@@ -1,17 +1,23 @@
 'use client';
 
 import { Field } from '@/components/ui/field';
-import type { RecordErrors, RecordFields } from '@/lib/employer/record-fields';
+import {
+  EMPLOYMENT_TYPE_LABELS,
+  FIELD_LABELS,
+  type RecordErrors,
+  type RecordFields,
+} from '@/lib/employer/record-fields';
 
 type EndDateMode = 'optional' | 'hidden' | 'required';
 
-const EMPLOYMENT_TYPES: { value: RecordFields['employmentType']; label: string }[] = [
-  { value: 'FULL_TIME', label: 'Full time' },
-  { value: 'PART_TIME', label: 'Part time' },
-  { value: 'CONTRACT', label: 'Contract' },
-];
+const EMPLOYMENT_TYPES = Object.entries(EMPLOYMENT_TYPE_LABELS) as [RecordFields['employmentType'], string][];
 
-/** The employment fields, shared by the directory and the issue form. */
+const END_DATE_LABEL: Record<Exclude<EndDateMode, 'hidden'>, string> = {
+  required: FIELD_LABELS.endDate,
+  optional: `${FIELD_LABELS.endDate} (vacía si sigue empleado)`,
+};
+
+/** Los campos de empleo, compartidos por el directorio y el formulario de emisión. */
 export function RecordForm({
   fields,
   errors,
@@ -25,8 +31,11 @@ export function RecordForm({
   endDate?: EndDateMode;
   disabled?: boolean;
 }) {
-  const text = (name: keyof RecordFields, label: string, extra?: { type?: string; hint?: string; autoComplete?: string }) => (
-    <Field label={label} error={errors[name]} hint={extra?.hint}>
+  const text = (
+    name: keyof RecordFields,
+    extra?: { label?: string; type?: string; hint?: string; autoComplete?: string },
+  ) => (
+    <Field label={extra?.label ?? FIELD_LABELS[name]} error={errors[name]} hint={extra?.hint}>
       <input
         name={name}
         type={extra?.type ?? 'text'}
@@ -43,12 +52,12 @@ export function RecordForm({
 
   return (
     <div className="grid gap-6 sm:grid-cols-2">
-      {text('givenName', 'Given name')}
-      {text('familyName', 'Family name')}
-      {text('nationalId', 'National ID')}
-      {text('jobTitle', 'Job title')}
-      {text('department', 'Department (optional)')}
-      <Field label="Employment type" error={errors.employmentType}>
+      {text('givenName')}
+      {text('familyName')}
+      {text('nationalId')}
+      {text('jobTitle')}
+      {text('department')}
+      <Field label={FIELD_LABELS.employmentType} error={errors.employmentType}>
         <select
           name="employmentType"
           disabled={disabled}
@@ -57,18 +66,17 @@ export function RecordForm({
             onChange({ ...fields, employmentType: event.target.value as RecordFields['employmentType'] });
           }}
         >
-          {EMPLOYMENT_TYPES.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
+          {EMPLOYMENT_TYPES.map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
             </option>
           ))}
         </select>
       </Field>
-      {text('startDate', 'Start date', { type: 'date' })}
-      {endDate !== 'hidden' &&
-        text('endDate', endDate === 'required' ? 'End date' : 'End date (empty if still employed)', { type: 'date' })}
-      {text('workCountry', 'Work country', { hint: 'Two letters, for example VE' })}
-      {text('salaryMonthlyUsd', 'Monthly salary in USD (optional)', { type: 'number' })}
+      {text('startDate', { type: 'date' })}
+      {endDate !== 'hidden' && text('endDate', { type: 'date', label: END_DATE_LABEL[endDate] })}
+      {text('workCountry', { hint: 'Dos letras, por ejemplo VE' })}
+      {text('salaryMonthlyUsd', { type: 'number' })}
     </div>
   );
 }

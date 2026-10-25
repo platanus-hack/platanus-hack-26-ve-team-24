@@ -1,8 +1,10 @@
 'use client';
 
 import { LinkButton } from '@/components/ui/button';
-import { Panel } from '@/components/ui/panel';
+import { Chip } from '@/components/ui/check-list';
+import { Seal } from '@/components/ui/seal';
 import { vaultStore } from '@/lib/vault/browser';
+import { KIND_LABEL } from '@/lib/vault/certificate-info';
 import { employerName, useEmployers } from '@/lib/vault/use-employers';
 import { useVault } from '@/lib/vault/use-vault';
 import type { VaultRequest } from '@/lib/vault/types';
@@ -20,24 +22,27 @@ function PendingRequest({
   const closed = request.status === 'DECLINED' || request.status === 'REJECTED';
   const headline =
     request.status === 'DECLINED'
-      ? `${employer} declined this request`
+      ? `${employer} rechazó esta solicitud`
       : request.status === 'REJECTED'
-        ? `${employer} sent a certificate that could not be used`
-        : `Waiting for ${employer}…`;
+        ? `${employer} envió una constancia que no se pudo usar`
+        : `Esperando a ${employer}…`;
   return (
-    <li className="flex flex-wrap items-center justify-between gap-4 border-t-2 border-ink py-4">
+    <li className="grid grid-cols-[2.25rem_1fr] items-start gap-x-4 gap-y-3 border-t-2 border-ink py-4 sm:grid-cols-[2.25rem_1fr_auto]">
+      <Chip status={closed ? 'FAILED' : 'CHECKING'} />
       <div>
         <p className="text-body font-bold">{headline}</p>
-        {request.error && <p className="text-small text-ink-muted">{request.error}</p>}
-      </div>
-      <div className="flex items-center gap-4">
-        <p className="text-small text-ink-muted">
-          <code>{request.employeeRef}</code> ·{' '}
-          {request.kind === 'CURRENT' ? 'Works here now' : 'Used to work here'}
+        <p className={`text-small font-bold tracking-wide uppercase ${closed ? 'text-fail' : 'text-ink'}`}>
+          {closed ? 'Cerrada' : 'En espera'}
         </p>
+        {request.error && <p className="text-small text-ink-muted">{request.error}</p>}
+        <p className="text-small text-ink-muted">
+          Empleado <code>{request.employeeRef}</code> · {KIND_LABEL[request.kind]}
+        </p>
+      </div>
+      <div className="col-start-2 sm:col-start-3">
         {closed && (
           <button type="button" className="min-h-12 font-bold hover:underline" onClick={onDismiss}>
-            Dismiss
+            Descartar
           </button>
         )}
       </div>
@@ -49,7 +54,7 @@ export function VaultHome() {
   const vault = useVault();
   const employers = useEmployers();
 
-  if (vault.status === 'loading') return <p role="status">Opening your vault…</p>;
+  if (vault.status === 'loading') return <p role="status">Abriendo tu bóveda…</p>;
   const { requests, certificates, refresh } = vault;
 
   return (
@@ -82,15 +87,21 @@ export function VaultHome() {
         </ul>
       )}
       {requests.length === 0 && certificates.length === 0 && (
-        <Panel title="Nothing here yet" tone="quiet">
-          <p className="max-w-[65ch] text-body text-ink-muted">
-            There is no account, no email and nothing to sign up for. Ask an employer for a
-            certificate and it appears here. Lose this device and you ask for your certificates again.
-          </p>
-        </Panel>
+        <section className="grid border-4 border-ink md:grid-cols-12">
+          <div className="flex items-center justify-center bg-marigold p-8 md:col-span-4">
+            <Seal size={128} />
+          </div>
+          <div className="flex flex-col gap-4 p-6 md:col-span-8 md:p-8">
+            <h2 className="font-display text-title font-extrabold">Aún no tienes constancias</h2>
+            <p className="max-w-[65ch] text-body">
+              No hay cuenta, ni correo, ni registro. Pide una constancia a tu empleador y aparecerá
+              aquí. Si pierdes este dispositivo, vuelves a pedir tus constancias.
+            </p>
+          </div>
+        </section>
       )}
       <div>
-        <LinkButton href="/vault/request">Ask for a certificate</LinkButton>
+        <LinkButton href="/vault/request">Pedir una constancia</LinkButton>
       </div>
     </div>
   );

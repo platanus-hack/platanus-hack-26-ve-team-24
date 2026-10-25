@@ -89,21 +89,21 @@ describe('verifyPresentation edge cases', () => {
   });
 
   it('rejects an empty string at TOKEN without asking the ledger', async () => {
-    await expectTokenRejection('', /Nothing to check/);
+    await expectTokenRejection('', /Nada que verificar/);
   });
 
   it('rejects whitespace-only input at TOKEN without asking the ledger', async () => {
-    await expectTokenRejection(' \n\t  ', /Nothing to check/);
+    await expectTokenRejection(' \n\t  ', /Nada que verificar/);
   });
 
   it('rejects a non-string input at TOKEN without asking the ledger', async () => {
-    await expectTokenRejection(123 as unknown as string, /Nothing to check/);
+    await expectTokenRejection(123 as unknown as string, /Nada que verificar/);
   });
 
   it('rejects a re-signed issuer JWT with a wrong header typ at TOKEN', async () => {
     const credential = await reissueIssuerJwt({ header: { typ: 'JWT' } });
 
-    await expectTokenRejection(await present({ credential }), /not a Constancia credential header/);
+    await expectTokenRejection(await present({ credential }), /no es el de una constancia/);
   });
 
   it('rejects a re-signed issuer JWT with an unknown vocabulary at TOKEN', async () => {
@@ -113,7 +113,7 @@ describe('verifyPresentation edge cases', () => {
       },
     });
 
-    await expectTokenRejection(await present({ credential }), /unknown vocabulary/);
+    await expectTokenRejection(await present({ credential }), /vocabulario desconocido/);
   });
 
   it('rejects an issuer JWT dated in the future at LEDGER', async () => {
@@ -125,7 +125,7 @@ describe('verifyPresentation edge cases', () => {
     expect(verdict).toMatchObject({
       kind: 'NOT_AUTHENTIC',
       failedAt: 'LEDGER',
-      reason: expect.stringMatching(/future/),
+      reason: expect.stringMatching(/fecha futura/),
     });
   });
 
@@ -146,7 +146,7 @@ describe('verifyPresentation edge cases', () => {
     expect(verdict).toMatchObject({
       kind: 'NOT_AUTHENTIC',
       failedAt: 'HOLDER',
-      reason: expect.stringMatching(/future/),
+      reason: expect.stringMatching(/fecha futura/),
     });
   });
 
@@ -167,7 +167,7 @@ describe('verifyPresentation edge cases', () => {
     expect(verdict).toMatchObject({
       kind: 'NOT_AUTHENTIC',
       failedAt: 'LEDGER',
-      reason: expect.stringMatching(/expired/),
+      reason: expect.stringMatching(/venció/),
     });
   });
 });

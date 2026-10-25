@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Field } from '@/components/ui/field';
 import { importStoredSigner } from '@/lib/credential/keystore';
 import type { P256PrivateJwk } from '@/lib/credential/types';
 
@@ -14,52 +15,55 @@ interface IdentityPack {
   employers: NamedKey[];
 }
 
+type Outcome = { ok: true; count: number } | { ok: false };
+
 async function importPack(pack: IdentityPack): Promise<number> {
   const entries = [
     ...pack.members.map(({ name, jwk }) => ({ key: `member:${name}`, jwk })),
     ...pack.employers.map(({ name, jwk }) => ({ key: `employer:${name}`, jwk })),
   ];
-  for (const { key, jwk } of entries) await importStoredSigner(key, jwk);
+  await Promise.all(entries.map(({ key, jwk }) => importStoredSigner(key, jwk)));
   return entries.length;
 }
 
+async function fetchServerPack(): Promise<IdentityPack> {
+  const response = await fetch('/api/dev/ledger/identities');
+  if (!response.ok) throw new Error('identities unavailable');
+  return (await response.json()) as IdentityPack;
+}
+
 export function IdentityImport() {
-  const [message, setMessage] = useState<string | null>(null);
-  // The server only hands out these keys on the memory ledger; in chain mode the route answers 404,
-  // so showing the button offered a path that could never work.
+  const [outcome, setOutcome] = useState<Outcome | null>(null);
+  // el servidor solo entrega estas claves con el registro en memoria; en modo cadena la ruta responde 404
   const fromServer = process.env.NEXT_PUBLIC_LEDGER_MODE === 'memory';
 
   async function run(load: () => Promise<IdentityPack>) {
-    setMessage(null);
+    setOutcome(null);
     try {
-      setMessage(`Imported ${await importPack(await load())} identities.`);
+      setOutcome({ ok: true, count: await importPack(await load()) });
     } catch {
-      setMessage('Could not import. Check the source and try again.');
+      setOutcome({ ok: false });
     }
   }
 
   return (
-    <div className="mt-8 flex flex-col gap-6">
+    <div className="mt-12 flex flex-col gap-8">
       {fromServer ? (
         <Button
+          className="self-start"
           onClick={() => {
-            void run(async () => {
-              const response = await fetch('/api/dev/ledger/identities');
-              if (!response.ok) throw new Error('identities unavailable');
-              return (await response.json()) as IdentityPack;
-            });
+            void run(fetchServerPack);
           }}
         >
-          Import from this server
+          Importar desde este servidor
         </Button>
       ) : (
         <p className="max-w-[65ch] text-body text-ink-muted">
-          This deployment runs on the live ledger, so the demo keys are not served from it. Upload
-          the pack file instead.
+          Este despliegue usa el registro en vivo, así que las claves de demostración no se sirven
+          desde aquí. Sube el archivo del paquete.
         </p>
       )}
-      <label className="flex flex-col gap-2 text-body">
-        {fromServer ? 'Or upload' : 'Upload'} demo-pack/identities.json
+      <Field label={`${fromServer ? 'O sube' : 'Sube'} demo-pack/identities.json`}>
         <input
           type="file"
           accept=".json"
@@ -68,8 +72,14 @@ export function IdentityImport() {
             if (file) void run(async () => JSON.parse(await file.text()) as IdentityPack);
           }}
         />
-      </label>
-      {message ? <p role="status">{message}</p> : null}
+      </Field>
+      <p role="status" className={outcome?.ok === false ? 'font-bold text-fail' : 'font-bold'}>
+        {outcome === null
+          ? ''
+          : outcome.ok
+            ? `Se importaron ${outcome.count} identidades.`
+            : 'No se pudo importar. Revisa el origen e inténtalo de nuevo.'}
+      </p>
     </div>
   );
 }

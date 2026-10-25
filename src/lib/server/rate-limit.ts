@@ -30,5 +30,5 @@ export function rateLimit(
     return;
   }
   current.count += 1;
-  if (current.count > limit) throw new HttpError(429, 'RATE_LIMITED', 'Too many requests');
+  if (current.count > limit) throw new HttpError(429, 'RATE_LIMITED', 'Demasiados intentos. Espera un momento.');
 }

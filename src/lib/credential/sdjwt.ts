@@ -71,7 +71,7 @@ export async function issueCredential(args: {
   const parsed = employmentRecordSchema.safeParse(args.record);
   if (!parsed.success) {
     const problems = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`);
-    throw new Error(`The employment record is not valid (${problems.join('; ')})`);
+    throw new Error(`Los datos laborales no son válidos (${problems.join('; ')})`);
   }
   const record = parsed.data;
   const { did, keyId } = args.issuer;

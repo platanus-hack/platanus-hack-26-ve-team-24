@@ -23,10 +23,10 @@ export function parseEntry(entry: DirectoryEntry): DirectoryEntry {
   };
 }
 
-/** The directory keys on the upper-cased number, so a lower-case lookup still finds the person. */
+/** El directorio usa el número en mayúsculas como clave, así que una búsqueda en minúsculas igual encuentra a la persona. */
 const employeeRefKey = (employeeRef: string): string => employeeRef.trim().toUpperCase();
 
-// Fictional people at a fictional employer.
+// Personas ficticias de un empleador ficticio.
 export const DEMO_DIRECTORY: DirectoryEntry[] = [
   {
     employeeRef: 'E-1042',
@@ -34,8 +34,8 @@ export const DEMO_DIRECTORY: DirectoryEntry[] = [
       givenName: 'María Fernanda',
       familyName: 'Rojas',
       nationalId: 'V-24.567.890',
-      jobTitle: 'Logistics Analyst',
-      department: 'Logistics',
+      jobTitle: 'Analista de Logística',
+      department: 'Logística',
       employmentType: 'FULL_TIME',
       startDate: '2021-03-01',
       workCountry: 'VE',
@@ -48,8 +48,8 @@ export const DEMO_DIRECTORY: DirectoryEntry[] = [
       givenName: 'Andrés',
       familyName: 'Pérez Linares',
       nationalId: 'V-19.340.221',
-      jobTitle: 'Warehouse Supervisor',
-      department: 'Operations',
+      jobTitle: 'Supervisor de Almacén',
+      department: 'Operaciones',
       employmentType: 'FULL_TIME',
       startDate: '2018-07-16',
       endDate: '2023-05-31',
@@ -63,8 +63,8 @@ export const DEMO_DIRECTORY: DirectoryEntry[] = [
       givenName: 'Valentina',
       familyName: 'Camacho',
       nationalId: 'V-27.118.904',
-      jobTitle: 'Accounts Assistant',
-      department: 'Finance',
+      jobTitle: 'Asistente Contable',
+      department: 'Finanzas',
       employmentType: 'PART_TIME',
       startDate: '2023-09-04',
       workCountry: 'VE',
@@ -77,7 +77,7 @@ export const DEMO_DIRECTORY: DirectoryEntry[] = [
       givenName: 'Luis Eduardo',
       familyName: 'Marcano',
       nationalId: 'V-16.802.553',
-      jobTitle: 'Delivery Driver',
+      jobTitle: 'Chofer de Reparto',
       employmentType: 'CONTRACT',
       startDate: '2019-02-11',
       endDate: '2022-12-15',

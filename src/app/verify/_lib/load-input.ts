@@ -2,12 +2,12 @@ import { MAX_INPUT_BYTES, type InputKind, type InputOrigin, type LoadedInput } f
 
 export class InputError extends Error {}
 
-const TOO_LARGE = 'This file is too large to be a certificate (limit 256 KB)';
-const EMPTY = 'Nothing to check: the text is empty';
-const NOT_FOUND = 'This share link does not exist or was removed';
-const EXPIRED = 'This share has expired. Ask the holder for a new link';
-const UNREACHABLE = 'Could not reach the server. Try again';
-const DAMAGED = 'This link is incomplete or damaged';
+const TOO_LARGE = 'Este archivo es demasiado grande para ser una constancia (límite 256 KB)';
+const EMPTY = 'Nada que verificar: el texto está vacío';
+const NOT_FOUND = 'Este enlace para compartir no existe o fue eliminado';
+const EXPIRED = 'Este enlace venció. Pídele al titular uno nuevo';
+const UNREACHABLE = 'No se pudo conectar con el servidor. Inténtalo de nuevo';
+const DAMAGED = 'Este enlace está incompleto o dañado';
 
 const SHARE_FRAGMENT = /^s=([0-9a-f]{32})\.([A-Za-z0-9_-]{43})$/;
 const CV_TYPE = 'constancia-cv';

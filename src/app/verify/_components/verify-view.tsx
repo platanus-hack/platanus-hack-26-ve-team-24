@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckList, CheckRow } from '@/components/ui/check-list';
+import { CheckList, CheckRow, Chip, ROW_STATUS } from '@/components/ui/check-list';
 import { DropZone } from '@/components/ui/drop-zone';
 import { Field } from '@/components/ui/field';
-import { LineField } from '@/components/ui/line-field';
-import { Panel } from '@/components/ui/panel';
 import { takeHandoffFile } from '@/lib/handoff';
 import type { LookupFn } from '@/lib/credential/verify';
 import { makeSample } from '../_lib/fixture';
@@ -17,21 +15,19 @@ import {
   parseShareFragment,
   readInputFile,
 } from '../_lib/load-input';
-import type { LoadedInput } from '../_lib/types';
+import type { LoadedInput, RowView } from '../_lib/types';
 import { useVerification } from '../_lib/use-verification';
+import { statusesOf } from '../_lib/verdict-copy';
 import { CvView } from './cv-view';
 import { ReceiptPanel } from './receipt-panel';
+import { SealLayout } from './seal-layout';
 import { TechnicalDetails } from './technical-details';
 import { VerdictPanel } from './verdict-panel';
 
-const bandState = (running: boolean, verdictKind: string | undefined) => {
-  if (verdictKind === 'AUTHENTIC') return 'resolved-ok';
-  if (verdictKind === 'NOT_AUTHENTIC') return 'resolved-fail';
-  if (verdictKind === 'UNAVAILABLE') return 'resolved-unavailable';
-  return running ? 'scanning' : 'rest';
-};
-
-const RESOLVED = new Set(['VERIFIED', 'FAILED', 'UNAVAILABLE', 'NOT_EXAMINED']);
+function liveMessage(rows: RowView[]): string {
+  const latest = rows.findLast((row) => row.status !== 'PENDING');
+  return latest ? `${latest.label}: ${ROW_STATUS[latest.status]}. ${latest.detail ?? ''}` : '';
+}
 
 export function VerifyView() {
   const verification = useVerification();
@@ -57,7 +53,7 @@ export function VerifyView() {
       try {
         start(await load());
       } catch (caught) {
-        setError(caught instanceof InputError ? caught.message : 'This could not be read.');
+        setError(caught instanceof InputError ? caught.message : 'No se pudo leer.');
       }
     },
     [start],
@@ -79,8 +75,6 @@ export function VerifyView() {
   }, [attempt]);
 
   const { rows, verdict, decoded, requests, running } = verification;
-  const resolvedCount = rows.filter((row) => RESOLVED.has(row.status)).length;
-  const latest = [...rows].reverse().find((row) => row.status !== 'PENDING');
 
   const reset = () => {
     setInput(null);
@@ -89,23 +83,33 @@ export function VerifyView() {
 
   if (!input) {
     return (
-      <div className="mt-8 flex flex-col gap-8">
-        <LineField interactive className="border-y-4 border-ink">
-          <div className="px-gutter py-12">
-            <DropZone
-              onFile={(file) => void attempt(async () => inputFromText(await readInputFile(file), 'file'))}
-              label="Drop a certificate to check it"
-              hint="The file stays in your browser."
-            />
-          </div>
-        </LineField>
+      <SealLayout>
+        <div>
+          <h1 className="max-w-[14ch] font-display text-display font-extrabold text-balance">
+            Verifica una constancia.
+          </h1>
+          <p className="mt-8 max-w-[45ch] text-lead">
+            Cinco comprobaciones corren en tu navegador. Solo ves los datos que el titular eligió
+            mostrar, y cuántos quedan ocultos.
+          </p>
+        </div>
+        <DropZone
+          onFile={(file) => void attempt(async () => inputFromText(await readInputFile(file), 'file'))}
+          label="Suelta una constancia para verificarla"
+          hint="El archivo no sale de tu navegador."
+        />
         {error ? (
-          <p role="alert" className="max-w-[65ch] text-body font-bold text-red-text">
+          <p role="alert" className="flex max-w-[65ch] items-start gap-4 text-body font-bold text-fail">
+            <Chip status="FAILED" />
             {error}
           </p>
         ) : null}
-        <Panel title="Or paste it" tone="quiet">
-          <Field label="Certificate text" hint="A share link also works: open it directly.">
+        <div className="border-t-4 border-ink pt-6">
+          <h2 className="mb-4 font-display text-title font-extrabold">O pega el texto</h2>
+          <Field
+            label="Texto de la constancia"
+            hint="Si tienes un enlace para compartir, ábrelo directamente."
+          >
             <textarea
               rows={4}
               value={pasted}
@@ -120,7 +124,7 @@ export function VerifyView() {
               disabled={pasted.trim().length === 0}
               onClick={() => void attempt(async () => inputFromText(pasted, 'paste'))}
             >
-              Check pasted text
+              Verificar el texto
             </Button>
             {useFixture ? (
               <Button
@@ -132,69 +136,66 @@ export function VerifyView() {
                   })()
                 }
               >
-                Try a sample
+                Probar con un ejemplo
               </Button>
             ) : null}
           </div>
-        </Panel>
-      </div>
+        </div>
+      </SealLayout>
     );
   }
 
-  if (input.kind === 'cv') {
-    return (
-      <div className="mt-8">
-        <CvView input={input} onReset={reset} />
-      </div>
-    );
-  }
+  if (input.kind === 'cv') return <CvView input={input} onReset={reset} />;
 
   return (
-    <div className="mt-8 flex flex-col gap-8">
-      <LineField
-        state={bandState(running, verdict?.kind)}
-        progress={running ? resolvedCount : undefined}
-        className="h-24 border-y-4 border-ink"
-      />
-      <p role="status" className="sr-only">
-        {latest ? `${latest.label}: ${latest.status.toLowerCase()}. ${latest.detail ?? ''}` : ''}
-      </p>
-      <CheckList>
-        {rows.map((row, index) => (
-          <CheckRow
-            key={row.code}
-            index={index + 1}
-            label={row.label}
-            status={row.status}
-            measured={row.measured}
-            detail={row.detail}
+    <>
+      <SealLayout statuses={statusesOf(rows)}>
+        <h1 className="font-display text-headline font-extrabold text-balance">
+          Cinco comprobaciones, en orden.
+        </h1>
+        <p role="status" className="sr-only">
+          {liveMessage(rows)}
+        </p>
+        <CheckList>
+          {rows.map((row, index) => (
+            <CheckRow
+              key={row.code}
+              index={index + 1}
+              label={row.label}
+              status={row.status}
+              measured={row.measured}
+              detail={row.detail}
+            />
+          ))}
+        </CheckList>
+      </SealLayout>
+      <div className="flex flex-col gap-16 border-t-4 border-ink px-gutter py-16">
+        {verdict ? (
+          <VerdictPanel
+            verdict={verdict}
+            statuses={statusesOf(rows)}
+            checking={running}
+            onCheckAgain={() => {
+              start(input, sampleLookup.current);
+            }}
           />
-        ))}
-      </CheckList>
-      {verdict ? (
-        <VerdictPanel
-          verdict={verdict}
-          checking={running}
-          onCheckAgain={() => {
-            start(input, sampleLookup.current);
-          }}
-        />
-      ) : null}
-      {verdict ? (
-        <ReceiptPanel
-          requests={requests}
-          shareId={input.shareId}
-          claims={verdict.kind === 'AUTHENTIC' ? verdict.claims : null}
-        />
-      ) : null}
-      {verdict?.kind === 'AUTHENTIC' && decoded ? (
-        <TechnicalDetails verdict={verdict} decoded={decoded} />
-      ) : null}
-      <div>
-        <Button variant="quiet" onClick={reset}>
-          Check another
-        </Button>
+        ) : null}
+        {verdict ? (
+          <ReceiptPanel
+            requests={requests}
+            shareId={input.shareId}
+            claims={verdict.kind === 'AUTHENTIC' ? verdict.claims : null}
+          />
+        ) : null}
+        {verdict?.kind === 'AUTHENTIC' && decoded ? (
+          <TechnicalDetails verdict={verdict} decoded={decoded} />
+        ) : null}
+        <div>
+          <Button variant="secondary" onClick={reset}>
+            Verificar otra constancia
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

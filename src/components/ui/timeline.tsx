@@ -68,7 +68,7 @@ function GapRow({ gap }: { gap: Gap }) {
     <li className="grid grid-cols-[2.25rem_1fr] gap-x-4 py-2">
       <span aria-hidden="true" className="gap-hatch min-h-12 border-2 border-ink" />
       <p className="self-center text-small font-bold">
-        Gap · {gap.months} {gap.months === 1 ? 'month' : 'months'}{' '}
+        Sin empleo · {gap.months} {gap.months === 1 ? 'mes' : 'meses'}{' '}
         <span className="font-normal text-ink-muted">
           ({gap.from} – {gap.to})
         </span>
@@ -82,7 +82,7 @@ function OverlapRow({ label }: { label: string }) {
     <li className="relative grid grid-cols-[2.25rem_1fr] gap-x-4 pb-8">
       <span aria-hidden="true" className={SPINE} />
       <span aria-hidden="true" className={SECOND_SPINE} />
-      <p className="col-start-2 self-center text-small font-bold">Overlap · {label}</p>
+      <p className="col-start-2 self-center text-small font-bold">Solapamiento · {label}</p>
     </li>
   );
 }
@@ -115,7 +115,7 @@ export function Timeline({
             .map((overlap) => (
               <OverlapRow
                 key={`${overlap.a}-${overlap.b}`}
-                label={`${employerOf(overlap.a)} and ${employerOf(overlap.b)}`}
+                label={`${employerOf(overlap.a)} y ${employerOf(overlap.b)}`}
               />
             ))}
         </Fragment>

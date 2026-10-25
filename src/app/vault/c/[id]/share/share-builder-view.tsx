@@ -1,9 +1,9 @@
 'use client';
 
+import { ErrorText } from '@/components/ui/error-text';
 import { useEffect, useState } from 'react';
-import { Button, LinkButton } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { ClaimList } from '@/components/ui/claim-list';
-import { Panel } from '@/components/ui/panel';
 import { loadSigner } from '@/lib/credential/keystore';
 import { presentCredential } from '@/lib/credential/present';
 import { sealShare } from '@/lib/credential/share-crypto';
@@ -24,6 +24,7 @@ import { createShare, NoKeyError, type CreatedShare } from '@/lib/vault/share-fl
 import { recordShare } from '@/lib/vault/share-history';
 import { postShare } from '@/lib/vault/shares-client';
 import type { VaultCertificate } from '@/lib/vault/types';
+import { NotInVault } from '../../../_components/not-in-vault';
 import { AudienceAndExpiry, ShareResult } from '../../../_components/share-fields';
 
 function Builder({ certificate }: { certificate: VaultCertificate }) {
@@ -55,8 +56,8 @@ function Builder({ certificate }: { certificate: VaultCertificate }) {
     } catch (caught) {
       setFailure(
         caught instanceof NoKeyError
-          ? 'The key for this certificate is not on this device, so it cannot be shared from here.'
-          : 'Could not create the link. Check your connection and try again.',
+          ? 'La clave de esta constancia no está en este dispositivo, así que no se puede compartir desde aquí.'
+          : 'No se pudo crear el enlace. Revisa tu conexión e inténtalo de nuevo.',
       );
     }
     setBusy(false);
@@ -66,7 +67,7 @@ function Builder({ certificate }: { certificate: VaultCertificate }) {
     <div className="grid gap-10 lg:grid-cols-2">
       <div className="flex flex-col gap-8">
         <fieldset>
-          <legend className="mb-3 font-bold text-small">Start from</legend>
+          <legend className="mb-3 font-bold">Empieza con</legend>
           <div className="flex flex-wrap gap-3">
             {(Object.keys(TEMPLATE_LABELS) as TemplateName[]).map((template) => (
               <Button
@@ -82,53 +83,51 @@ function Builder({ certificate }: { certificate: VaultCertificate }) {
           </div>
         </fieldset>
         <ClaimList
-          caption="Switch each claim on or off."
+          caption="Activa o desactiva cada dato."
           claims={claimViews(claims, reveal, 'toggle')}
           onToggle={(name, next) => {
             setReveal((current) => toggleClaim(current, name as ClaimName, next));
           }}
         />
         {revealsIdentity(reveal) && (
-          <p role="status" className="border-2 border-ink bg-white p-4 font-bold">
-            This reveals your name and national ID.
+          <p role="status" className="border-2 border-ink bg-marigold p-4 font-bold">
+            Esto revela tu nombre y tu cédula de identidad.
           </p>
         )}
         <AudienceAndExpiry aud={aud} onAud={setAud} ttlSec={ttlSec} onTtl={setTtlSec} />
       </div>
 
       <div className="flex flex-col gap-8">
-        <section aria-labelledby="preview-title" className="border-4 border-ink bg-white p-6">
+        <section aria-labelledby="preview-title" className="border-4 border-ink bg-paper p-6">
           <h2
             id="preview-title"
-            className="mb-4 font-display text-headline font-extrabold font-stretch-expanded"
+            className="mb-6 font-display text-headline font-extrabold"
           >
-            What the reader sees
+            Lo que ve quien lo recibe
           </h2>
           {reveal.length === 0 ? (
-            <p className="mb-4 font-bold">Choose at least one claim to show.</p>
+            <p className="mb-4 font-bold">Elige al menos un dato para mostrar.</p>
           ) : null}
           <ClaimList claims={claimViews(claims, reveal, 'preview')} />
           <p className="mt-4 text-small text-ink-muted">
-            Hidden claims cannot be read or guessed, even by us.
+            Nadie puede leer ni adivinar los datos ocultos, ni siquiera nosotros.
           </p>
         </section>
 
         <div className="flex flex-col gap-3">
           <div>
             <Button disabled={!canCreate} onClick={() => void create()}>
-              {busy ? 'Creating…' : 'Create share link'}
+              {busy ? 'Creando…' : 'Crear enlace para compartir'}
             </Button>
           </div>
           {failure && (
-            <p role="alert" className="font-bold text-red-text">
-              {failure}
-            </p>
+            <ErrorText>{failure}</ErrorText>
           )}
         </div>
 
         {created && (
           <ShareResult
-            title="Your link is ready"
+            title="Tu enlace está listo"
             link={created.link}
             file={{ name: 'share.sdjwt', text: created.presentation }}
           />
@@ -145,14 +144,7 @@ export function ShareBuilder({ id }: { id: string }) {
     void vaultStore().getCertificate(id).then(setCertificate);
   }, [id]);
 
-  if (certificate === undefined) return <p role="status">Opening the certificate…</p>;
-  if (certificate === null) {
-    return (
-      <Panel title="Not in this vault">
-        <p className="mb-4 text-body">This certificate is not on this device.</p>
-        <LinkButton href="/vault">Back to your vault</LinkButton>
-      </Panel>
-    );
-  }
+  if (certificate === undefined) return <p role="status">Abriendo la constancia…</p>;
+  if (certificate === null) return <NotInVault />;
   return <Builder certificate={certificate} />;
 }
