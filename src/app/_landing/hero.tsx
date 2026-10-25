@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { LinkButton } from '@/components/ui/button';
 import type { RowStatus } from '@/components/ui/check-list';
 import { DropZone } from '@/components/ui/drop-zone';
-import { Seal, SealLegend } from '@/components/ui/seal';
+import { SealLegend } from '@/components/ui/seal';
 import { setHandoffFile } from '@/lib/handoff';
+import { SealStage } from './seal-stage';
 
 const SEGMENT_STAGGER_MS = 120;
 // el sello termina de cerrarse (5 segmentos escalonados + la última transición) antes de navegar
@@ -41,15 +42,7 @@ export function Hero() {
   return (
     <section className="grid flex-1 md:grid-cols-12">
       <div className="flex flex-col justify-between gap-10 bg-marigold px-gutter py-10 md:col-span-5 md:py-14">
-        <div className="flex flex-1 items-center justify-center">
-          <Seal
-            statuses={statuses}
-            stagger={SEGMENT_STAGGER_MS}
-            size={320}
-            className="hidden lg:grid"
-          />
-          <Seal statuses={statuses} stagger={SEGMENT_STAGGER_MS} size={176} className="lg:hidden" />
-        </div>
+        <SealStage statuses={statuses} stagger={SEGMENT_STAGGER_MS} closing={closing} />
         <SealLegend statuses={closing ? statuses : undefined} />
       </div>
 

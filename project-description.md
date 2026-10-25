@@ -1,3 +1,5 @@
+<img src="./project-logo.png" alt="Logo de Constancia" width="180" />
+
 # Constancia
 
 **Tu historial profesional, verificable. Y solo se muestra lo que tú elijas.**

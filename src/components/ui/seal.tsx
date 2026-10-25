@@ -5,7 +5,16 @@ import type { RowStatus } from './check-list';
 export const SEAL_CHECKS = ['Constancia', 'Acreditado', 'Firma', 'Titular', 'Registro'] as const;
 
 // a C on a 6×6 module grid, drawn in check order: beak, top, left upper, left lower, bottom
-const SEGMENT_AREAS = ['2 / 6 / 3 / 7', '1 / 2 / 2 / 7', '1 / 1 / 4 / 2', '4 / 1 / 7 / 2', '6 / 2 / 7 / 7'];
+export const SEAL_GRID = 6;
+export const SEGMENT_AREAS = [
+  '2 / 6 / 3 / 7',
+  '1 / 2 / 2 / 7',
+  '1 / 1 / 4 / 2',
+  '4 / 1 / 7 / 2',
+  '6 / 2 / 7 / 7',
+] as const;
+// gap between modules, as a fraction of the mark's side (shared with the 3D entrance)
+export const SEAL_GAP_RATIO = 1 / 40;
 
 // state is never colour alone: filled, outlined, hatched or dashed, and the legend prints the word
 const SEGMENT: Record<RowStatus, string> = {
@@ -45,7 +54,7 @@ export function Seal({
         {
           width: size,
           height: size,
-          gap: Math.round(size / 40),
+          gap: Math.round(size * SEAL_GAP_RATIO),
           '--seal-stagger': `${stagger}ms`,
         } as CSSProperties
       }

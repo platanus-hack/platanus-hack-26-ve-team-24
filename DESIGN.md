@@ -213,7 +213,7 @@ Square everywhere: zero radius on buttons, inputs, panels, chips, the drop slot 
 ## Components
 
 ### Seal (signature)
-The five-segment C on a 6x6 grid, painted with `currentColor` so the parent's text colour draws it. Stroke scales with size (size / 32, minimum 2px). Segment states: outlined (pending), filled (checking, verified, done), 45-degree hatched (failed), dashed (unavailable), dashed at 40% (not examined). Checking blinks in two hard steps (0.8s). Changes animate background and border in 240ms on the resolve ease, staggered by segment index (120ms on the landing close). Under reduced motion, changes are instant and nothing blinks. The **legend** below it is a five-column numbered list, each entry under a 4px rule, printing the state word once a state exists.
+The five-segment C on a 6x6 grid, painted with `currentColor` so the parent's text colour draws it. Stroke scales with size (size / 32, minimum 2px). Segment states: outlined (pending), filled (checking, verified, done), 45-degree hatched (failed), dashed (unavailable), dashed at 40% (not examined). Checking blinks in two hard steps (0.8s). Changes animate background and border in 240ms on the resolve ease, staggered by segment index (120ms on the landing close). Under reduced motion, changes are instant and nothing blinks. On the landing only, the mark has an **entrance**: five solid ink blocks with one module of depth fall domino-style onto the grid in check order (beak, top, left upper, left lower, bottom), each hinging 90° from the edge it shares with the previous one, 520ms on the resolve ease, 160ms apart, lit from the top-left so the sides read as volume; the whole mark settles (1.03 to 1 in 240ms) and crossfades to the DOM seal, which then behaves as above. Under reduced motion the entrance is skipped. The **legend** below it is a five-column numbered list, each entry under a 4px rule, printing the state word once a state exists.
 
 ### Wordmark
 The closed seal at 24px beside CONSTANCIA in extra-bold body size, tracked 0.32em. Top-left of every nav, sitting under a 2px ink rule.
@@ -259,7 +259,7 @@ A 3px ink spine through the centre of the chip column. Overlapping employment do
 - **Do** give marigold whole regions (the 5/12 seal column, a band, a verdict field) and set only ink on it.
 - **Do** frame and divide with black rules: 4px for frames and section breaks, 3px for controls, 2px for rows.
 - **Do** print every state as a word plus a drawn mark, and keep it in its fixed position.
-- **Do** use the resolve ease (cubic-bezier(0.16, 1, 0.3, 1)) for the seal and the verdict wipe, and make both instant under reduced motion.
+- **Do** use the resolve ease (cubic-bezier(0.16, 1, 0.3, 1)) for the seal, its landing entrance and the verdict wipe, and make all three instant under reduced motion.
 - **Do** keep body text at 17px or more and every target at 48px or more.
 - **Do** set hashes, keys and IDs in Red Hat Mono with tabular numerals, shortened in the middle when long.
 
