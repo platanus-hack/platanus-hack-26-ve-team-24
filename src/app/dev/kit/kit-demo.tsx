@@ -30,7 +30,7 @@ const VERIFIER_CHECKS = [
   {
     label: 'Acreditado',
     detail: 'El consorcio acreditó a este empleador en el registro.',
-    measured: 'Logística Orinoco (demo)',
+    measured: 'Logística Orinoco, C.A.',
   },
   { label: 'Firma', detail: 'La firmó la clave del empleador, no otra.', measured: 'ES256 · 3,1 ms' },
   {
@@ -182,7 +182,7 @@ const VERDICTS: {
   {
     kind: 'AUTHENTIC',
     title: 'VÁLIDA',
-    reason: 'La emitió Logística Orinoco (empleador ficticio). Las cinco comprobaciones pasaron.',
+    reason: 'La emitió Logística Orinoco, C.A. (empleador ficticio). Las cinco comprobaciones pasaron.',
     statuses: uniform('VERIFIED'),
   },
   {
@@ -233,7 +233,7 @@ export function ClaimListDemo() {
   const [shared, setShared] = useState({ tenure: true, salary: false });
 
   const claims: ClaimView[] = [
-    { name: 'employer', label: 'Empleador', value: 'Logística Orinoco (demo)', state: 'shown' },
+    { name: 'employer', label: 'Empleador', value: 'Logística Orinoco, C.A.', state: 'shown' },
     { name: 'position', label: 'Cargo', value: 'Analista (ficticio)', state: 'hidden' },
     {
       name: 'tenure',

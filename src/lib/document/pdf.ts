@@ -15,7 +15,7 @@ import { parsePayload, serializePayload, type DocPayload } from './payload';
 const INFO_KEY = 'ConstanciaToken';
 const ATTACHMENT_NAME = 'constancia-token.json';
 const PAGE = { width: 595, height: 842 } as const;
-const MARGIN = 48;
+const MARGIN = 56;
 const INK = rgb(0.04, 0.04, 0.04);
 const MUTED = rgb(0.3, 0.3, 0.3);
 const MARIGOLD = rgb(0.949, 0.718, 0.02);
@@ -48,6 +48,9 @@ interface Fonts {
   regular: PDFFont;
   bold: PDFFont;
   mono: PDFFont;
+  serif: PDFFont;
+  serifBold: PDFFont;
+  serifItalic: PDFFont;
 }
 
 const supported = new WeakMap<PDFFont, Set<number>>();
@@ -87,6 +90,9 @@ async function start(): Promise<{ doc: PDFDocument; page: PDFPage; fonts: Fonts 
     regular: await doc.embedFont(StandardFonts.Helvetica),
     bold: await doc.embedFont(StandardFonts.HelveticaBold),
     mono: await doc.embedFont(StandardFonts.Courier),
+    serif: await doc.embedFont(StandardFonts.TimesRoman),
+    serifBold: await doc.embedFont(StandardFonts.TimesRomanBold),
+    serifItalic: await doc.embedFont(StandardFonts.TimesRomanItalic),
   };
   return { doc, page: doc.addPage([PAGE.width, PAGE.height]), fonts };
 }
@@ -128,10 +134,17 @@ function paragraph(
   page: PDFPage,
   font: PDFFont,
   text: string,
-  at: { y: number; size: number; color?: ReturnType<typeof rgb>; x?: number; width?: number },
+  at: {
+    y: number;
+    size: number;
+    color?: ReturnType<typeof rgb>;
+    x?: number;
+    width?: number;
+    leading?: number;
+  },
 ): number {
   const x = at.x ?? MARGIN;
-  const lineHeight = at.size * 1.4;
+  const lineHeight = at.leading ?? at.size * 1.4;
   let { y } = at;
   for (const line of wrap(font, text, at.size, at.width ?? PAGE.width - 2 * MARGIN)) {
     page.drawText(line, { x, y, size: at.size, font, color: at.color ?? INK });
@@ -224,6 +237,87 @@ export async function buildSheetPdf(sheet: Sheet, payload: DocPayload): Promise<
     y = paragraph(page, fonts.regular, note, { y, size: 9.5, color: MUTED }) - 4;
 
   footer(page, fonts, sheet.footer);
+  return finish(doc, payload);
+}
+
+const SEAL_OFFSETS = [0, 14, 34, 46];
+
+export interface Letter {
+  issuer: { name: string; did: string };
+  reference: string;
+  issuedOn: string;
+  title: string;
+  intro: string;
+  subject: { name: string; detail: string };
+  paragraphs: string[];
+  facts: SheetRow[]; // up to four, shown as one row
+  signer: { name: string; detail: string };
+  seal: string[];
+  footer: string[];
+}
+
+
+/** An employment verification letter: letterhead, formal body, signature and a verification seal. */
+export async function buildLetterPdf(letter: Letter, payload: DocPayload): Promise<Uint8Array> {
+  const { doc, page, fonts } = await start();
+  const left = MARGIN;
+  const width = PAGE.width - 2 * MARGIN;
+  const right = PAGE.width - MARGIN;
+  const centered = (font: PDFFont, text: string, size: number, y: number, color = INK) => {
+    const line = safe(font, text);
+    page.drawText(line, { x: (PAGE.width - font.widthOfTextAtSize(line, size)) / 2, y, size, font, color });
+  };
+
+  page.drawRectangle({ x: 0, y: PAGE.height - 16, width: PAGE.width, height: 16, color: MARIGOLD });
+  page.drawRectangle({ x: 0, y: PAGE.height - 19, width: PAGE.width, height: 3, color: INK });
+
+  page.drawText(safe(fonts.bold, letter.issuer.name), { x: left, y: PAGE.height - 58, size: 17, font: fonts.bold, color: INK });
+  page.drawText(safe(fonts.mono, letter.issuer.did), { x: left, y: PAGE.height - 71, size: 6.5, font: fonts.mono, color: MUTED });
+  const reference = safe(fonts.mono, `Ref. ${letter.reference}`);
+  page.drawText(reference, { x: right - fonts.mono.widthOfTextAtSize(reference, 8), y: PAGE.height - 52, size: 8, font: fonts.mono, color: INK });
+  const issued = safe(fonts.regular, letter.issuedOn);
+  page.drawText(issued, { x: right - fonts.regular.widthOfTextAtSize(issued, 9), y: PAGE.height - 65, size: 9, font: fonts.regular, color: MUTED });
+  page.drawRectangle({ x: left, y: PAGE.height - 84, width, height: 1, color: RULE });
+
+  centered(fonts.serifBold, letter.title, 23, PAGE.height - 132);
+  page.drawRectangle({ x: PAGE.width / 2 - 30, y: PAGE.height - 146, width: 60, height: 3, color: INK });
+
+  const body = { size: 12, leading: 19, x: left, width };
+  let y = paragraph(page, fonts.serif, letter.intro, { ...body, y: PAGE.height - 184 }) - 6;
+  centered(fonts.serifBold, letter.subject.name, 17, y - 6);
+  centered(fonts.regular, letter.subject.detail, 9.5, y - 22, MUTED);
+  y -= 50;
+  for (const text of letter.paragraphs) y = paragraph(page, fonts.serif, text, { ...body, y }) - 8;
+
+  const facts = letter.facts.slice(0, 4);
+  const boxTop = y - 4;
+  const boxHeight = 50;
+  page.drawRectangle({ x: left, y: boxTop - boxHeight, width, height: boxHeight, borderColor: INK, borderWidth: 2 });
+  const column = width / facts.length;
+  for (const [i, fact] of facts.entries()) {
+    const x = left + i * column + 12;
+    if (i > 0) page.drawRectangle({ x: left + i * column, y: boxTop - boxHeight, width: 1, height: boxHeight, color: RULE });
+    page.drawText(safe(fonts.regular, fact.label), { x, y: boxTop - 17, size: 8.5, font: fonts.regular, color: MUTED });
+    paragraph(page, fonts.bold, fact.value ?? '', { y: boxTop - 32, size: 10, x, width: column - 22, leading: 12 });
+  }
+
+  const signY = Math.max(200, boxTop - boxHeight - 96);
+  page.drawText(safe(fonts.serifItalic, 'Firmado electrónicamente'), { x: left, y: signY + 10, size: 12, font: fonts.serifItalic, color: MUTED });
+  page.drawRectangle({ x: left, y: signY, width: 210, height: 1, color: INK });
+  page.drawText(safe(fonts.bold, letter.signer.name), { x: left, y: signY - 14, size: 10.5, font: fonts.bold, color: INK });
+  page.drawText(safe(fonts.regular, letter.signer.detail), { x: left, y: signY - 26, size: 8.5, font: fonts.regular, color: MUTED });
+
+  const sealW = 132;
+  const sealH = 84;
+  const sealX = right - sealW;
+  page.drawRectangle({ x: sealX, y: signY - 28, width: sealW, height: sealH, color: MARIGOLD, borderColor: INK, borderWidth: 3 });
+  for (const [i, line] of letter.seal.entries()) {
+    const font = i === 0 ? fonts.bold : fonts.regular;
+    const size = i === 0 ? 11 : 8.5;
+    page.drawText(safe(font, line), { x: sealX + 10, y: signY + sealH - 48 - SEAL_OFFSETS[i], size, font, color: INK });
+  }
+
+  footer(page, fonts, letter.footer);
   return finish(doc, payload);
 }
 
