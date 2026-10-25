@@ -26,8 +26,18 @@ export const CLAIM_LABELS: Record<ClaimName, string> = {
   salaryBand: 'Rango salarial (USD/mes)',
 };
 
+const EMPLOYMENT_TYPES: Record<string, string> = {
+  FULL_TIME: 'Tiempo completo',
+  PART_TIME: 'Medio tiempo',
+  CONTRACT: 'Por contrato',
+};
+
 export const formatClaim = (value: DisclosedClaims[ClaimName]): string =>
-  typeof value === 'boolean' ? (value ? 'Sí' : 'No') : String(value);
+  typeof value === 'boolean'
+    ? value
+      ? 'Sí'
+      : 'No'
+    : (EMPLOYMENT_TYPES[String(value)] ?? String(value));
 
 /** Every claim the certificate holds, read-only: the holder may see all of them. */
 export function ownClaimViews(claims: DisclosedClaims): ClaimView[] {

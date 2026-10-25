@@ -3,8 +3,9 @@ import { Wordmark } from '@/components/ui/wordmark';
 
 const LINKS = [
   { href: '/verify', label: 'Verificar' },
+  { href: '/present', label: 'Compartir' },
+  { href: '/join', label: 'Unificar' },
   { href: '/employer', label: 'Empleadores' },
-  { href: '/vault', label: 'Bóveda' },
   { href: '/ledger', label: 'Registro' },
 ];
 

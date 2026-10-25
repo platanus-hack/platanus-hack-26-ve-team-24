@@ -4,16 +4,16 @@ import { useEffect, useState } from 'react';
 import { Button, LinkButton } from '@/components/ui/button';
 import { CheckList, CheckRow, type RowStatus } from '@/components/ui/check-list';
 import { Panel } from '@/components/ui/panel';
-import { listDirectory } from '@/lib/employer/directory';
 import { listIdentities, type EmployerIdentity } from '@/lib/employer/identity';
 import { signIn } from '@/lib/employer/session-client';
 import { useMe } from '@/lib/employer/use-me';
 import { fetchNetworkState } from '@/lib/ledger/gateway-client';
 import type { IssuerInfo } from '@/lib/ledger/types';
 import { ErrorText } from '@/components/ui/error-text';
+import type { Address } from '@/lib/credential/types';
+import { IssueFlow } from './issue-flow';
 
 const SET_UP = '/employer/onboarding';
-const DIRECTORY = '/employer/directory';
 const SET_UP_ANOTHER = '/employer/onboarding?create=1';
 
 type Identities =
@@ -54,7 +54,8 @@ function SignedOut() {
     }
   }
 
-  if (identities.status === 'loading') return <p role="status">Buscando claves de firma en este dispositivo…</p>;
+  if (identities.status === 'loading')
+    return <p role="status">Buscando claves de firma en este dispositivo…</p>;
 
   if (identities.status === 'error') {
     return (
@@ -95,7 +96,9 @@ function SignedOut() {
                     void enter(identity);
                   }}
                 >
-                  {busy === identity.signerName ? 'Iniciando sesión…' : `Entrar como ${identity.orgName}`}
+                  {busy === identity.signerName
+                    ? 'Iniciando sesión…'
+                    : `Entrar como ${identity.orgName}`}
                 </Button>
               </li>
             ))}
@@ -126,12 +129,24 @@ function accreditedStatus(issuer: IssuerInfo | undefined, applied: boolean): Row
   return applied ? 'CHECKING' : 'PENDING';
 }
 
-function readinessSteps(issuer: IssuerInfo | undefined, directoryLoaded: boolean): Step[] {
+function readinessSteps(issuer: IssuerInfo | undefined): Step[] {
   const applied = issuer !== undefined && issuer.status !== 'NONE';
-  const approvals = issuer ? `${issuer.approvals} de ${issuer.quorum} miembros aprobaron` : undefined;
+  const approvals = issuer
+    ? `${issuer.approvals} de ${issuer.quorum} miembros aprobaron`
+    : undefined;
   return [
-    { label: 'Clave de firma en este dispositivo', status: 'DONE', href: SET_UP, action: 'Continuar la configuración' },
-    { label: 'Cuenta de la organización', status: 'DONE', href: SET_UP, action: 'Continuar la configuración' },
+    {
+      label: 'Clave de firma en este dispositivo',
+      status: 'DONE',
+      href: SET_UP,
+      action: 'Continuar la configuración',
+    },
+    {
+      label: 'Cuenta de la organización',
+      status: 'DONE',
+      href: SET_UP,
+      action: 'Continuar la configuración',
+    },
     {
       label: 'Acreditación solicitada al consorcio',
       status: applied ? 'DONE' : 'PENDING',
@@ -142,40 +157,19 @@ function readinessSteps(issuer: IssuerInfo | undefined, directoryLoaded: boolean
     {
       label: 'Acreditada',
       status: accreditedStatus(issuer, applied),
-      detail: issuer?.status === 'SUSPENDED' ? 'El consorcio puso en pausa a esta organización.' : approvals,
+      detail:
+        issuer?.status === 'SUSPENDED'
+          ? 'El consorcio puso en pausa a esta organización.'
+          : approvals,
       href: SET_UP,
       action: 'Ver la acreditación',
-    },
-    {
-      label: 'Directorio de empleados cargado',
-      status: directoryLoaded ? 'DONE' : 'PENDING',
-      detail: 'Los datos de los empleados se quedan en este navegador y nunca llegan a un servidor.',
-      href: DIRECTORY,
-      action: 'Cargar tu directorio de empleados',
     },
   ];
 }
 
-function Readiness({ account, name }: { account: string; name: string }) {
+function Readiness({ account, name }: { account: Address; name: string }) {
   const [issuer, setIssuer] = useState<IssuerInfo | undefined>();
   const [unreachable, setUnreachable] = useState(false);
-  const [directoryLoaded, setDirectoryLoaded] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    async function load() {
-      try {
-        const entries = await listDirectory();
-        if (active) setDirectoryLoaded(entries.length > 0);
-      } catch {
-        // The row simply stays pending; the directory page reports its own trouble.
-      }
-    }
-    void load();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -199,31 +193,36 @@ function Readiness({ account, name }: { account: string; name: string }) {
     };
   }, [account]);
 
-  const steps = readinessSteps(issuer, directoryLoaded);
+  const steps = readinessSteps(issuer);
   const next = steps.find((step) => step.status !== 'DONE');
 
   return (
     <div className="flex flex-col gap-8">
-      <p className="text-body">
-        Sesión iniciada como <strong>{name || 'tu organización'}</strong>
-      </p>
       {unreachable && (
         <p role="status" className="font-bold">
-          El registro no responde en este momento. Esta lista se actualiza sola.
+          El registro no responde en este momento. Esta página se actualiza sola.
         </p>
       )}
-      <CheckList title="Lista para emitir">
-        {steps.map((step, index) => (
-          <CheckRow key={step.label} index={index + 1} label={step.label} status={step.status} detail={step.detail} />
-        ))}
-      </CheckList>
-      <div>
-        {next ? (
-          <LinkButton href={next.href}>{next.action}</LinkButton>
-        ) : (
-          <LinkButton href="/employer/requests">Abrir las solicitudes</LinkButton>
-        )}
-      </div>
+      {next ? (
+        <>
+          <CheckList title="Lista para emitir">
+            {steps.map((step, index) => (
+              <CheckRow
+                key={step.label}
+                index={index + 1}
+                label={step.label}
+                status={step.status}
+                detail={step.detail}
+              />
+            ))}
+          </CheckList>
+          <div>
+            <LinkButton href={next.href}>{next.action}</LinkButton>
+          </div>
+        </>
+      ) : (
+        <IssueFlow account={account} name={name} />
+      )}
     </div>
   );
 }

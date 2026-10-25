@@ -7,9 +7,8 @@ import { signOut } from '@/lib/employer/session-client';
 import { useMe } from '@/lib/employer/use-me';
 
 const LINKS = [
-  { href: '/employer/requests', label: 'Solicitudes' },
+  { href: '/employer', label: 'Emitir' },
   { href: '/employer/issued', label: 'Emitidas' },
-  { href: '/employer/directory', label: 'Directorio' },
 ];
 
 export function EmployerNav() {
@@ -21,7 +20,8 @@ export function EmployerNav() {
     <nav aria-label="Empleador" className="flex flex-wrap items-center gap-x-8 gap-y-1">
       <ul className="flex flex-wrap gap-x-8 gap-y-1">
         {LINKS.map((link) => {
-          const current = pathname.startsWith(link.href);
+          const current =
+            link.href === '/employer' ? pathname === '/employer' : pathname.startsWith(link.href);
           return (
             <li key={link.href}>
               <Link

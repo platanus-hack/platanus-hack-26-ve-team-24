@@ -1,11 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckList, CheckRow, Chip, ROW_STATUS } from '@/components/ui/check-list';
 import { DropZone } from '@/components/ui/drop-zone';
 import { Field } from '@/components/ui/field';
-import { takeHandoffFile } from '@/lib/handoff';
+import { Panel } from '@/components/ui/panel';
+import { setHandoffFile, takeHandoffFile } from '@/lib/handoff';
 import type { LookupFn } from '@/lib/credential/verify';
 import { makeSample } from '../_lib/fixture';
 import {
@@ -30,7 +32,9 @@ function liveMessage(rows: RowView[]): string {
 }
 
 export function VerifyView() {
+  const router = useRouter();
   const verification = useVerification();
+  const file = useRef<File | null>(null); // the PDF that was attached, to hand it to Compartir
   const [input, setInput] = useState<LoadedInput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pasted, setPasted] = useState('');
@@ -48,6 +52,12 @@ export function VerifyView() {
     [verification.run],
   );
 
+  const fromFile = useCallback(async (picked: File) => {
+    const loaded = inputFromText(await readInputFile(picked), 'file');
+    file.current = picked;
+    return loaded;
+  }, []);
+
   const attempt = useCallback(
     async (load: () => Promise<LoadedInput>) => {
       try {
@@ -64,15 +74,15 @@ export function VerifyView() {
     started.current = true;
     setUseFixture(new URLSearchParams(window.location.search).has('fixture'));
     const share = parseShareFragment(window.location.hash);
-    const file = takeHandoffFile();
+    const handed = takeHandoffFile();
     if (share) {
       void attempt(async () =>
         inputFromText(await fetchShareText(share.id, share.key), 'link', share.id),
       );
-    } else if (file) {
-      void attempt(async () => inputFromText(await readInputFile(file), 'file'));
+    } else if (handed) {
+      void attempt(() => fromFile(handed));
     }
-  }, [attempt]);
+  }, [attempt, fromFile]);
 
   const { rows, verdict, decoded, requests, running } = verification;
 
@@ -94,18 +104,21 @@ export function VerifyView() {
           </p>
         </div>
         <DropZone
-          onFile={(file) => void attempt(async () => inputFromText(await readInputFile(file), 'file'))}
-          label="Suelta una constancia para verificarla"
-          hint="El archivo no sale de tu navegador."
+          onFile={(picked) => void attempt(() => fromFile(picked))}
+          label="Suelta el PDF de una constancia"
+          hint="Lo que el PDF dice se lee de su token firmado. El archivo no sale de tu navegador."
         />
         {error ? (
-          <p role="alert" className="flex max-w-[65ch] items-start gap-4 text-body font-bold text-fail">
+          <p
+            role="alert"
+            className="flex max-w-[65ch] items-start gap-4 text-body font-bold text-fail"
+          >
             <Chip status="FAILED" />
             {error}
           </p>
         ) : null}
         <div className="border-t-4 border-ink pt-6">
-          <h2 className="mb-4 font-display text-title font-extrabold">O pega el texto</h2>
+          <h2 className="mb-4 font-display text-title font-extrabold">O pega el token</h2>
           <Field
             label="Texto de la constancia"
             hint="Si tienes un enlace para compartir, ábrelo directamente."
@@ -186,6 +199,22 @@ export function VerifyView() {
             shareId={input.shareId}
             claims={verdict.kind === 'AUTHENTIC' ? verdict.claims : null}
           />
+        ) : null}
+        {verdict?.kind === 'AUTHENTIC' && !verdict.keyBound && file.current ? (
+          <Panel title="Esta es la constancia completa">
+            <p className="mb-6 max-w-[65ch] text-body">
+              El PDF trae todos los datos. Para mostrar a un tercero solo una parte y que aun así
+              pueda comprobarla, elige qué datos compartir y genera una presentación.
+            </p>
+            <Button
+              onClick={() => {
+                if (file.current) setHandoffFile(file.current);
+                router.push('/present');
+              }}
+            >
+              Elegir qué datos compartir
+            </Button>
+          </Panel>
         ) : null}
         {verdict?.kind === 'AUTHENTIC' && decoded ? (
           <TechnicalDetails verdict={verdict} decoded={decoded} />

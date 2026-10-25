@@ -12,15 +12,15 @@ Un CV es una lista que nadie puede comprobar. Quien contrata, un banco o un cons
 
 ## La propuesta
 
-Constancia convierte el historial laboral en un **CV verificable**: cada puesto es una constancia firmada por un empleador acreditado, el trabajador las reúne en su bóveda, y quien lee el CV comprueba la trayectoria entera en su propio navegador, sin llamar a nadie. El trabajador decide, dato por dato, qué parte de esa historia se revela.
+Constancia convierte el historial laboral en un **CV verificable**: cada puesto es una constancia firmada por un empleador acreditado, el trabajador las une en un historial, y quien lee el CV comprueba la trayectoria entera en su propio navegador, sin llamar a nadie. El trabajador decide, dato por dato, qué parte de esa historia se revela.
 
 ## Cómo funciona
 
 | Rol | Qué hace |
 | :-- | :-- |
-| **Empleador** | RR. HH. crea una cuenta de organización con una clave del dispositivo, sin wallet y sin comisiones, y solicita acreditación al consorcio. Cuando un quórum de miembros la aprueba, puede emitir constancias. |
-| **Trabajador** | Pide una constancia a su empleador y la recibe cifrada de extremo a extremo, con una clave propia por solicitud. Las guarda en su bóveda, las une en un CV con su línea de tiempo, sus huecos y sus solapamientos, y comparte **un dato a la vez** por enlace o QR, viendo antes exactamente lo que verá el lector. |
-| **Verificador** | Abre el enlace o el archivo del CV. Cinco chequeos corren en su navegador y solo aparecen los datos elegidos, con el número exacto de los que siguen ocultos. |
+| **Empleador** | RR. HH. crea una cuenta de organización con una clave del dispositivo, sin wallet y sin comisiones, y solicita acreditación al consorcio. Cuando un quórum de miembros la aprueba, llena un formulario y descarga la constancia como **PDF**: una capa visual legible y, adentro, el token firmado. La solicitud de la constancia ocurre fuera de la plataforma. |
+| **Trabajador** | Con ese PDF elige, dato por dato, qué muestra y genera una presentación en PDF que no contiene los demás datos. Con varias constancias de la misma persona arma un historial único, sellado, con su línea de tiempo, sus huecos y sus solapamientos. |
+| **Verificador** | Carga el PDF (constancia, presentación o historial). Cinco chequeos corren en su navegador y solo aparecen los datos elegidos, con el número exacto de los que siguen ocultos. |
 
 ### Los cinco chequeos
 

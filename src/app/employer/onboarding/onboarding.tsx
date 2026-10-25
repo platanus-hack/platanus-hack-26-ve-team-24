@@ -7,11 +7,7 @@ import { Mono } from '@/components/ui/mono';
 import { Panel } from '@/components/ui/panel';
 import { createStoredSigner, loadSigner } from '@/lib/credential/keystore';
 import { listIdentities, saveIdentity, type EmployerIdentity } from '@/lib/employer/identity';
-import {
-  accreditationView,
-  orgNameSchema,
-  signerNameFor,
-} from '@/lib/employer/onboarding';
+import { accreditationView, orgNameSchema, signerNameFor } from '@/lib/employer/onboarding';
 import { signIn } from '@/lib/employer/session-client';
 import { createAccountClient, LedgerWriteError } from '@/lib/ledger/account-client';
 import type { TxResult } from '@/lib/ledger/account-client';
@@ -44,7 +40,9 @@ function NameStep({ onCreated }: { onCreated: (identity: EmployerIdentity) => vo
       await saveIdentity(identity);
       onCreated(identity);
     } catch {
-      setError('No se pudo crear una clave de firma en este dispositivo. Revisa la configuración del navegador e inténtalo de nuevo.');
+      setError(
+        'No se pudo crear una clave de firma en este dispositivo. Revisa la configuración del navegador e inténtalo de nuevo.',
+      );
     } finally {
       setBusy(false);
     }
@@ -96,7 +94,9 @@ function ApplyStep({ identity, issuer }: { identity: EmployerIdentity; issuer?: 
       try {
         await signIn(identity);
       } catch {
-        setError('El registro ya tiene tu solicitud, pero este dispositivo no pudo iniciar sesión. Vuelve a entrar desde esta página.');
+        setError(
+          'El registro ya tiene tu solicitud, pero este dispositivo no pudo iniciar sesión. Vuelve a entrar desde esta página.',
+        );
       }
     } catch (caught) {
       setError(
@@ -134,7 +134,7 @@ function ApplyStep({ identity, issuer }: { identity: EmployerIdentity; issuer?: 
             <p className="max-w-[65ch] text-body">{view.detail}</p>
             {view.tone === 'active' && (
               <div>
-                <LinkButton href="/employer/requests">Abrir las solicitudes</LinkButton>
+                <LinkButton href="/employer">Emitir una constancia</LinkButton>
               </div>
             )}
           </div>
@@ -195,7 +195,8 @@ export function Onboarding() {
     };
   }, []);
 
-  if (identity === undefined) return <p role="status">Buscando claves de firma en este dispositivo…</p>;
+  if (identity === undefined)
+    return <p role="status">Buscando claves de firma en este dispositivo…</p>;
 
   return (
     <div className="flex flex-col gap-10">

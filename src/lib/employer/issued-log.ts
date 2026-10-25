@@ -1,10 +1,10 @@
-// Browser only. What this device issued, as hashes and opaque employee numbers: no claims, no names.
+// Browser only. What this device issued, so the employer can find a credential again and revoke it.
 export interface IssuedLogEntry {
   credentialHash: `0x${string}`;
   keyId: `0x${string}`;
-  employeeRef: string;
+  subject: string; // the person's name, as typed in the form; it never leaves this device
+  jobTitle: string;
   issuedAt: string;
-  kind: 'CURRENT' | 'PAST';
 }
 
 const DB_NAME = 'constancia-issued';

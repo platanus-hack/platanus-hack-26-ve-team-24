@@ -8,6 +8,7 @@ const NOT_FOUND = 'Este enlace para compartir no existe o fue eliminado';
 const EXPIRED = 'Este enlace venció. Pídele al titular uno nuevo';
 const UNREACHABLE = 'No se pudo conectar con el servidor. Inténtalo de nuevo';
 const DAMAGED = 'Este enlace está incompleto o dañado';
+const NOT_A_CONSTANCIA = 'Este PDF no trae una constancia: no tiene el token firmado adentro';
 
 const SHARE_FRAGMENT = /^s=([0-9a-f]{32})\.([A-Za-z0-9_-]{43})$/;
 const CV_TYPE = 'constancia-cv';
@@ -43,9 +44,18 @@ export async function fetchShareText(id: string, key: string): Promise<string> {
   }
 }
 
+/** Text files are read as they are; a PDF gives up the signed token it carries. */
 export async function readInputFile(file: File): Promise<string> {
   if (file.size > MAX_INPUT_BYTES) throw new InputError(TOO_LARGE);
-  return file.text();
+  const { isPdf, readPdfPayload } = await import('@/lib/document/pdf');
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (isPdf(bytes)) {
+    const payload = await readPdfPayload(bytes);
+    if (!payload) throw new InputError(NOT_A_CONSTANCIA);
+    if (payload.type === 'credential') return payload.sdJwt;
+    return payload.type === 'presentation' ? payload.presentation : payload.cv;
+  }
+  return new TextDecoder().decode(bytes);
 }
 
 function isCvObject(value: unknown): boolean {

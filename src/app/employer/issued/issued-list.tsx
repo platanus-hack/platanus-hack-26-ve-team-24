@@ -8,8 +8,11 @@ import { Panel } from '@/components/ui/panel';
 import { loadSigner } from '@/lib/credential/keystore';
 import { listIdentities } from '@/lib/employer/identity';
 import { listIssued, type IssuedLogEntry } from '@/lib/employer/issued-log';
-import { certificateStatus, formatDate, type CertificateStatus } from '@/lib/employer/issued-status';
-import { REQUEST_KIND_LABELS } from '@/lib/employer/record-fields';
+import {
+  certificateStatus,
+  formatDate,
+  type CertificateStatus,
+} from '@/lib/employer/issued-status';
 import { useMe } from '@/lib/employer/use-me';
 import { createAccountClient, LedgerWriteError, type TxResult } from '@/lib/ledger/account-client';
 import { lookupLedger } from '@/lib/ledger/gateway-client';
@@ -25,7 +28,11 @@ function statusView(status: Status): { chip: RowStatus; word: string; tone: stri
     case 'ACTIVE':
       return { chip: 'VERIFIED', word: 'Vigente', tone: 'text-ok' };
     case 'REVOKED':
-      return { chip: 'FAILED', word: `Revocada el ${formatDate(status.revokedAt)}`, tone: 'text-fail' };
+      return {
+        chip: 'FAILED',
+        word: `Revocada el ${formatDate(status.revokedAt)}`,
+        tone: 'text-fail',
+      };
     case 'NOT_ON_LEDGER':
       return { chip: 'FAILED', word: 'No está en el registro', tone: 'text-fail' };
     case 'UNKNOWN':
@@ -40,7 +47,10 @@ function statusView(status: Status): { chip: RowStatus; word: string; tone: stri
 function StatusBadge({ status }: { status: Status }) {
   const view = statusView(status);
   return (
-    <p role="status" className={`flex items-center gap-3 text-small font-bold uppercase tracking-wide ${view.tone}`}>
+    <p
+      role="status"
+      className={`flex items-center gap-3 text-small font-bold uppercase tracking-wide ${view.tone}`}
+    >
       <Chip status={view.chip} />
       {view.word}
     </p>
@@ -81,7 +91,9 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
       const identity = (await listIdentities()).find((item) => item.account === account);
       const signer = identity ? await loadSigner(identity.signerName) : null;
       if (!signer) throw new Error('missing signer');
-      const tx = await (await createAccountClient({ signer, account })).revoke(entry.credentialHash);
+      const tx = await (
+        await createAccountClient({ signer, account })
+      ).revoke(entry.credentialHash);
       setResult(tx);
       setStatus({ kind: 'REVOKED', revokedAt: Math.floor(Date.now() / 1000) });
       setConfirming(false);
@@ -101,7 +113,7 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-title font-bold">
-            <code>{entry.employeeRef}</code> · {REQUEST_KIND_LABELS[entry.kind]}
+            {entry.subject} · {entry.jobTitle}
           </p>
           <p className="text-small text-ink-muted">
             Emitida el {entry.issuedAt.slice(0, 10)} · <Mono value={entry.credentialHash} shorten />
@@ -112,7 +124,7 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
           {status.kind === 'ACTIVE' && !confirming && (
             <Button
               variant="secondary"
-              aria-label={`Revocar la constancia de ${entry.employeeRef}`}
+              aria-label={`Revocar la constancia de ${entry.subject}`}
               onClick={() => {
                 setConfirming(true);
               }}

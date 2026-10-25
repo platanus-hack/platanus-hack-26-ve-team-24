@@ -61,12 +61,18 @@ so an employer cannot deny what it issued, and the holder cannot splice a job in
 ## 🔄 How it works
 
 1. **Employer** (`/employer`): HR signs in with a key on their device, applies to the consortium, and
-   once a quorum of members approves, issues certificates. No wallet, no password, no fee.
-2. **Holder** (`/vault`, `/cv`): asks for a certificate, receives it encrypted to a key made for that
-   request, shares claim by claim by link or QR, and joins every job into one Verified CV with its
-   timeline, gaps and overlaps.
-3. **Verifier** (`/verify`): five checks run in their browser and only the chosen claims appear.
-   `/verify/lab` tries four forgeries, each failing at a named check. `/ledger` shows the consortium.
+   once a quorum approves, fills in one form. The result is a **PDF**: a readable visual layer plus
+   the signed SD-JWT token and the holder's key inside the file. The hash is anchored on the ledger
+   before the PDF is handed over. Requesting a certificate happens outside the platform.
+2. **Verifier** (`/verify`): drop a PDF; five checks run in the browser and the data is read from the
+   token, not from the visual layer. `/verify/lab` tries four forgeries, each failing at a named check.
+3. **Holder** (`/present`): drop the credential PDF, choose which claims to show, and get a
+   presentation PDF that does not contain the others at all (selective disclosure, not zero knowledge).
+   `/join` unifies several credentials of the same person (same ID and name, each verified) into one
+   sealed history PDF that `/verify` checks entry by entry. `/ledger` shows the consortium.
+
+Demo: issue PDF -> `/verify` -> `/present` (pick claims) -> `/verify` -> issue a second PDF for the
+same person -> `/join` -> `/verify`.
 
 ## 🏗️ Architecture
 
@@ -75,8 +81,8 @@ so an employer cannot deny what it issued, and the holder cannot splice a job in
   hash, the issuer and the signing key id, never personal data. Sepolia stands in for a permissioned
   consortium network we could not host on Render.
 - **Accounts:** ERC-4337 accounts controlled by P-256 device keys
-- **Server:** a blind mailbox (ciphertext, public keys, an opaque employee number) on Postgres.
-- **Verifier:** all five checks run in the browser, and the share key never leaves the URL fragment.
+- **Server:** holds no credentials: only the ledger gateway, employer sessions and optional share links (ciphertext) on Postgres.
+- **Verifier:** all five checks run in the browser, and files never leave the browser.
 
 ## 🧱 Stack
 

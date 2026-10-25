@@ -56,12 +56,3 @@ export function toggleClaim(reveal: ClaimName[], name: ClaimName, next: boolean)
   const without = reveal.filter((claim) => claim !== name);
   return next ? [...without, name] : without;
 }
-
-const FRAGMENT_PATTERN = /^#s=[0-9a-f]{32}\.[A-Za-z0-9_-]+$/;
-
-/** The key sits in the fragment: the browser never sends it to a server. */
-export function shareLink(appUrl: string, id: string, key: string): string {
-  const link = `${appUrl.replace(/\/$/, '')}/verify#s=${id}.${key}`;
-  if (!FRAGMENT_PATTERN.test(link.slice(link.indexOf('#')))) throw new Error('Unexpected share id');
-  return link;
-}

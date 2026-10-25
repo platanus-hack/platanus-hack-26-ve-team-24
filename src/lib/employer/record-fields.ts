@@ -36,11 +36,6 @@ export const EMPLOYMENT_TYPE_LABELS: Record<EmploymentRecord['employmentType'], 
   CONTRACT: 'Por contrato',
 };
 
-export const REQUEST_KIND_LABELS = {
-  CURRENT: 'Empleo actual',
-  PAST: 'Empleo anterior',
-} as const;
-
 const FIELD_ERRORS: Record<keyof RecordFields, string> = {
   givenName: 'Escribe los nombres',
   familyName: 'Escribe los apellidos',
@@ -76,7 +71,9 @@ export const fieldsFromRecord = (record: EmploymentRecord): RecordFields => ({
 
 const blankToUndefined = (value: string) => (value.trim() === '' ? undefined : value.trim());
 
-export type ParsedRecord = { ok: true; record: EmploymentRecord } | { ok: false; errors: RecordErrors };
+export type ParsedRecord =
+  | { ok: true; record: EmploymentRecord }
+  | { ok: false; errors: RecordErrors };
 
 export function recordFromFields(fields: RecordFields): ParsedRecord {
   const salary = blankToUndefined(fields.salaryMonthlyUsd);

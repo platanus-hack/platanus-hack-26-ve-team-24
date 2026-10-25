@@ -64,5 +64,20 @@ export async function verifyEs256(
   const publicKey = await crypto.subtle.importKey('jwk', publicPart(jwk), ALGORITHM, false, [
     'verify',
   ]);
-  return crypto.subtle.verify(SIGN_PARAMS, publicKey, signature as BufferSource, message as BufferSource);
+  return crypto.subtle.verify(
+    SIGN_PARAMS,
+    publicKey,
+    signature as BufferSource,
+    message as BufferSource,
+  );
+}
+
+/** A fresh holder key whose private half can travel inside the credential file (extractable on purpose). */
+export async function generateHolderKey(): Promise<P256PrivateJwk> {
+  const { privateKey } = await crypto.subtle.generateKey(ALGORITHM, true, ['sign', 'verify']);
+  const { kty, crv, x, y, d } = (await crypto.subtle.exportKey(
+    'jwk',
+    privateKey,
+  )) as P256PrivateJwk;
+  return { kty, crv, x, y, d };
 }
