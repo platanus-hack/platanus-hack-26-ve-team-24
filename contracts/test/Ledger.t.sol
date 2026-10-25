@@ -20,7 +20,7 @@ contract LedgerTest is Test {
             memberList.push(address(uint160(0x100 + i)));
             names[i] = "Member";
         }
-        ledger = new Ledger(memberList, names, 2, DEMO_ADMIN);
+        ledger = new Ledger(memberList, names, DEMO_ADMIN);
         (employer, employerKey) = _account(0xA1);
         secondKey = _addSecondKey(employer, 0xA2);
     }
@@ -45,6 +45,8 @@ contract LedgerTest is Test {
         ledger.approve(issuer);
         vm.prank(memberList[1]);
         ledger.approve(issuer);
+        vm.prank(memberList[2]);
+        ledger.approve(issuer);
     }
 
     function test_quorumAccreditsAnIssuer() public {
@@ -58,8 +60,14 @@ contract LedgerTest is Test {
         assertEq(uint8(issuer.status), uint8(Ledger.Status.PENDING));
         assertEq(issuer.approvals, 1);
 
-        vm.warp(1_000_500);
         vm.prank(memberList[1]);
+        ledger.approve(address(employer));
+        issuer = ledger.issuerOf(address(employer));
+        assertEq(uint8(issuer.status), uint8(Ledger.Status.PENDING));
+        assertEq(issuer.approvals, 3);
+
+        vm.warp(1_000_500);
+        vm.prank(memberList[2]);
         ledger.approve(address(employer));
         issuer = ledger.issuerOf(address(employer));
         assertEq(uint8(issuer.status), uint8(Ledger.Status.ACTIVE));
@@ -167,6 +175,8 @@ contract LedgerTest is Test {
         ledger.approve(eoa);
         vm.prank(memberList[1]);
         ledger.approve(eoa);
+        vm.prank(memberList[2]);
+        ledger.approve(eoa);
         vm.prank(eoa);
         vm.expectRevert(Ledger.NotAnAccount.selector);
         ledger.anchor(keccak256("cert"), employerKey);
@@ -212,6 +222,9 @@ contract LedgerTest is Test {
         ledger.suspend(address(employer));
         vm.prank(memberList[3]);
         ledger.suspend(address(employer));
+        assertEq(uint8(ledger.issuerOf(address(employer)).status), uint8(Ledger.Status.ACTIVE));
+        vm.prank(memberList[0]);
+        ledger.suspend(address(employer));
 
         assertEq(uint8(ledger.issuerOf(address(employer)).status), uint8(Ledger.Status.SUSPENDED));
         assertEq(ledger.recordOf(address(employer), keccak256("cert")).anchoredAt, 1_000_000);
@@ -224,7 +237,7 @@ contract LedgerTest is Test {
         (address[] memory accounts, string[] memory names) = ledger.members();
         assertEq(accounts.length, 4);
         assertEq(names.length, 4);
-        assertEq(ledger.quorum(), 2);
+        assertEq(ledger.quorum(), 3);
         assertEq(ledger.issuerList().length, 0);
         _accredit(address(employer));
         address[] memory list = ledger.issuerList();
@@ -232,17 +245,55 @@ contract LedgerTest is Test {
         assertEq(list[0], address(employer));
     }
 
+    function test_onlyMembersCanProposeAMember() public {
+        vm.prank(address(employer));
+        vm.expectRevert(Ledger.NotMember.selector);
+        ledger.addMember(address(0xB0B), "Nueva");
+
+        vm.prank(memberList[0]);
+        vm.expectRevert(Ledger.BadConsortium.selector);
+        ledger.addMember(memberList[1], "Already a member");
+    }
+
+    function test_addingMembersNeedsAMajorityAndRaisesTheQuorum() public {
+        address first = address(0xB0B);
+        address second = address(0xB0C);
+
+        // Two of three is not a majority: nothing changes yet.
+        vm.prank(memberList[0]);
+        ledger.addMember(first, "Nueva A");
+        vm.prank(memberList[1]);
+        ledger.addMember(first, "Nueva A");
+        (address[] memory before,) = ledger.members();
+        assertEq(before.length, 4);
+
+        vm.prank(memberList[2]);
+        ledger.addMember(first, "Nueva A");
+        (address[] memory five,) = ledger.members();
+        assertEq(five.length, 5);
+        assertEq(ledger.quorum(), 3);
+
+        for (uint256 i = 0; i < 3; i++) {
+            vm.prank(memberList[i]);
+            ledger.addMember(second, "Nueva B");
+        }
+        (address[] memory six, string[] memory names) = ledger.members();
+        assertEq(six.length, 6);
+        assertEq(names[5], "Nueva B");
+        assertEq(ledger.quorum(), 4);
+    }
+
     function test_constructorRejectsBadConsortiums() public {
         string[] memory names = new string[](1);
         address[] memory accounts = new address[](1);
         accounts[0] = address(1);
         vm.expectRevert(Ledger.BadConsortium.selector);
-        new Ledger(accounts, names, 2, DEMO_ADMIN);
+        new Ledger(accounts, new string[](2), DEMO_ADMIN);
         vm.expectRevert(Ledger.BadConsortium.selector);
-        new Ledger(accounts, names, 0, DEMO_ADMIN);
+        new Ledger(accounts, names, address(0));
+        address[] memory nobody = new address[](0);
+        string[] memory noNames = new string[](0);
         vm.expectRevert(Ledger.BadConsortium.selector);
-        new Ledger(accounts, new string[](2), 1, DEMO_ADMIN);
-        vm.expectRevert(Ledger.BadConsortium.selector);
-        new Ledger(accounts, names, 1, address(0));
+        new Ledger(nobody, noNames, DEMO_ADMIN);
     }
 }

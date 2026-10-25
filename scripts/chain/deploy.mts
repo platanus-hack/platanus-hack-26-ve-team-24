@@ -3,7 +3,6 @@ import { publicClient } from './config.mjs';
 import { deployArtifact, jwkCoordinates, readAddresses, readIdentities, relayer, saveAddresses } from './lib.mjs';
 
 // Idempotent: whatever is already recorded in demo-pack/addresses.json is never redeployed.
-const QUORUM = 2;
 const SALT = BigInt(0);
 const addresses = readAddresses();
 
@@ -29,10 +28,10 @@ if (!addresses.ledger) {
       });
     }),
   );
+  // The contract computes quorum as a strict majority of the members it is given.
   const { address, block } = await deployArtifact('Ledger', [
     accounts,
     members.map((m) => m.name),
-    QUORUM,
     relayer().address,
   ]);
   addresses.ledger = address;

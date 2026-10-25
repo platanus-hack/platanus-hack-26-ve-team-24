@@ -68,6 +68,10 @@ export function OperatorConsole() {
   const [result, setResult] = useState<TxResult | null>(null);
   const [demoVotes, setDemoVotes] = useState<DemoAccreditResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [candidate, setCandidate] = useState('');
+  const [candidateName, setCandidateName] = useState('');
+  const [addResult, setAddResult] = useState<TxResult | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
   const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === '1';
 
   useEffect(() => {
@@ -109,6 +113,40 @@ export function OperatorConsole() {
   const pending = issuers.filter((issuer) => issuer.status === 'PENDING');
   const active = issuers.filter((issuer) => issuer.status === 'ACTIVE');
   const locked = busy || !member;
+  const quorum = view.status === 'ready' ? view.state.quorum : 0;
+  const memberCount = view.status === 'ready' ? view.state.members.length : 0;
+  const candidateOk = /^0x[0-9a-fA-F]{40}$/.test(candidate.trim());
+  const nameOk = candidateName.trim().length >= 2 && new TextEncoder().encode(candidateName.trim()).length <= 64;
+
+  async function addMember() {
+    setAddResult(null);
+    setAddError(null);
+    if (!candidateOk) {
+      setAddError('Escribe una dirección de 0x y 40 caracteres hexadecimales.');
+      return;
+    }
+    if (!nameOk) {
+      setAddError('Pon un nombre de entre 2 y 64 bytes.');
+      return;
+    }
+    setBusy(true);
+    try {
+      const signer = await loadSigner(member);
+      if (!signer) throw new Error('missing signer');
+      const client = await createAccountClient({ signer });
+      setAddResult(await client.addMember(candidate.trim() as Address, candidateName.trim()));
+      setCandidate('');
+      setCandidateName('');
+    } catch (caught) {
+      setAddError(
+        caught instanceof LedgerWriteError
+          ? caught.message
+          : 'El registro no aceptó el voto. Revisa el miembro e inténtalo de nuevo.',
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
   // The demo path needs no keys at all: the route signs with the consortium's hardcoded demo keys.
   const demoAvailable = demoMode && names.length === 0;
 
@@ -185,6 +223,63 @@ export function OperatorConsole() {
           El registro no responde en este momento. Esta página vuelve a intentarlo sola.
         </p>
       ) : null}
+
+      <section className="border-4 border-marigold bg-marigold/10 p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="font-display text-title font-extrabold">Añadir miembro al consorcio</h2>
+          <span className="tnum border-2 border-ink bg-marigold px-3 py-1 text-small font-bold">
+            {memberCount} miembros · quórum {quorum}
+          </span>
+        </div>
+        <p className="mt-3 max-w-[65ch] text-body text-ink-muted">
+          Un miembro entra solo si lo vota la mayoría del consorcio actual. Cada miembro vota una vez
+          y, al entrar, el quórum se recalcula: crecer nunca abarata las decisiones. Los empleadores
+          no votan, son el sujeto de la acreditación, no parte del consorcio.
+        </p>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <Field label="Cuenta del candidato">
+            <input
+              name="candidate"
+              placeholder="0x…"
+              value={candidate}
+              onChange={(event) => {
+                setCandidate(event.target.value);
+              }}
+              className="font-mono"
+            />
+          </Field>
+          <Field label="Nombre del miembro">
+            <input
+              name="candidateName"
+              placeholder="Banco Meridiano"
+              value={candidateName}
+              onChange={(event) => {
+                setCandidateName(event.target.value);
+              }}
+            />
+          </Field>
+        </div>
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          <Button
+            disabled={locked || !candidateOk || !nameOk}
+            onClick={() => {
+              void addMember();
+            }}
+          >
+            {member ? `Votar con ${member.slice(MEMBER_PREFIX.length)}` : 'Elige un miembro'}
+          </Button>
+          {addResult ? (
+            <p role="status" className="text-small font-bold">
+              Voto registrado en {formatBlock(addResult.blockNumber)}
+            </p>
+          ) : null}
+        </div>
+        {addError ? (
+          <p role="alert" className="mt-4 border-l-4 border-fail pl-3 text-small font-bold text-fail">
+            {addError}
+          </p>
+        ) : null}
+      </section>
 
       <ConsoleSection title="Esperando aprobación">
         <IssuerRows

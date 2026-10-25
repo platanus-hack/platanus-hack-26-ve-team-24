@@ -30,6 +30,11 @@ contract Ledger {
         uint64 blockNumber;
     }
 
+    struct MemberProposal {
+        string name;
+        uint8 approvals;
+    }
+
     event IssuerApplied(address indexed issuer, string name);
     event IssuerApproved(address indexed issuer, address indexed member, uint8 approvals);
     event IssuerAccredited(address indexed issuer);
@@ -37,6 +42,8 @@ contract Ledger {
     // so an audit can tell a real member vote apart from an administrative shortcut.
     event IssuerDemoAccredited(address indexed issuer, address indexed admin);
     event IssuerSuspended(address indexed issuer);
+    event MemberProposed(address indexed account, address indexed member, uint8 approvals);
+    event MemberAdded(address indexed account, string name, uint8 quorum);
     event CredentialAnchored(address indexed issuer, bytes32 indexed credentialHash, bytes32 keyId);
     event CredentialRevoked(address indexed issuer, bytes32 indexed credentialHash);
 
@@ -57,11 +64,16 @@ contract Ledger {
     address[] private memberAccounts;
     string[] private memberNames;
     mapping(address => bool) private isMember;
-    uint8 public immutable quorum;
+    // A strict majority, recomputed whenever the consortium grows. Stored rather than immutable so
+    // admitting a member makes every later decision stricter instead of leaving the bar behind.
+    uint8 public quorum;
     // DEMO ONLY. One address that may accredit an employer without a member quorum, so a single
     // visitor can walk the whole flow. It is a deliberate hole in the trust model: on a real
     // consortium this should not exist. See demoAccredit().
     address public immutable demoAdmin;
+
+    mapping(address candidate => mapping(address member => bool)) private memberVotes;
+    mapping(address candidate => MemberProposal) private memberProposals;
 
     mapping(address => Issuer) private issuers;
     address[] private issuerAccounts;
@@ -70,9 +82,8 @@ contract Ledger {
     mapping(address issuer => uint8) private suspensions;
     mapping(address issuer => mapping(bytes32 credentialHash => Record)) private records;
 
-    constructor(address[] memory accounts, string[] memory names, uint8 quorum_, address demoAdmin_) {
+    constructor(address[] memory accounts, string[] memory names, address demoAdmin_) {
         if (accounts.length == 0 || accounts.length != names.length) revert BadConsortium();
-        if (quorum_ == 0 || quorum_ > accounts.length) revert BadConsortium();
         if (demoAdmin_ == address(0)) revert BadConsortium();
         for (uint256 i = 0; i < accounts.length; i++) {
             if (accounts[i] == address(0) || isMember[accounts[i]]) revert BadConsortium();
@@ -80,8 +91,13 @@ contract Ledger {
         }
         memberAccounts = accounts;
         memberNames = names;
-        quorum = quorum_;
+        quorum = majority(accounts.length);
         demoAdmin = demoAdmin_;
+    }
+
+    // No minority can ever decide for the consortium: 3 members need 2, 6 need 4, 7 need 4.
+    function majority(uint256 count) private pure returns (uint8) {
+        return uint8(count / 2 + 1);
     }
 
     modifier onlyMember() {
@@ -101,6 +117,35 @@ contract Ledger {
         issuer.appliedAt = uint64(block.timestamp);
         issuerAccounts.push(msg.sender);
         emit IssuerApplied(msg.sender, name);
+    }
+
+    // A member joins only with a majority of the CURRENT consortium. The candidate never votes on
+    // its own admission, and quorum is recomputed afterwards, so growing the roster can only make
+    // future decisions harder. Employers are never part of this count: they are the subject of an
+    // accreditation, not a voter, and letting them in would let a flood of fake issuers accredit
+    // itself.
+    function addMember(address account, string calldata name) external onlyMember {
+        if (account == address(0) || isMember[account]) revert BadConsortium();
+        if (memberVotes[account][msg.sender]) revert AlreadyVoted();
+
+        MemberProposal storage proposal = memberProposals[account];
+        if (proposal.approvals == 0) {
+            uint256 length = bytes(name).length;
+            if (length == 0 || length > MAX_NAME_BYTES) revert BadName();
+            proposal.name = name;
+        }
+
+        memberVotes[account][msg.sender] = true;
+        uint8 votes = ++proposal.approvals;
+        emit MemberProposed(account, msg.sender, votes);
+
+        if (votes >= quorum) {
+            isMember[account] = true;
+            memberAccounts.push(account);
+            memberNames.push(proposal.name);
+            quorum = majority(memberAccounts.length);
+            emit MemberAdded(account, proposal.name, quorum);
+        }
     }
 
     function approve(address account) external onlyMember {

@@ -148,5 +148,6 @@ export async function createChainAccountClient({
     removeKey: (keyId) => send(execute(address, accountCall('removeOwner', [keyId]))),
     approve: (issuer) => send(execute(ledger, ledgerCall('approve', [issuer]))),
     suspend: (issuer) => send(execute(ledger, ledgerCall('suspend', [issuer]))),
+    addMember: (account, name) => send(execute(ledger, ledgerCall('addMember', [account, name]))),
   };
 }

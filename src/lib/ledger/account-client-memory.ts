@@ -83,5 +83,9 @@ export function createMemoryAccountClient(
     removeKey: (keyId) => send({ method: 'removeKey', keyId }),
     approve: (issuer) => send({ method: 'approve', issuer }),
     suspend: (issuer) => send({ method: 'suspend', issuer }),
+    // The in-memory ledger keeps a fixed roster; growing the consortium is a chain-only action for now.
+    addMember: async () => {
+      throw new Error('Adding consortium members needs the chain ledger');
+    },
   };
 }

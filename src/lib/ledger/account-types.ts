@@ -18,6 +18,7 @@ export interface AccountClient {
   removeKey(keyId: Hex): Promise<TxResult>;
   approve(issuer: Address): Promise<TxResult>; // consortium member accounts
   suspend(issuer: Address): Promise<TxResult>;
+  addMember(account: Address, name: string): Promise<TxResult>; // one vote of the current quorum
 }
 
 export interface AccountClientArgs {
