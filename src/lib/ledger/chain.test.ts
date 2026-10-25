@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { HttpRequestError } from 'viem';
 import { generateSigner } from '../credential/keys';
 import { jwkCoordinates } from './account-address';
 import {
@@ -121,11 +122,27 @@ describe('chain reader', () => {
   test('a dead RPC becomes LedgerUnreachableError', async () => {
     const dead = fakeClient({
       getBlock: async () => {
-        throw new Error('fetch failed');
+        throw new HttpRequestError({ body: {}, url: 'https://sepolia.example.org', status: 503 });
       },
     });
     const reader = createChainReader(dead, config);
     await expect(reader.head()).rejects.toBeInstanceOf(LedgerUnreachableError);
     await expect(reader.state()).rejects.toBeInstanceOf(LedgerUnreachableError);
+  });
+
+  // A revert or a decoding bug is our fault, not the network's: calling it unreachable pointed every
+  // investigation at Sepolia.
+  test('a non-transport failure keeps its own identity instead of becoming unreachable', async () => {
+    const broken = fakeClient({
+      readContract: async () => {
+        throw new Error('execution reverted: WrongStatus');
+      },
+    });
+    const error = await createChainReader(broken, config)
+      .issuer(ACCOUNT)
+      .catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(Error);
+    expect(error).not.toBeInstanceOf(LedgerUnreachableError);
+    expect((error as Error).message).toContain('WrongStatus');
   });
 });

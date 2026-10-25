@@ -1,5 +1,5 @@
 // LedgerReader over viem: reads the Sepolia Ledger and the consortium accounts.
-import { hexToBytes, type Abi } from 'viem';
+import { BaseError, HttpRequestError, LimitExceededRpcError, TimeoutError, WebSocketRequestError, hexToBytes, type Abi } from 'viem';
 import { toB64u } from '../credential/jws';
 import type { Address, Hex, P256Jwk } from '../credential/types';
 import { jwkCoordinates } from './account-address';
@@ -109,10 +109,23 @@ export function toKeyInfo(keyId: Hex, [x, y, addedAt, removedAt]: readonly [Hex,
 
 // --- the reader ---
 
+// A transport failure is the RPC being unreachable. A revert, a decode failure or a bug is not:
+// wrapping those too made every contract-level fault indistinguishable from a network outage.
+const isTransportFailure = (error: unknown): boolean =>
+  error instanceof BaseError &&
+  error.walk(
+    (cause) =>
+      cause instanceof HttpRequestError ||
+      cause instanceof TimeoutError ||
+      cause instanceof WebSocketRequestError ||
+      cause instanceof LimitExceededRpcError,
+  ) !== null;
+
 async function guard<T>(run: () => Promise<T>): Promise<T> {
   try {
     return await run();
   } catch (error) {
+    if (!isTransportFailure(error)) throw error;
     throw new LedgerUnreachableError('The Sepolia RPC did not answer', { cause: error });
   }
 }

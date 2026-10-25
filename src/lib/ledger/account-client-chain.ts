@@ -30,7 +30,15 @@ async function lookupAccount(jwk: P256Jwk, salt: bigint): Promise<AccountLookup>
   const query = new URLSearchParams({ x: jwk.x, y: jwk.y, salt: salt.toString() });
   const response = await fetch(`${appBase()}/api/ledger/account?${query}`).catch(() => null);
   if (!response?.ok) {
-    throw new LedgerWriteError('The ledger is busy, try again in a moment', 'account lookup failed');
+    // A 4xx means this device's key was refused; anything else is the server's fault. Calling both
+    // "the ledger is busy" told people to retry a request that could never succeed.
+    const status = response?.status;
+    throw new LedgerWriteError(
+      status !== undefined && status >= 400 && status < 500
+        ? 'This device could not prove its account'
+        : 'The ledger is busy, try again in a moment',
+      `account lookup failed (${status ?? 'no reply'})`,
+    );
   }
   return (await response.json()) as AccountLookup;
 }

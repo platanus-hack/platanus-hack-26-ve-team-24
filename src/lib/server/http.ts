@@ -39,6 +39,8 @@ export async function respond(handler: () => Promise<Response>): Promise<Respons
     if (error instanceof HttpError) {
       return Response.json({ error: error.code, message: error.message }, { status: error.status });
     }
+    // Without this line the cause existed nowhere: the client got a sentence and the server said nothing.
+    console.error('request failed', error);
     return Response.json({ error: 'INTERNAL', message: 'Something went wrong' }, { status: 500 });
   }
 }
