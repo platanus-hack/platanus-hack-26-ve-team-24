@@ -1,6 +1,7 @@
 <div align="center">
 
-<img src="./project-logo.png" alt="Platanus Hack 26 × Constancia" width="180" />
+<img src="./platanus-hack-logo.png" alt="Platanus Hack 26 Caracas" width="180" />
+<img src="./project-logo.png" alt="Constancia logo" width="180" />
 
 # Constancia
 
