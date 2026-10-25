@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  BundlerConfigError,
   BundlerError,
   chainId,
   estimateUserOperationGas,
@@ -62,6 +63,8 @@ export async function POST(request: Request) {
     return reply(id, { result: await handler(params) });
   } catch (error) {
     if (error instanceof BundlerError) return fail(id, error.code, error.message);
+    // The server's env is broken, not the caller's request: say so, and name the variable only.
+    if (error instanceof BundlerConfigError) return fail(id, -32603, error.message);
     if (error instanceof z.ZodError) return fail(id, -32602, 'Invalid params');
     return fail(id, -32603, 'The ledger is busy');
   }

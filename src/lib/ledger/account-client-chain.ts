@@ -36,17 +36,29 @@ async function lookupAccount(jwk: P256Jwk, salt: bigint): Promise<AccountLookup>
 }
 
 // Technical text from the bundler or the EntryPoint becomes a sentence a person can act on.
+// Every EntryPoint error code names a different broken piece; collapsing them into one sentence
+// is what made a missing paymaster deposit look like a rejected application.
 function explain(error: BundlerRpcError): LedgerWriteError {
   const technical = error.message;
-  const human = /AA24|signature/i.test(technical)
-    ? 'Your signing key is not an owner of this account'
-    : /gas price|above the cap/i.test(technical)
-      ? 'The network is expensive right now, try again in a few minutes'
-      : /rate limited/i.test(technical)
-        ? 'Too many requests, wait a moment and try again'
-        : /network error|not confirmed/i.test(technical)
-          ? 'The ledger is busy, try again in a moment'
-          : 'The ledger did not accept that';
+  const human = /AA31|deposit too low/i.test(technical)
+    ? 'The consortium paymaster is out of gas money'
+    : /AA33|reverted/i.test(technical)
+      ? 'The ledger rejected the operation'
+      : /AA21|prefund/i.test(technical)
+        ? 'This account has no funds for gas'
+        : /AA25|nonce/i.test(technical)
+          ? 'Two operations from this device collided'
+          : /AA34|paymaster signature/i.test(technical)
+            ? 'The consortium paymaster rejected this operation'
+            : /AA24|invalid signature|signature error/i.test(technical)
+              ? 'Your signing key is not an owner of this account'
+              : /gas price|above the cap/i.test(technical)
+                ? 'The network is expensive right now, try again in a few minutes'
+                : /rate limited/i.test(technical)
+                  ? 'Too many requests, wait a moment and try again'
+                  : /network error|not confirmed/i.test(technical)
+                    ? 'The ledger is busy, try again in a moment'
+                    : 'The ledger did not accept that';
   return new LedgerWriteError(human, technical);
 }
 

@@ -50,6 +50,16 @@ export class BundlerError extends Error {
   }
 }
 
+/**
+ * The server's own env is wrong, not the request. Kept apart from BundlerError so the route never
+ * reports it as bad params: naming the variable is what makes it fixable without the process env.
+ */
+export class BundlerConfigError extends Error {
+  constructor(readonly variables: string[]) {
+    super(`Bundler is misconfigured: ${variables.join(', ')}`);
+  }
+}
+
 const optional = <T extends z.ZodType>(schema: T) =>
   z.preprocess((value) => (value === '' ? undefined : value), schema.optional());
 const address = z
@@ -101,7 +111,12 @@ type OpStatus =
   | { state: 'submitted'; txHash: Hex; op: Op };
 
 function createContext() {
-  const config = CONFIG_SCHEMA.parse(process.env);
+  const parsed = CONFIG_SCHEMA.safeParse(process.env);
+  if (!parsed.success) {
+    const names = [...new Set(parsed.error.issues.map((issue) => String(issue.path[0] ?? 'environment')))];
+    throw new BundlerConfigError(names);
+  }
+  const config = parsed.data;
   const urls = [config.LEDGER_RPC_URL, config.LEDGER_RPC_URL_BACKUP].filter((url) => url !== undefined);
   const transport = fallback(urls.map((url) => http(url)));
   const relayer = privateKeyToAccount(config.RELAYER_PRIVATE_KEY as Hex);
