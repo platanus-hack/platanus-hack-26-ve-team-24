@@ -47,6 +47,8 @@ next-env.d.ts
 .impeccable/review/
 .impeccable/build/
 demo-pack/
+# backups of the pack hold the same private keys; never let one reach the repo
+demo-pack.bak-*/
 docker/ledger/data/
 contracts/out/
 contracts/lib/
