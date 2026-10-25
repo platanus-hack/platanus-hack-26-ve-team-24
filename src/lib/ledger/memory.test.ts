@@ -5,6 +5,7 @@ import { conformanceCases, type ConformanceWorld } from './conformance';
 import { buildDidDocument, parseDid } from './did';
 import { MemoryLedger } from './memory';
 import { LedgerOpError } from './memory-ops';
+import roster from './members.json';
 
 async function bootWorld(): Promise<ConformanceWorld> {
   let now = 1_800_000_000;
@@ -28,11 +29,12 @@ describe('memory ledger conformance', () => {
 });
 
 describe('memory ledger specifics', () => {
-  test('boots four members and three accredited employers', async () => {
+  test('boots the consortium roster and three accredited employers', async () => {
     const ledger = new MemoryLedger();
     await ledger.seed();
     const state = ledger.state();
-    expect(state.members).toHaveLength(4);
+    expect(state.members).toHaveLength(roster.members.length);
+    expect(state.members).toHaveLength(6);
     expect(state.issuers.map((issuer) => issuer.status)).toEqual(['ACTIVE', 'ACTIVE', 'ACTIVE']);
     expect(state.chainId).toBe(11155111);
     expect(state.blockTimeSec).toBe(12);

@@ -33,12 +33,16 @@ contract Ledger {
     event IssuerApplied(address indexed issuer, string name);
     event IssuerApproved(address indexed issuer, address indexed member, uint8 approvals);
     event IssuerAccredited(address indexed issuer);
+    // DEMO ONLY: written instead of IssuerApproved when the demo admin stands in for the quorum,
+    // so an audit can tell a real member vote apart from an administrative shortcut.
+    event IssuerDemoAccredited(address indexed issuer, address indexed admin);
     event IssuerSuspended(address indexed issuer);
     event CredentialAnchored(address indexed issuer, bytes32 indexed credentialHash, bytes32 keyId);
     event CredentialRevoked(address indexed issuer, bytes32 indexed credentialHash);
 
     error BadConsortium();
     error NotMember();
+    error NotDemoAdmin();
     error BadName();
     error WrongStatus();
     error AlreadyVoted();
@@ -54,6 +58,10 @@ contract Ledger {
     string[] private memberNames;
     mapping(address => bool) private isMember;
     uint8 public immutable quorum;
+    // DEMO ONLY. One address that may accredit an employer without a member quorum, so a single
+    // visitor can walk the whole flow. It is a deliberate hole in the trust model: on a real
+    // consortium this should not exist. See demoAccredit().
+    address public immutable demoAdmin;
 
     mapping(address => Issuer) private issuers;
     address[] private issuerAccounts;
@@ -62,9 +70,10 @@ contract Ledger {
     mapping(address issuer => uint8) private suspensions;
     mapping(address issuer => mapping(bytes32 credentialHash => Record)) private records;
 
-    constructor(address[] memory accounts, string[] memory names, uint8 quorum_) {
+    constructor(address[] memory accounts, string[] memory names, uint8 quorum_, address demoAdmin_) {
         if (accounts.length == 0 || accounts.length != names.length) revert BadConsortium();
         if (quorum_ == 0 || quorum_ > accounts.length) revert BadConsortium();
+        if (demoAdmin_ == address(0)) revert BadConsortium();
         for (uint256 i = 0; i < accounts.length; i++) {
             if (accounts[i] == address(0) || isMember[accounts[i]]) revert BadConsortium();
             isMember[accounts[i]] = true;
@@ -72,6 +81,7 @@ contract Ledger {
         memberAccounts = accounts;
         memberNames = names;
         quorum = quorum_;
+        demoAdmin = demoAdmin_;
     }
 
     modifier onlyMember() {
@@ -105,6 +115,22 @@ contract Ledger {
             issuer.accreditedAt = uint64(block.timestamp);
             emit IssuerAccredited(account);
         }
+    }
+
+    // DEMO ONLY. The admin accredits directly, standing in for the quorum so one visitor can finish
+    // the flow alone. It does not fabricate member votes: approvedBy stays untouched, no
+    // IssuerApproved or IssuerAccredited is emitted, and IssuerDemoAccredited names the admin
+    // instead. approvals is set to quorum only so the public counters agree with the status.
+    // Remove this function, the demoAdmin field and the constructor argument before any release
+    // whose consortium is real.
+    function demoAccredit(address account) external {
+        if (msg.sender != demoAdmin) revert NotDemoAdmin();
+        Issuer storage issuer = issuers[account];
+        if (issuer.status != Status.PENDING) revert WrongStatus();
+        issuer.approvals = quorum;
+        issuer.status = Status.ACTIVE;
+        issuer.accreditedAt = uint64(block.timestamp);
+        emit IssuerDemoAccredited(account, msg.sender);
     }
 
     function suspend(address account) external onlyMember {

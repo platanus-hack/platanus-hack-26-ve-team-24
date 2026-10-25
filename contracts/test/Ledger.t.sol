@@ -7,6 +7,7 @@ import {ConsortiumAccount} from "../ConsortiumAccount.sol";
 
 contract LedgerTest is Test {
     Ledger private ledger;
+    address private constant DEMO_ADMIN = address(0xD3A0);
     address[] private memberList;
     ConsortiumAccount private employer;
     bytes32 private employerKey;
@@ -19,7 +20,7 @@ contract LedgerTest is Test {
             memberList.push(address(uint160(0x100 + i)));
             names[i] = "Member";
         }
-        ledger = new Ledger(memberList, names, 2);
+        ledger = new Ledger(memberList, names, 2, DEMO_ADMIN);
         (employer, employerKey) = _account(0xA1);
         secondKey = _addSecondKey(employer, 0xA2);
     }
@@ -85,6 +86,31 @@ contract LedgerTest is Test {
         vm.prank(memberList[0]);
         vm.expectRevert(Ledger.WrongStatus.selector);
         ledger.approve(address(0xDEAD));
+    }
+
+    // DEMO ONLY: the admin stands in for the quorum, and the event says so.
+    function test_demoAdminAccreditsA_PENDING_issuerAlone() public {
+        vm.prank(address(employer));
+        ledger.applyForAccreditation("Orinoco Logistics (demo)");
+        vm.prank(DEMO_ADMIN);
+        ledger.demoAccredit(address(employer));
+        Ledger.Issuer memory issuer = ledger.issuerOf(address(employer));
+        assertEq(uint8(issuer.status), uint8(Ledger.Status.ACTIVE));
+        assertEq(issuer.approvals, 2);
+    }
+
+    function test_onlyTheDemoAdminCanUseTheShortcut() public {
+        vm.prank(address(employer));
+        ledger.applyForAccreditation("Orinoco Logistics (demo)");
+        vm.prank(memberList[0]);
+        vm.expectRevert(Ledger.NotDemoAdmin.selector);
+        ledger.demoAccredit(address(employer));
+    }
+
+    function test_theShortcutNeedsAPendingIssuer() public {
+        vm.prank(DEMO_ADMIN);
+        vm.expectRevert(Ledger.WrongStatus.selector);
+        ledger.demoAccredit(address(employer));
     }
 
     function test_applyingTwiceOrWithABadNameReverts() public {
@@ -211,10 +237,12 @@ contract LedgerTest is Test {
         address[] memory accounts = new address[](1);
         accounts[0] = address(1);
         vm.expectRevert(Ledger.BadConsortium.selector);
-        new Ledger(accounts, names, 2);
+        new Ledger(accounts, names, 2, DEMO_ADMIN);
         vm.expectRevert(Ledger.BadConsortium.selector);
-        new Ledger(accounts, names, 0);
+        new Ledger(accounts, names, 0, DEMO_ADMIN);
         vm.expectRevert(Ledger.BadConsortium.selector);
-        new Ledger(accounts, new string[](2), 1);
+        new Ledger(accounts, new string[](2), 1, DEMO_ADMIN);
+        vm.expectRevert(Ledger.BadConsortium.selector);
+        new Ledger(accounts, names, 1, address(0));
     }
 }

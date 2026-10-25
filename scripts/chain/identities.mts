@@ -3,12 +3,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 // Demo identities as extractable P-256 private JWKs (only seed scripts and tests ever hold these).
 // demo-pack/ is gitignored. The file is never overwritten: the deployed Ledger depends on it.
 const FILE = 'demo-pack/identities.json';
-const MEMBER_NAMES = [
-  'Cámara Nacional de Comercio e Industria',
-  'Banco Meridiano',
-  'Instituto Andino de Formación Profesional',
-  'Servicio Nacional de Registro Laboral',
-];
+const MEMBER_NAMES = ['Yuumy Cachea', 'Render', 'Anthropic'];
 const EMPLOYER_NAMES = ['Logística Orinoco, C.A.', 'Cafés del Tepuy, C.A.', 'Astilleros del Lago, C.A.'];
 
 async function newPrivateJwk() {

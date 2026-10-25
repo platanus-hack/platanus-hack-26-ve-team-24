@@ -20,6 +20,12 @@ const MEMBER_PREFIX = 'member:';
 
 type Action = 'approve' | 'suspend';
 
+interface DemoAccreditResult {
+  approvals: number;
+  quorum: number;
+  admin: { txHash: string; blockNumber: number };
+}
+
 function ConsoleSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="border-t-4 border-ink pt-4">
@@ -60,7 +66,9 @@ export function OperatorConsole() {
   const [member, setMember] = useState('');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<TxResult | null>(null);
+  const [demoVotes, setDemoVotes] = useState<DemoAccreditResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === '1';
 
   useEffect(() => {
     async function loadMembers() {
@@ -79,6 +87,7 @@ export function OperatorConsole() {
   async function run(action: Action, issuer: Address) {
     setBusy(true);
     setResult(null);
+    setDemoVotes(null);
     setError(null);
     try {
       const signer = await loadSigner(member);
@@ -100,17 +109,54 @@ export function OperatorConsole() {
   const pending = issuers.filter((issuer) => issuer.status === 'PENDING');
   const active = issuers.filter((issuer) => issuer.status === 'ACTIVE');
   const locked = busy || !member;
+  // The demo path needs no keys at all: the route signs with the consortium's hardcoded demo keys.
+  const demoAvailable = demoMode && names.length === 0;
+
+  async function runDemoVote(issuer: Address) {
+    setBusy(true);
+    setResult(null);
+    setDemoVotes(null);
+    setError(null);
+    try {
+      const response = await fetch('/api/demo/consortium/accredit', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ issuer }),
+      });
+      const body = (await response.json()) as DemoAccreditResult & { message?: string };
+      if (!response.ok) throw new Error(body.message ?? 'La votación de demostración falló');
+      setDemoVotes({ approvals: body.approvals, quorum: body.quorum, admin: body.admin });
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'La votación de demostración falló');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="mt-12 flex flex-col gap-12">
       {names.length === 0 ? (
-        <p className="text-body">
-          No hay claves de miembros en este dispositivo. Impórtalas desde{' '}
-          <Link href="/dev/identity" className="font-bold">
-            Identidades de demostración
-          </Link>
-          .
-        </p>
+        demoMode ? (
+          <p className="max-w-[65ch] text-body">
+            Este dispositivo no tiene claves de miembro, así que la votación se simula:{' '}
+            <strong>un admin de demostración acredita directamente</strong>, sin esperar quórum,
+            porque los miembros del consorcio son ficticios. La transacción es real y el contrato la
+            registra como <code>IssuerDemoAccredited</code>. Si prefieres firmar tú como miembro,
+            importa las identidades desde{' '}
+            <Link href="/dev/identity" className="font-bold">
+              Identidades de demostración
+            </Link>
+            .
+          </p>
+        ) : (
+          <p className="text-body">
+            No hay claves de miembros en este dispositivo. Impórtalas desde{' '}
+            <Link href="/dev/identity" className="font-bold">
+              Identidades de demostración
+            </Link>
+            .
+          </p>
+        )
       ) : (
         <Field label="Miembro">
           <select
@@ -149,14 +195,25 @@ export function OperatorConsole() {
               <span className="tnum text-small">
                 {issuer.approvals}/{issuer.quorum} aprobaciones
               </span>
-              <Button
-                disabled={locked}
-                onClick={() => {
-                  void run('approve', issuer.account);
-                }}
-              >
-                Aprobar
-              </Button>
+              {demoAvailable ? (
+                <Button
+                  disabled={busy}
+                  onClick={() => {
+                    void runDemoVote(issuer.account);
+                  }}
+                >
+                  Acreditar (admin demo)
+                </Button>
+              ) : (
+                <Button
+                  disabled={locked}
+                  onClick={() => {
+                    void run('approve', issuer.account);
+                  }}
+                >
+                  Aprobar
+                </Button>
+              )}
             </>
           )}
         />
@@ -191,6 +248,34 @@ export function OperatorConsole() {
         <div role="alert" className="flex items-start gap-4 border-4 border-fail p-4">
           <Chip status="FAILED" />
           <p className="font-bold text-fail">{error}</p>
+        </div>
+      ) : null}
+
+      {demoVotes ? (
+        <div className="flex flex-col gap-4">
+          <CheckList title="Votación simulada (demo)">
+            <CheckRow
+              index={1}
+              label="Acreditado por el admin de demo"
+              status="DONE"
+              measured={formatBlock(demoVotes.admin.blockNumber)}
+            />
+            <CheckRow
+              index={2}
+              label="Aprobaciones"
+              status="DONE"
+              measured={`${demoVotes.approvals}/${demoVotes.quorum}`}
+            />
+            <CheckRow index={3} label="Costo" status="DONE" measured="lo paga el relayer" />
+          </CheckList>
+          <Disclosure summary="Detalles técnicos">
+            <dl className="grid grid-cols-[auto_1fr] items-center gap-x-6 gap-y-2">
+              <dt className="font-bold">Transacción</dt>
+              <dd>
+                <Mono value={demoVotes.admin.txHash} shorten copy />
+              </dd>
+            </dl>
+          </Disclosure>
         </div>
       ) : null}
 

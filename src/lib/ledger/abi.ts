@@ -324,6 +324,11 @@ export const ledgerAbi = [
         "internalType": "uint8",
         "name": "quorum_",
         "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "demoAdmin_",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -362,6 +367,11 @@ export const ledgerAbi = [
   {
     "inputs": [],
     "name": "NotAnAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotDemoAdmin",
     "type": "error"
   },
   {
@@ -488,6 +498,25 @@ export const ledgerAbi = [
         "internalType": "address",
         "name": "issuer",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "admin",
+        "type": "address"
+      }
+    ],
+    "name": "IssuerDemoAccredited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "issuer",
+        "type": "address"
       }
     ],
     "name": "IssuerSuspended",
@@ -535,6 +564,32 @@ export const ledgerAbi = [
     "name": "approve",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "demoAccredit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "demoAdmin",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

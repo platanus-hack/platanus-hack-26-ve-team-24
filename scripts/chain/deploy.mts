@@ -29,7 +29,12 @@ if (!addresses.ledger) {
       });
     }),
   );
-  const { address, block } = await deployArtifact('Ledger', [accounts, members.map((m) => m.name), QUORUM]);
+  const { address, block } = await deployArtifact('Ledger', [
+    accounts,
+    members.map((m) => m.name),
+    QUORUM,
+    relayer().address,
+  ]);
   addresses.ledger = address;
   addresses.ledgerDeployBlock = block;
   saveAddresses(addresses);

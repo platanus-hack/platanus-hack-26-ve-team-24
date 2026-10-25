@@ -1,10 +1,16 @@
 {
   "quorum": 2,
   "members": [
-    "Cámara Nacional de Comercio e Industria",
-    "Banco Meridiano",
-    "Instituto Andino de Formación Profesional",
-    "Servicio Nacional de Registro Laboral"
+    "Cashea",
+    "Anthropic",
+    "Vercel",
+    "Yuumy",
+    "Platanus",
+    "Supabase"
   ],
-  "employers": ["Logística Orinoco, C.A.", "Cafés del Tepuy, C.A.", "Astilleros del Lago, C.A."]
+  "employers": [
+    "Logística Orinoco, C.A.",
+    "Cafés del Tepuy, C.A.",
+    "Astilleros del Lago, C.A."
+  ]
 }
