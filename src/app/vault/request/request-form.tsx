@@ -53,7 +53,13 @@ export function RequestForm() {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-6" noValidate>
+    <form
+      onSubmit={(event) => {
+        void submit(event);
+      }}
+      className="flex flex-col gap-6"
+      noValidate
+    >
       <Field label="Employer" error={errors.employer}>
         <select
           value={employer}
