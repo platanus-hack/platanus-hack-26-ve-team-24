@@ -42,7 +42,7 @@ export async function makeSample(): Promise<{ input: LoadedInput; lookup: Lookup
     credential: issued.sdJwt,
     holder: holder.signer,
     reveal: REVEAL_TEMPLATES.income,
-    aud: 'Banco Demo',
+    aud: 'Banco Meridiano',
     ttlSec: 3600,
   });
 

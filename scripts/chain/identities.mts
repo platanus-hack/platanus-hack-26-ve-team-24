@@ -4,12 +4,12 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 // demo-pack/ is gitignored. The file is never overwritten: the deployed Ledger depends on it.
 const FILE = 'demo-pack/identities.json';
 const MEMBER_NAMES = [
-  'Chamber of Commerce (demo)',
-  'Banco Demo',
-  'Universidad Demo',
-  'Ministry of Labour (demo)',
+  'Cámara Nacional de Comercio e Industria',
+  'Banco Meridiano',
+  'Instituto Andino de Formación Profesional',
+  'Servicio Nacional de Registro Laboral',
 ];
-const EMPLOYER_NAMES = ['Orinoco Logistics (demo)', 'Tepuy Coffee (demo)', 'Lago Shipyards (demo)'];
+const EMPLOYER_NAMES = ['Logística Orinoco, C.A.', 'Cafés del Tepuy, C.A.', 'Astilleros del Lago, C.A.'];
 
 async function newPrivateJwk() {
   const pair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign']);

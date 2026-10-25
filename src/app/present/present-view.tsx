@@ -156,7 +156,7 @@ export function PresentView() {
           <div className="flex flex-col gap-6">
             <Field
               label="¿Para quién es?"
-              hint="Un nombre que verá quien lo reciba, por ejemplo Banco Demo."
+              hint="Un nombre que verá quien lo reciba, por ejemplo Banco Meridiano."
             >
               <input
                 value={aud}

@@ -28,7 +28,7 @@ const CREDENTIAL_ID = '0x3f9a1c7e0b2d4a685c1e8b7a9d3f0e26a4b9c2d1e7f086351d6e3b9
 const TIMELINE: TimelineItem[] = [
   {
     id: 'a',
-    employer: 'Logística Orinoco (demo)',
+    employer: 'Logística Orinoco, C.A.',
     title: 'Analista (ficticio)',
     start: '2021-03',
     end: '2023-08',
@@ -36,7 +36,7 @@ const TIMELINE: TimelineItem[] = [
   },
   {
     id: 'c',
-    employer: 'Café Tepuy (demo)',
+    employer: 'Cafés del Tepuy, C.A.',
     title: 'Asistente (ficticio)',
     start: '2022-06',
     end: '2023-10',
@@ -45,7 +45,7 @@ const TIMELINE: TimelineItem[] = [
   },
   {
     id: 'b',
-    employer: 'Astilleros del Lago (demo)',
+    employer: 'Astilleros del Lago, C.A.',
     title: 'Coordinadora (ficticio)',
     start: '2024-01',
     end: 'present',
@@ -213,7 +213,7 @@ export default function KitPage() {
             title="Lo que guardamos"
             rows={[
               { label: 'ID de la constancia', value: CREDENTIAL_ID, mono: true },
-              { label: 'Empleador', value: 'Logística Orinoco (empleador ficticio)' },
+              { label: 'Empleador', value: 'Logística Orinoco, C.A. (empleador ficticio)' },
               { label: 'Huella', value: '0x9c41…7e2a (ejemplo)', mono: true },
               { label: 'Fecha', value: '24-10-2026 14:32 UTC' },
             ]}

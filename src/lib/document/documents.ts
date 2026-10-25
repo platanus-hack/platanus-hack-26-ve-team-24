@@ -3,7 +3,7 @@ import { decodePresentation, REVEAL_TEMPLATES } from '../credential/present';
 import type { IssuedCredential } from '../credential/sdjwt';
 import type { DisclosedClaims, P256PrivateJwk } from '../credential/types';
 import { CLAIM_LABELS, formatClaim } from '../vault/claims';
-import { buildHistoryPdf, buildSheetPdf, type HistoryEntry, type SheetRow } from './pdf';
+import { buildHistoryPdf, buildLetterPdf, buildSheetPdf, type HistoryEntry, type SheetRow } from './pdf';
 
 export const subjectOf = (claims: DisclosedClaims): string | undefined => {
   const name = [claims.givenName, claims.familyName].filter(Boolean).join(' ');
@@ -28,6 +28,37 @@ function rowsOf(claims: DisclosedClaims, hidden: 'bar' | 'omit'): SheetRow[] {
   return rows;
 }
 
+const MODALITY: Record<string, string> = {
+  FULL_TIME: 'a tiempo completo',
+  PART_TIME: 'a medio tiempo',
+  CONTRACT: 'por contrato',
+};
+
+const longDate = (iso: string | Date): string =>
+  new Date(iso).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+const countryName = (code: string): string =>
+  new Intl.DisplayNames(['es'], { type: 'region' }).of(code) ?? code;
+
+/** The letter's prose, from the claims. Present tense while the person is still employed. */
+function letterText(claims: DisclosedClaims, issuerName: string, issuedOn: string) {
+  const current = claims.employedNow === true;
+  const start = longDate(String(claims.startDate));
+  const period = claims.endDate === undefined ? `desde el ${start} y a la fecha continúa en funciones` : `desde el ${start} hasta el ${longDate(String(claims.endDate))}`;
+  const department = claims.department === undefined ? '' : `, adscrito al departamento de ${String(claims.department)}`;
+  const salary =
+    claims.salaryMonthlyUsd === undefined
+      ? ''
+      : ` Su remuneración mensual ${current ? 'es' : 'fue'} de USD ${String(claims.salaryMonthlyUsd)}.`;
+  return {
+    intro: `Por medio de la presente, ${issuerName} hace constar que:`,
+    paragraphs: [
+      `${current ? 'Presta' : 'Prestó'} servicios en esta organización ${period}. En ese tiempo ${current ? 'se desempeña' : 'se desempeñó'} en el cargo de ${String(claims.jobTitle)}${department}, ${MODALITY[String(claims.employmentType)] ?? ''}, con sede de trabajo en ${countryName(String(claims.workCountry))}.${salary}`,
+      `Se expide la presente constancia a solicitud de la parte interesada, el ${issuedOn}. Su autenticidad se comprueba en línea cargando este archivo en la página de verificación de Constancia: la emisión quedó registrada en el consorcio de acreditación.`,
+    ],
+  };
+}
+
 export function credentialPdf(args: {
   credential: IssuedCredential;
   holderKey: P256PrivateJwk;
@@ -35,16 +66,28 @@ export function credentialPdf(args: {
 }): Promise<Uint8Array> {
   const { credential, holderKey, issuerName } = args;
   const { claims } = credential;
-  return buildSheetPdf(
+  const issuedOn = longDate(new Date());
+  const text = letterText(claims, issuerName, issuedOn);
+  return buildLetterPdf(
     {
-      kicker: 'Credencial verificable · SD-JWT VC · W3C VC 2.0',
-      title: 'Constancia de trabajo',
-      subject: subjectOf(claims),
       issuer: { name: issuerName, did: credential.did },
-      rows: rowsOf(claims, 'omit'),
-      notes: [
-        'Este archivo contiene todos los datos. Quien lo tenga puede elegir cuáles mostrar a un tercero con la página Compartir, sin que el resto salga del archivo.',
+      reference: credential.credentialHash.slice(2, 12),
+      issuedOn,
+      title: 'Constancia de trabajo',
+      intro: text.intro,
+      subject: {
+        name: subjectOf(claims) ?? 'Titular',
+        detail: `Cédula de identidad ${String(claims.nationalId)}`,
+      },
+      paragraphs: text.paragraphs,
+      facts: [
+        { label: 'Cargo', value: String(claims.jobTitle) },
+        { label: 'Ingreso', value: longDate(String(claims.startDate)) },
+        { label: 'Egreso', value: claims.endDate === undefined ? 'En funciones' : longDate(String(claims.endDate)) },
+        { label: 'Modalidad', value: formatClaim(claims.employmentType) },
       ],
+      signer: { name: issuerName, detail: `Clave ES256 ${credential.keyId.slice(0, 10)}…${credential.keyId.slice(-4)}` },
+      seal: ['Verificable', 'en línea', 'Cargue este PDF en', 'la página Verificar'],
       footer: [
         `huella  ${credential.credentialHash}`,
         `clave   ${credential.keyId}`,
