@@ -11,6 +11,7 @@ import { setHandoffFile, takeHandoffFile } from '@/lib/handoff';
 import type { LookupFn } from '@/lib/credential/verify';
 import { makeSample } from '../_lib/fixture';
 import {
+  FULL_FILE_AUD,
   fetchShareText,
   InputError,
   inputFromText,
@@ -19,7 +20,7 @@ import {
 } from '../_lib/load-input';
 import type { LoadedInput, RowView } from '../_lib/types';
 import { useVerification } from '../_lib/use-verification';
-import { statusesOf, visibleRows } from '../_lib/verdict-copy';
+import { statusesOf } from '../_lib/verdict-copy';
 import { CvView } from './cv-view';
 import { ReceiptPanel } from './receipt-panel';
 import { SealLayout } from './seal-layout';
@@ -170,7 +171,7 @@ export function VerifyView() {
           {liveMessage(rows)}
         </p>
         <CheckList>
-          {visibleRows(rows).map((row, index) => (
+          {rows.map((row, index) => (
             <CheckRow
               key={row.code}
               index={index + 1}
@@ -200,7 +201,7 @@ export function VerifyView() {
             claims={verdict.kind === 'AUTHENTIC' ? verdict.claims : null}
           />
         ) : null}
-        {verdict?.kind === 'AUTHENTIC' && !verdict.keyBound && file.current ? (
+        {verdict?.kind === 'AUTHENTIC' && decoded?.keyBinding?.payload.aud === FULL_FILE_AUD && file.current ? (
           <Panel title="Esta es la constancia completa">
             <p className="mb-6 max-w-[65ch] text-body">
               El PDF trae todos los datos. Para mostrar a un tercero solo una parte y que aun así

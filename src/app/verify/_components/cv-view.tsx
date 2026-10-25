@@ -9,7 +9,7 @@ import { Verdict as VerdictBand } from '@/components/ui/verdict';
 import type { CareerTimeline, CvVerdict } from '@/lib/credential/passport';
 import { useCvVerification } from '../_lib/use-cv-verification';
 import type { LoadedInput, RowView } from '../_lib/types';
-import { failureReason, statusesOf, visibleRows, unavailableReason, VERDICT_TITLE } from '../_lib/verdict-copy';
+import { failureReason, statusesOf, unavailableReason, VERDICT_TITLE } from '../_lib/verdict-copy';
 import { ReceiptPanel } from './receipt-panel';
 import { SealLayout } from './seal-layout';
 import { IssuerPanel, VerdictActions } from './verdict-panel';
@@ -76,7 +76,7 @@ export function CvView({ input, onReset }: { input: LoadedInput; onReset: () => 
                 summary={`Constancia ${index + 1}${entry ? ` · ${entry.issuer.name}` : ''}`}
               >
                 <CheckList>
-                  {visibleRows(rows).map((row, rowIndex) => (
+                  {rows.map((row, rowIndex) => (
                     <CheckRow
                       key={row.code}
                       index={rowIndex + 1}

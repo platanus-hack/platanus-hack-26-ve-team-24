@@ -1,3 +1,4 @@
+import type { P256PrivateJwk } from '@/lib/credential/types';
 import { MAX_INPUT_BYTES, type InputKind, type InputOrigin, type LoadedInput } from './types';
 
 export class InputError extends Error {}
@@ -12,6 +13,9 @@ const NOT_A_CONSTANCIA = 'Este PDF no trae una constancia: no tiene el token fir
 
 const SHARE_FRAGMENT = /^s=([0-9a-f]{32})\.([A-Za-z0-9_-]{43})$/;
 const CV_TYPE = 'constancia-cv';
+
+/** Audience of the presentation the verifier makes from a full credential file. */
+export const FULL_FILE_AUD = 'Archivo completo';
 
 export function parseShareFragment(hash: string): { id: string; key: string } | null {
   const match = SHARE_FRAGMENT.exec(hash.replace(/^#/, ''));
@@ -44,6 +48,28 @@ export async function fetchShareText(id: string, key: string): Promise<string> {
   }
 }
 
+/**
+ * A credential file carries its holder key, so the verifier presents the whole credential with it.
+ * That way the Titular check really runs: the signature must come from the key the credential names.
+ */
+async function presentWholeFile(sdJwt: string, holderKey: P256PrivateJwk): Promise<string> {
+  const [{ signerFromPrivateJwk }, { presentCredential, REVEAL_TEMPLATES }] = await Promise.all([
+    import('@/lib/credential/keys'),
+    import('@/lib/credential/present'),
+  ]);
+  try {
+    return await presentCredential({
+      credential: sdJwt,
+      holder: await signerFromPrivateJwk(holderKey),
+      reveal: REVEAL_TEMPLATES.full,
+      aud: FULL_FILE_AUD,
+      ttlSec: 300,
+    });
+  } catch {
+    return sdJwt; // unreadable: the checks report what is wrong with it
+  }
+}
+
 /** Text files are read as they are; a PDF gives up the signed token it carries. */
 export async function readInputFile(file: File): Promise<string> {
   if (file.size > MAX_INPUT_BYTES) throw new InputError(TOO_LARGE);
@@ -52,7 +78,7 @@ export async function readInputFile(file: File): Promise<string> {
   if (isPdf(bytes)) {
     const payload = await readPdfPayload(bytes);
     if (!payload) throw new InputError(NOT_A_CONSTANCIA);
-    if (payload.type === 'credential') return payload.sdJwt;
+    if (payload.type === 'credential') return presentWholeFile(payload.sdJwt, payload.holderKey);
     return payload.type === 'presentation' ? payload.presentation : payload.cv;
   }
   return new TextDecoder().decode(bytes);

@@ -9,6 +9,7 @@ import type { Address, ClaimName, EmploymentRecord } from '../credential/types';
 import { verifyCertificate, verifyPresentation, type LookupFn } from '../credential/verify';
 import { runIssue, type IssueDeps } from '../employer/issue';
 import { drainVerdict } from '../vault/drain-verdict';
+import { readInputFile } from '../../app/verify/_lib/load-input';
 import { readCredentialFile } from './credential-file';
 import { credentialPdf, presentationPdf } from './documents';
 import { buildHistory, checkSamePerson } from './join';
@@ -95,6 +96,17 @@ describe('the demo flow', () => {
       expect(full.hiddenCount).toBe(0);
       expect(full.claims.salaryMonthlyUsd).toBe(850);
     }
+
+    // the verifier page reads the full file with its own key, so the Titular check really runs
+    const fileRun = verifyPresentation(await readInputFile(first), { lookup });
+    const statuses: Record<string, string> = {};
+    let fileStep = await fileRun.next();
+    while (!fileStep.done) {
+      statuses[fileStep.value.code] = fileStep.value.status;
+      fileStep = await fileRun.next();
+    }
+    expect(fileStep.value.kind).toBe('AUTHENTIC');
+    expect(statuses.HOLDER).toBe('VERIFIED');
 
     // 3: selective disclosure: only the salary band and employment dates
     const reveal: ClaimName[] = ['salaryBand', 'startDate', 'endDate', 'employedNow'];
