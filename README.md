@@ -74,8 +74,7 @@ so an employer cannot deny what it issued, and the holder cannot splice a job in
 - **Ledger:** a consortium contract with members and quorum, deployed on public Sepolia; stores the
   hash, the issuer and the signing key id, never personal data. Sepolia stands in for a permissioned
   consortium network we could not host on Render.
-- **Accounts:** ERC-4337 accounts controlled by P-256 device keys; a consortium sponsor wallet pays
-  all gas through a paymaster.
+- **Accounts:** ERC-4337 accounts controlled by P-256 device keys
 - **Server:** a blind mailbox (ciphertext, public keys, an opaque employee number) on Postgres.
 - **Verifier:** all five checks run in the browser, and the share key never leaves the URL fragment.
 
