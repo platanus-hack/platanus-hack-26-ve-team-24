@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { AttachRegion } from '@/components/ui/attach-region';
 import { Button } from '@/components/ui/button';
 import { ClaimList } from '@/components/ui/claim-list';
 import { DropZone } from '@/components/ui/drop-zone';
@@ -106,7 +107,7 @@ export function PresentView() {
 
   if (!credential) {
     return (
-      <div className="flex max-w-3xl flex-col gap-6">
+      <AttachRegion>
         <DropZone
           accept=".pdf"
           onFile={(file) => void load(file)}
@@ -114,7 +115,7 @@ export function PresentView() {
           hint="Es el archivo que te dio tu empleador. No sale de tu navegador."
         />
         {error && <ErrorText>{error}</ErrorText>}
-      </div>
+      </AttachRegion>
     );
   }
 
@@ -147,7 +148,7 @@ export function PresentView() {
             }}
           />
           {revealsIdentity(reveal) && (
-            <p role="status" className="mt-4 font-bold">
+            <p role="status" className="mt-4 border-2 border-ink bg-marigold p-4 font-bold">
               Vas a mostrar tu cédula. Quien la reciba podrá ligar esta constancia contigo.
             </p>
           )}

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { AttachRegion } from '@/components/ui/attach-region';
 import { Button } from '@/components/ui/button';
 import { Chip, type RowStatus } from '@/components/ui/check-list';
 import { ClaimList } from '@/components/ui/claim-list';
@@ -118,7 +119,7 @@ export function JoinView() {
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="max-w-3xl">
+      <AttachRegion>
         <DropZone
           accept=".pdf"
           multiple
@@ -126,7 +127,7 @@ export function JoinView() {
           label={rows.length === 0 ? 'Suelta los PDF de tus constancias' : 'Suelta más constancias'}
           hint="Son los archivos que emitieron tus empleadores. No salen de tu navegador."
         />
-      </div>
+      </AttachRegion>
       {problems.map((problem) => (
         <ErrorText key={problem}>{problem}</ErrorText>
       ))}
