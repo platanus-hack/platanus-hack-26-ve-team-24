@@ -29,8 +29,23 @@ function RequestCard({
   request: PendingRequest;
   person: DirectoryEntry | undefined;
   now: number;
-  onDecline: () => void;
+  onDecline: () => Promise<void>;
 }) {
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function decline() {
+    setBusy(true);
+    setError(null);
+    try {
+      await onDecline();
+    } catch {
+      setError('This request could not be declined. Check your connection and try again.');
+      setBusy(false);
+    }
+  }
+
   return (
     <li className="flex flex-wrap items-center justify-between gap-6 border-t-2 border-ink py-5">
       <div>
@@ -41,12 +56,47 @@ function RequestCard({
           <code>{request.employeeRef}</code> · {request.kind} ·{' '}
           {formatAge(new Date(request.createdAt).getTime() / 1000, now)}
         </p>
+        {error && (
+          <p role="alert" className="mt-2 font-bold text-red-text">
+            {error}
+          </p>
+        )}
       </div>
-      <div className="flex flex-wrap gap-3">
-        <LinkButton href={`/employer/issue/${request.id}`}>Review and issue</LinkButton>
-        <Button variant="secondary" onClick={onDecline}>
-          Decline
-        </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        {confirming ? (
+          <>
+            <p className="text-small font-bold">Decline for good?</p>
+            <Button
+              variant="secondary"
+              disabled={busy}
+              onClick={() => {
+                void decline();
+              }}
+            >
+              {busy ? 'Declining…' : 'Yes, decline'}
+            </Button>
+            <Button
+              variant="quiet"
+              onClick={() => {
+                setConfirming(false);
+              }}
+            >
+              Keep it
+            </Button>
+          </>
+        ) : (
+          <>
+            <LinkButton href={`/employer/issue/${request.id}`}>Review and issue</LinkButton>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setConfirming(true);
+              }}
+            >
+              Decline
+            </Button>
+          </>
+        )}
       </div>
     </li>
   );
@@ -100,8 +150,9 @@ export function RequestInbox() {
           request={request}
           now={now}
           person={directory.find((entry) => entry.employeeRef === request.employeeRef)}
-          onDecline={() => {
-            void declineRequest(request.id).then(refresh).catch(() => undefined);
+          onDecline={async () => {
+            await declineRequest(request.id);
+            await refresh();
           }}
         />
       ))}

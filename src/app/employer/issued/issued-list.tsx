@@ -26,6 +26,8 @@ function statusLabel(status: Status): string {
       return 'Not on the ledger';
     case 'UNKNOWN':
       return 'Ledger not answering';
+    case 'LOADING':
+      return 'Checking…';
     default:
       return 'Checking…';
   }
@@ -40,13 +42,19 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
 
   useEffect(() => {
     let active = true;
-    lookupLedger({ issuer: account, keyId: entry.keyId, credentialHash: entry.credentialHash })
-      .then((response) => {
+    async function load() {
+      try {
+        const response = await lookupLedger({
+          issuer: account,
+          keyId: entry.keyId,
+          credentialHash: entry.credentialHash,
+        });
         if (active) setStatus(certificateStatus(response));
-      })
-      .catch(() => {
+      } catch {
         if (active) setStatus({ kind: 'UNKNOWN' });
-      });
+      }
+    }
+    void load();
     return () => {
       active = false;
     };

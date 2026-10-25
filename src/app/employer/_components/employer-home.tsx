@@ -12,18 +12,32 @@ import { fetchNetworkState } from '@/lib/ledger/gateway-client';
 import type { IssuerInfo } from '@/lib/ledger/types';
 
 const SET_UP = '/employer/onboarding';
+const SET_UP_ANOTHER = '/employer/onboarding?create=1';
+
+type Identities =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'ready'; list: EmployerIdentity[] };
 
 function SignedOut() {
-  const [identities, setIdentities] = useState<EmployerIdentity[] | null>(null);
+  const [identities, setIdentities] = useState<Identities>({ status: 'loading' });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
-    void listIdentities()
-      .then(setIdentities)
-      .catch(() => {
-        setIdentities([]);
-      });
+    let active = true;
+    async function load() {
+      try {
+        const list = await listIdentities();
+        if (active) setIdentities({ status: 'ready', list });
+      } catch {
+        if (active) setIdentities({ status: 'error' });
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   async function enter(identity: EmployerIdentity) {
@@ -38,11 +52,29 @@ function SignedOut() {
     }
   }
 
-  if (identities === null) return <p role="status">Looking for signing keys on this device…</p>;
+  if (identities.status === 'loading') return <p role="status">Looking for signing keys on this device…</p>;
+
+  if (identities.status === 'error') {
+    return (
+      <Panel title="This browser could not read its signing keys">
+        <p className="mb-6 max-w-[65ch] text-body text-ink-muted">
+          That is not the same as having none. Check that this site is allowed to store data, then
+          reload.
+        </p>
+        <Button
+          onClick={() => {
+            window.location.reload();
+          }}
+        >
+          Try again
+        </Button>
+      </Panel>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      {identities.length === 0 ? (
+      {identities.list.length === 0 ? (
         <Panel title="No organization on this device yet">
           <p className="mb-6 max-w-[65ch] text-body text-ink-muted">
             Your signing key is made and kept on this device. There is nothing to remember and no
@@ -53,7 +85,7 @@ function SignedOut() {
       ) : (
         <Panel title="Sign in with this device">
           <ul className="flex flex-col gap-4">
-            {identities.map((identity) => (
+            {identities.list.map((identity) => (
               <li key={identity.signerName} className="flex flex-wrap items-center gap-4">
                 <Button
                   disabled={busy !== null}
@@ -67,7 +99,7 @@ function SignedOut() {
             ))}
           </ul>
           <p className="mt-6 text-small text-ink-muted">
-            <a href={SET_UP} className="font-bold">
+            <a href={SET_UP_ANOTHER} className="font-bold">
               Set up another organization
             </a>
           </p>
@@ -123,11 +155,19 @@ function Readiness({ account, name }: { account: string; name: string }) {
   const [directoryLoaded, setDirectoryLoaded] = useState(false);
 
   useEffect(() => {
-    void listDirectory()
-      .then((entries) => {
-        setDirectoryLoaded(entries.length > 0);
-      })
-      .catch(() => undefined);
+    let active = true;
+    async function load() {
+      try {
+        const entries = await listDirectory();
+        if (active) setDirectoryLoaded(entries.length > 0);
+      } catch {
+        // The row simply stays pending; the directory page reports its own trouble.
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {

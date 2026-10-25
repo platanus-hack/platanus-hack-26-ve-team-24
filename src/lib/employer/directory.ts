@@ -9,7 +9,12 @@ export interface DirectoryEntry {
   record: EmploymentRecord;
 }
 
-export const employeeRefSchema = z.string().trim().min(1).max(40);
+export const employeeRefSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(40)
+  .transform((value) => value.toUpperCase());
 
 export function parseEntry(entry: DirectoryEntry): DirectoryEntry {
   return {
@@ -17,6 +22,9 @@ export function parseEntry(entry: DirectoryEntry): DirectoryEntry {
     record: employmentRecordSchema.parse(entry.record),
   };
 }
+
+/** The directory keys on the upper-cased number, so a lower-case lookup still finds the person. */
+const employeeRefKey = (employeeRef: string): string => employeeRef.trim().toUpperCase();
 
 // Fictional people at a fictional employer.
 export const DEMO_DIRECTORY: DirectoryEntry[] = [
@@ -111,11 +119,14 @@ export async function listDirectory(): Promise<DirectoryEntry[]> {
 }
 
 export async function findEntry(employeeRef: string): Promise<DirectoryEntry | null> {
-  return (await withStore<DirectoryEntry | undefined>('readonly', (store) => store.get(employeeRef))) ?? null;
+  const found = await withStore<DirectoryEntry | undefined>('readonly', (store) =>
+    store.get(employeeRefKey(employeeRef)),
+  );
+  return found ?? null;
 }
 
 export async function removeEntry(employeeRef: string): Promise<void> {
-  await withStore('readwrite', (store) => store.delete(employeeRef));
+  await withStore('readwrite', (store) => store.delete(employeeRefKey(employeeRef)));
 }
 
 export async function loadDemoDirectory(): Promise<void> {

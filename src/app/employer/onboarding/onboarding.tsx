@@ -90,7 +90,11 @@ function ApplyStep({ identity, issuer }: { identity: EmployerIdentity; issuer?: 
       if (!signer) throw new Error('missing signer');
       const client = await createAccountClient({ signer });
       setResult(await client.applyForAccreditation(identity.orgName));
-      await signIn(identity).catch(() => undefined);
+      try {
+        await signIn(identity);
+      } catch {
+        setError('The ledger has your application, but this device could not start a session. Sign in again from this page.');
+      }
     } catch (caught) {
       setError(
         caught instanceof LedgerWriteError
@@ -174,18 +178,29 @@ function useIssuer(account: string | undefined): IssuerInfo | undefined {
   return issuer;
 }
 
+/** Read from the URL on the client: the page itself stays static and prerenderable. */
+const wantsANewOrganization = () =>
+  new URLSearchParams(window.location.search).get('create') === '1';
+
 export function Onboarding() {
   const [identity, setIdentity] = useState<EmployerIdentity | null | undefined>(undefined);
   const issuer = useIssuer(identity?.account);
 
   useEffect(() => {
-    void listIdentities()
-      .then((all) => {
-        setIdentity(all[0] ?? null);
-      })
-      .catch(() => {
-        setIdentity(null);
-      });
+    const createNew = wantsANewOrganization();
+    let active = true;
+    async function load() {
+      try {
+        const all = await listIdentities();
+        if (active) setIdentity(createNew ? null : (all[0] ?? null));
+      } catch {
+        if (active) setIdentity(null);
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (identity === undefined) return <p role="status">Looking for signing keys on this device…</p>;
@@ -204,8 +219,8 @@ export function Onboarding() {
         </>
       )}
       <p className="max-w-[65ch] text-small text-ink-muted">
-        This signing key lives on this device. Add a second device in Team so you cannot lock
-        yourself out.
+        This signing key lives only on this device and there is no backup yet. If you clear this
+        browser, ask the consortium to accredit a new device.
       </p>
     </div>
   );
