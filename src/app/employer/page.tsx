@@ -6,7 +6,7 @@ export default function EmployerPage() {
     <>
       <PageHeader
         title="Empleador"
-        lead="Emite constancias de trabajo que se prueban solas. Tu clave de firma no sale de este dispositivo."
+        lead="Llena el formulario y descarga la constancia en PDF, firmada con la clave de este dispositivo. Quien la reciba la verifica sin llamarte."
       />
       <div className="mt-10">
         <EmployerHome />

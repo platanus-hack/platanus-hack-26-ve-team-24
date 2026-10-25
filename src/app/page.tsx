@@ -23,7 +23,11 @@ const SAMPLE_CLAIMS: ClaimView[] = [
   { name: 'startDate', label: 'Fecha de ingreso', state: 'hidden' },
 ];
 
-const STORED = ['La huella (hash) de cada constancia', 'La cuenta del empleador que la emitió', 'La fecha'];
+const STORED = [
+  'La huella (hash) de cada constancia',
+  'La cuenta del empleador que la emitió',
+  'La fecha',
+];
 const NEVER_STORED = ['Tu nombre', 'Tu salario ni tu cargo', 'La constancia en sí'];
 
 function sealFor(index: number): RowStatus[] {
@@ -32,7 +36,9 @@ function sealFor(index: number): RowStatus[] {
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <h2 className="max-w-[18ch] font-display text-headline font-extrabold text-balance">{children}</h2>
+    <h2 className="max-w-[18ch] font-display text-headline font-extrabold text-balance">
+      {children}
+    </h2>
   );
 }
 
@@ -46,8 +52,8 @@ export default function Home() {
         <section className="border-t-4 border-ink px-gutter pt-24 pb-24">
           <SectionTitle>Cinco comprobaciones, siempre en el mismo orden.</SectionTitle>
           <p className="mt-6 max-w-[60ch] text-lead">
-            Cada una cierra un segmento del sello. Si una falla, el sello queda abierto en ese
-            punto y te dice qué se esperaba y qué se encontró.
+            Cada una cierra un segmento del sello. Si una falla, el sello queda abierto en ese punto
+            y te dice qué se esperaba y qué se encontró.
           </p>
           <ol className="mt-12 border-b-2 border-ink">
             {CHECKS.map((check, index) => (
@@ -74,7 +80,10 @@ export default function Home() {
             </p>
           </div>
           <div className="bg-paper p-6 text-ink">
-            <ClaimList claims={SAMPLE_CLAIMS} caption="Vista del banco · ejemplo con datos ficticios" />
+            <ClaimList
+              claims={SAMPLE_CLAIMS}
+              caption="Vista del banco · ejemplo con datos ficticios"
+            />
           </div>
         </section>
 
@@ -114,12 +123,15 @@ export default function Home() {
 
         <footer className="flex flex-wrap items-center justify-between gap-8 bg-marigold px-gutter py-16">
           <p className="max-w-[20ch] font-display text-headline font-extrabold text-balance">
-            ¿Te enviaron una constancia?
+            ¿Tienes el PDF de una constancia?
           </p>
           <div className="flex flex-wrap gap-4">
             <LinkButton href="/verify">Verificar una constancia</LinkButton>
-            <LinkButton href="/vault" variant="secondary">
-              Abrir mi bóveda
+            <LinkButton href="/present" variant="secondary">
+              Compartir solo una parte
+            </LinkButton>
+            <LinkButton href="/join" variant="secondary">
+              Unificar constancias
             </LinkButton>
           </div>
         </footer>

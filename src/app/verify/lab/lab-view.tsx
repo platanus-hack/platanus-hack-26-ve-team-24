@@ -2,14 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { useVerification } from '@/app/verify/_lib/use-verification';
-import { failureReason, statusesOf, unavailableReason, VERDICT_TITLE } from '@/app/verify/_lib/verdict-copy';
+import {
+  failureReason,
+  statusesOf,
+  unavailableReason,
+  VERDICT_TITLE,
+} from '@/app/verify/_lib/verdict-copy';
 import { SealLayout } from '@/app/verify/_components/seal-layout';
 import { Button, LinkButton } from '@/components/ui/button';
 import { CheckList, CheckRow } from '@/components/ui/check-list';
 import { Verdict } from '@/components/ui/verdict';
 import { ATTACK_TITLES, runAttack, type AttackId, type Sample } from '@/lib/credential/attacks';
 import type { Verdict as VerdictResult } from '@/lib/credential/verify';
-import { downloadText } from '@/lib/vault/certificate-info';
+import { downloadText } from '@/lib/document/download';
 import { ATTACK_CARDS, presentOriginal } from '@/lib/vault/lab';
 import { loadSample } from '@/lib/vault/lab-sample';
 
@@ -27,7 +32,13 @@ function reasonOf(verdict: VerdictResult): string {
   return 'Pasa las cinco comprobaciones.';
 }
 
-function Result({ run, verification }: { run: Run; verification: ReturnType<typeof useVerification> }) {
+function Result({
+  run,
+  verification,
+}: {
+  run: Run;
+  verification: ReturnType<typeof useVerification>;
+}) {
   const { rows, verdict } = verification;
   const statuses = statusesOf(rows);
   return (

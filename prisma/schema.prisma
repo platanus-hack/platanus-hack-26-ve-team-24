@@ -7,28 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum RequestStatus {
-  PENDING
-  ISSUED
-  DECLINED
-  EXPIRED
-}
-
-model CertRequest {
-  id          String        @id
-  employer    String
-  employeeRef String
-  kind        String
-  signJwk     Json
-  encJwk      Json
-  status      RequestStatus @default(PENDING)
-  deliveryJwe String?
-  createdAt   DateTime      @default(now())
-  expiresAt   DateTime
-
-  @@index([employer, status])
-}
-
 model Share {
   id         String   @id
   ciphertext String

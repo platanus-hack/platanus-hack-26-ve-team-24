@@ -65,7 +65,16 @@ export function useVerification() {
     };
 
     const { verifyPresentation } = await import('@/lib/credential/verify');
-    const generator = verifyPresentation(input.text, { lookup });
+    const { decodePresentation } = await import('@/lib/credential/present');
+    // The full credential (a PDF straight from the employer) has no holder signature: that check is
+    // reported as not examined. A presentation that carries one must pass it.
+    let requireKeyBinding = true;
+    try {
+      requireKeyBinding = decodePresentation(input.text).keyBinding !== null;
+    } catch {
+      // the token check reports it
+    }
+    const generator = verifyPresentation(input.text, { lookup, requireKeyBinding });
     let checkingSince = 0;
     let step = await generator.next();
     while (!step.done) {
@@ -86,7 +95,6 @@ export function useVerification() {
 
     let decoded: DecodedPresentation | null = null;
     if (step.value.kind === 'AUTHENTIC') {
-      const { decodePresentation } = await import('@/lib/credential/present');
       decoded = decodePresentation(input.text);
     }
     show({ verdict: step.value, decoded, requests: [...recorded], running: false });

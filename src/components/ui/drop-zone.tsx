@@ -19,7 +19,7 @@ export function DropZone({
   onFile,
   onFiles,
   multiple = false,
-  accept = '.sdjwt,.json,.txt',
+  accept = '.pdf,.sdjwt,.json,.txt',
   label,
   hint,
   disabled = false,

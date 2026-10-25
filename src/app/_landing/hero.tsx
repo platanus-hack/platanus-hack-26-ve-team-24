@@ -59,23 +59,22 @@ export function Hero() {
             Constancias que se prueban solas.
           </h1>
           <p className="mt-8 max-w-[40ch] text-lead">
-            Un banco o un consulado comprueba un solo dato en segundos. Todo lo demás queda
-            oculto.
+            Un banco o un consulado comprueba un solo dato en segundos. Todo lo demás queda oculto.
           </p>
         </div>
 
         <div className="mt-auto grid gap-6 xl:grid-cols-[1fr_18.75rem] xl:items-stretch">
           <DropZone
             onFile={handleFile}
-            label="Suelta una constancia para verificarla"
-            hint="El archivo no sale de tu navegador."
+            label="Suelta el PDF de una constancia"
+            hint="Se verifica en tu navegador. El archivo no sale de él."
             disabled={closing}
             compact
           />
           <div className="flex flex-wrap gap-4 xl:flex-col xl:justify-between">
             <LinkButton href="/verify">Verificar una constancia</LinkButton>
-            <LinkButton href="/vault" variant="secondary">
-              Abrir mi bóveda
+            <LinkButton href="/present" variant="secondary">
+              Compartir solo una parte
             </LinkButton>
             <Link href="/employer" className="self-center py-3 font-bold xl:self-start">
               Soy empleador
