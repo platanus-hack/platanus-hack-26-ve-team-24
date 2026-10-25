@@ -1,34 +1,48 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button, LinkButton } from '@/components/ui/button';
-import { CheckList, CheckRow } from '@/components/ui/check-list';
+import { Button } from '@/components/ui/button';
+import { Chip, type RowStatus } from '@/components/ui/check-list';
 import { Mono } from '@/components/ui/mono';
 import { Panel } from '@/components/ui/panel';
 import { loadSigner } from '@/lib/credential/keystore';
 import { listIdentities } from '@/lib/employer/identity';
 import { listIssued, type IssuedLogEntry } from '@/lib/employer/issued-log';
 import { certificateStatus, formatDate, type CertificateStatus } from '@/lib/employer/issued-status';
+import { REQUEST_KIND_LABELS } from '@/lib/employer/record-fields';
 import { useMe } from '@/lib/employer/use-me';
 import { createAccountClient, LedgerWriteError, type TxResult } from '@/lib/ledger/account-client';
-import { formatBlock } from '@/lib/ledger/format';
 import { lookupLedger } from '@/lib/ledger/gateway-client';
+import { ErrorText } from '@/components/ui/error-text';
+import { LedgerWriteReceipt } from '../_components/ledger-write-receipt';
+import { SignInFirst } from '../_components/sign-in-first';
 
 type Status = CertificateStatus | { kind: 'LOADING' } | { kind: 'UNKNOWN' };
 
-function statusLabel(status: Status): string {
+// cada estado: palabra, marca y color
+function statusView(status: Status): { chip: RowStatus; word: string; tone: string } {
   switch (status.kind) {
     case 'ACTIVE':
-      return 'Active';
+      return { chip: 'VERIFIED', word: 'Vigente', tone: 'text-ok' };
     case 'REVOKED':
-      return `Revoked ${formatDate(status.revokedAt)}`;
+      return { chip: 'FAILED', word: `Revocada el ${formatDate(status.revokedAt)}`, tone: 'text-fail' };
     case 'NOT_ON_LEDGER':
-      return 'Not on the ledger';
+      return { chip: 'FAILED', word: 'No está en el registro', tone: 'text-fail' };
     case 'UNKNOWN':
-      return 'Ledger not answering';
-    default:
-      return 'Checking…';
+      return { chip: 'UNAVAILABLE', word: 'El registro no responde', tone: 'text-ink' };
+    case 'LOADING':
+      return { chip: 'CHECKING', word: 'Comprobando…', tone: 'text-ink' };
   }
+}
+
+function StatusBadge({ status }: { status: Status }) {
+  const view = statusView(status);
+  return (
+    <p role="status" className={`flex items-center gap-3 text-small font-bold uppercase tracking-wide ${view.tone}`}>
+      <Chip status={view.chip} />
+      {view.word}
+    </p>
+  );
 }
 
 function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${string}` }) {
@@ -40,13 +54,15 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
 
   useEffect(() => {
     let active = true;
-    lookupLedger({ issuer: account, keyId: entry.keyId, credentialHash: entry.credentialHash })
-      .then((response) => {
+    async function check() {
+      try {
+        const response = await lookupLedger({ issuer: account, keyId: entry.keyId, credentialHash: entry.credentialHash });
         if (active) setStatus(certificateStatus(response));
-      })
-      .catch(() => {
+      } catch {
         if (active) setStatus({ kind: 'UNKNOWN' });
-      });
+      }
+    }
+    void check();
     return () => {
       active = false;
     };
@@ -67,7 +83,7 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
       setError(
         caught instanceof LedgerWriteError
           ? caught.message
-          : 'The ledger did not accept that. Try again in a moment.',
+          : 'El registro no aceptó la revocación. Inténtalo de nuevo en un momento.',
       );
     } finally {
       setBusy(false);
@@ -79,37 +95,37 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-title font-bold">
-            <code>{entry.employeeRef}</code> · {entry.kind}
+            <code>{entry.employeeRef}</code> · {REQUEST_KIND_LABELS[entry.kind]}
           </p>
           <p className="text-small text-ink-muted">
-            Issued {entry.issuedAt.slice(0, 10)} · <Mono value={entry.credentialHash} shorten />
+            Emitida el {entry.issuedAt.slice(0, 10)} · <Mono value={entry.credentialHash} shorten />
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <p role="status" className="text-small font-bold uppercase tracking-wide">
-            {statusLabel(status)}
-          </p>
+          <StatusBadge status={status} />
           {status.kind === 'ACTIVE' && !confirming && (
             <Button
               variant="secondary"
+              aria-label={`Revocar la constancia de ${entry.employeeRef}`}
               onClick={() => {
                 setConfirming(true);
               }}
             >
-              Revoke
+              Revocar
             </Button>
           )}
         </div>
       </div>
       {confirming && (
         <div className="mt-4">
-          <Panel title="Revoke this certificate?">
+          <Panel title="¿Revocar esta constancia?">
             <p className="mb-4 max-w-[65ch] text-body">
-              Everyone holding this certificate will see it fail the ledger check. This cannot be undone.
+              Quien tenga esta constancia verá que falla la comprobación del registro. No se puede
+              deshacer.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button disabled={busy} onClick={() => void revoke()}>
-                {busy ? 'Revoking…' : 'Revoke certificate'}
+                {busy ? 'Revocando…' : 'Revocar la constancia'}
               </Button>
               <Button
                 variant="quiet"
@@ -118,29 +134,16 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
                   setConfirming(false);
                 }}
               >
-                Keep it
+                Conservarla
               </Button>
             </div>
           </Panel>
         </div>
       )}
-      {error && (
-        <p role="alert" className="mt-4 font-bold text-red-text">
-          {error}
-        </p>
-      )}
+      {error && <ErrorText className="mt-4">{error}</ErrorText>}
       {result && (
         <div className="mt-4" aria-live="polite">
-          <CheckList>
-            <CheckRow index={1} label="Signed" status="DONE" measured="ES256 · this device" />
-            <CheckRow
-              index={2}
-              label="Written to the ledger"
-              status="DONE"
-              measured={`${formatBlock(result.blockNumber)} · ${result.elapsedMs} ms`}
-            />
-            <CheckRow index={3} label="Fee" status="DONE" measured={`${result.feeWei} · paid by the consortium`} />
-          </CheckList>
+          <LedgerWriteReceipt result={result} />
         </div>
       )}
     </li>
@@ -159,16 +162,10 @@ export function IssuedList() {
       });
   }, []);
 
-  if (me.status === 'loading' || entries === null) return <p role="status">Loading…</p>;
-  if (me.status === 'out') {
-    return (
-      <Panel title="Sign in first">
-        <LinkButton href="/employer">Sign in with this device</LinkButton>
-      </Panel>
-    );
-  }
+  if (me.status === 'loading' || entries === null) return <p role="status">Cargando…</p>;
+  if (me.status === 'out') return <SignInFirst />;
   if (entries.length === 0) {
-    return <p className="text-body text-ink-muted">Nothing issued from this device yet.</p>;
+    return <p className="text-body">Aún no has emitido constancias desde este dispositivo.</p>;
   }
   return (
     <ul className="border-b-2 border-ink">

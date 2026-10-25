@@ -20,14 +20,14 @@ export type MemoryTransport = (op: SignedOp) => Promise<{ txHash: Hex; blockNumb
 const OP_PATH = '/api/dev/ledger/op';
 
 const HUMAN_MESSAGES: Partial<Record<LedgerErrorCode, string>> = {
-  NOT_AUTHORIZED: 'Your signing key is not an owner of this account',
-  NOT_MEMBER: 'Only a consortium member can do that',
-  ALREADY_VOTED: 'This member already voted',
-  WRONG_STATUS: 'The ledger does not allow that in the current state',
-  KEY_NOT_LIVE: 'That signing key is not active on this account',
-  ALREADY_EXISTS: 'This certificate is already on the ledger',
-  NOT_FOUND: 'The ledger has no such certificate',
-  ALREADY_REVOKED: 'This certificate was already revoked',
+  NOT_AUTHORIZED: 'Tu clave de firma no está autorizada en esta cuenta',
+  NOT_MEMBER: 'Solo un miembro del consorcio puede hacer eso',
+  ALREADY_VOTED: 'Este miembro ya votó',
+  WRONG_STATUS: 'El registro no lo permite en el estado actual',
+  KEY_NOT_LIVE: 'Esa clave de firma no está activa en esta cuenta',
+  ALREADY_EXISTS: 'Esta constancia ya está en el registro',
+  NOT_FOUND: 'El registro no tiene esa constancia',
+  ALREADY_REVOKED: 'Esta constancia ya fue revocada',
 };
 
 const randomHex = (bytes: number) =>
@@ -69,7 +69,7 @@ export function createMemoryAccountClient(
       return { ...receipt, feeWei: '0', sponsorFeeWei: '0x0', elapsedMs: Date.now() - started };
     } catch (error) {
       if (!(error instanceof LedgerOpError)) throw error;
-      throw new LedgerWriteError(HUMAN_MESSAGES[error.code] ?? 'The ledger refused that', error.code);
+      throw new LedgerWriteError(HUMAN_MESSAGES[error.code] ?? 'El registro rechazó la operación', error.code);
     }
   }
 

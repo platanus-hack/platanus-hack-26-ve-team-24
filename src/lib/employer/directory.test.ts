@@ -32,7 +32,7 @@ describe('record fields', () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.givenName).toBeDefined();
-      expect(result.errors.startDate).toMatch(/future/);
+      expect(result.errors.startDate).toMatch(/futuro/);
     }
   });
 });

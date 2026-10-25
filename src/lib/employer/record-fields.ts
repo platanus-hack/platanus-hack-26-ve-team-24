@@ -17,6 +17,43 @@ export interface RecordFields {
 
 export type RecordErrors = Partial<Record<keyof RecordFields, string>>;
 
+export const FIELD_LABELS: Record<keyof RecordFields, string> = {
+  givenName: 'Nombres',
+  familyName: 'Apellidos',
+  nationalId: 'Cédula de identidad',
+  jobTitle: 'Cargo',
+  department: 'Departamento (opcional)',
+  employmentType: 'Tipo de empleo',
+  startDate: 'Fecha de ingreso',
+  endDate: 'Fecha de egreso',
+  workCountry: 'País de trabajo',
+  salaryMonthlyUsd: 'Salario mensual en USD (opcional)',
+};
+
+export const EMPLOYMENT_TYPE_LABELS: Record<EmploymentRecord['employmentType'], string> = {
+  FULL_TIME: 'Tiempo completo',
+  PART_TIME: 'Medio tiempo',
+  CONTRACT: 'Por contrato',
+};
+
+export const REQUEST_KIND_LABELS = {
+  CURRENT: 'Empleo actual',
+  PAST: 'Empleo anterior',
+} as const;
+
+const FIELD_ERRORS: Record<keyof RecordFields, string> = {
+  givenName: 'Escribe los nombres',
+  familyName: 'Escribe los apellidos',
+  nationalId: 'Usa entre 3 y 32 caracteres',
+  jobTitle: 'Escribe el cargo, con 2 caracteres o más',
+  department: 'Usa 80 caracteres o menos',
+  employmentType: 'Elige un tipo de empleo',
+  startDate: 'Usa una fecha válida',
+  endDate: 'Usa una fecha válida',
+  workCountry: 'Usa dos letras, por ejemplo VE',
+  salaryMonthlyUsd: 'Usa un número entero entre 0 y 1.000.000',
+};
+
 export const emptyFields = (): RecordFields => ({
   givenName: '',
   familyName: '',
@@ -58,8 +95,15 @@ export function recordFromFields(fields: RecordFields): ParsedRecord {
   const errors: RecordErrors = {};
   for (const issue of parsed.error.issues) {
     const key = issue.path[0] as keyof RecordFields;
-    errors[key] ??= 'Check this value';
-    if (key === 'startDate' || key === 'endDate') errors[key] = issue.message;
+    // las reglas cruzadas de fechas llegan como 'custom': el mensaje sale de los valores, no del texto del esquema
+    errors[key] ??= issue.code === 'custom' ? dateRuleError(key, fields) : FIELD_ERRORS[key];
   }
   return { ok: false, errors };
+}
+
+function dateRuleError(key: keyof RecordFields, fields: RecordFields): string {
+  if (key === 'startDate') return 'La fecha de ingreso no puede estar en el futuro';
+  return fields.endDate < fields.startDate
+    ? 'La fecha de egreso no puede ser anterior a la de ingreso'
+    : 'La fecha de egreso no puede estar en el futuro';
 }

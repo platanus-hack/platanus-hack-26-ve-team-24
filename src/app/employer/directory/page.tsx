@@ -5,8 +5,8 @@ export default function DirectoryPage() {
   return (
     <>
       <PageHeader
-        title="Employee directory"
-        lead="The people you can issue certificates for. This list never leaves this browser."
+        title="Directorio de empleados"
+        lead="Las personas a las que puedes emitir constancias. Esta lista nunca sale de este navegador."
       />
       <div className="mt-10">
         <DirectoryView />

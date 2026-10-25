@@ -30,7 +30,7 @@ async function lookupAccount(jwk: P256Jwk, salt: bigint): Promise<AccountLookup>
   const query = new URLSearchParams({ x: jwk.x, y: jwk.y, salt: salt.toString() });
   const response = await fetch(`${appBase()}/api/ledger/account?${query}`).catch(() => null);
   if (!response?.ok) {
-    throw new LedgerWriteError('The ledger is busy, try again in a moment', 'account lookup failed');
+    throw new LedgerWriteError('El registro está ocupado. Inténtalo de nuevo en un momento', 'account lookup failed');
   }
   return (await response.json()) as AccountLookup;
 }
@@ -39,14 +39,14 @@ async function lookupAccount(jwk: P256Jwk, salt: bigint): Promise<AccountLookup>
 function explain(error: BundlerRpcError): LedgerWriteError {
   const technical = error.message;
   const human = /AA24|signature/i.test(technical)
-    ? 'Your signing key is not an owner of this account'
+    ? 'Tu clave de firma no está autorizada en esta cuenta'
     : /gas price|above the cap/i.test(technical)
-      ? 'The network is expensive right now, try again in a few minutes'
+      ? 'La red está saturada. Inténtalo de nuevo en unos minutos'
       : /rate limited/i.test(technical)
-        ? 'Too many requests, wait a moment and try again'
+        ? 'Demasiadas solicitudes. Espera un momento e inténtalo de nuevo'
         : /network error|not confirmed/i.test(technical)
-          ? 'The ledger is busy, try again in a moment'
-          : 'The ledger did not accept that';
+          ? 'El registro está ocupado. Inténtalo de nuevo en un momento'
+          : 'El registro no aceptó la operación';
   return new LedgerWriteError(human, technical);
 }
 

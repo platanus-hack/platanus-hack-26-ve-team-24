@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { IssuerInfo } from '../ledger/types';
 import { EMPLOYER_SIGNER_PREFIX } from './identity';
 
-export const orgNameSchema = z.string().trim().min(2, 'Use at least 2 characters').max(80, 'Use 80 characters or fewer');
+export const orgNameSchema = z.string().trim().min(2, 'Usa al menos 2 caracteres').max(80, 'Usa 80 caracteres o menos');
 
 export const signerNameFor = (orgName: string): string => {
   const slug = orgName
@@ -25,26 +25,27 @@ export function accreditationView(issuer: IssuerInfo | undefined): Accreditation
     case 'PENDING':
       return {
         tone: 'waiting',
-        headline: 'Waiting for the consortium',
-        detail: `${issuer.approvals} of ${issuer.quorum} members have approved`,
+        headline: 'Esperando al consorcio',
+        detail: `${issuer.approvals} de ${issuer.quorum} miembros han aprobado`,
       };
     case 'ACTIVE':
       return {
         tone: 'active',
-        headline: 'Accredited',
-        detail: 'Your organization can now issue certificates.',
+        headline: 'Acreditada',
+        detail: 'Tu organización ya puede emitir constancias.',
       };
     case 'SUSPENDED':
       return {
         tone: 'paused',
-        headline: 'Paused by the consortium',
-        detail: 'Certificates you already issued stay on record, but new ones are on hold. Contact the consortium to resume.',
+        headline: 'En pausa por el consorcio',
+        detail: 'Las constancias que ya emitiste siguen en el registro, pero no puedes emitir nuevas. Contacta al consorcio para reanudar.',
       };
-    default:
+    case 'NONE':
+    case undefined:
       return {
         tone: 'idle',
-        headline: 'Not applied yet',
-        detail: 'Ask the consortium to accredit your organization.',
+        headline: 'Aún no has solicitado la acreditación',
+        detail: 'Pide al consorcio que acredite a tu organización.',
       };
   }
 }

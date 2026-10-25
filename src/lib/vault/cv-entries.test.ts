@@ -38,7 +38,7 @@ describe('attachCertificate', () => {
     const { world, deps } = await setup();
     const entry = await attachCertificate(deps(false), world.credential.sdJwt);
     expect(entry.status).toBe('UNBOUND');
-    expect(entry.reason).toMatch(/different vault/);
+    expect(entry.reason).toMatch(/otra bóveda/);
     expect(canJoin(entry)).toBe(false);
     expect(timelineOf([entry]).items).toHaveLength(0);
   });

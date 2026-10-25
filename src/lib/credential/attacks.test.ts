@@ -137,7 +137,7 @@ describe('Fake Letter Lab attacks', () => {
   it('describes the edit-claim change with both job titles', async () => {
     const { attack } = await runAttack('edit-claim', lab.sample);
 
-    expect(attack.changed).toBe('jobTitle changed from "Logistics Analyst" to "Director of Operations"');
+    expect(attack.changed).toBe('El cargo cambió de «Logistics Analyst» a «Director de Operaciones»');
   });
 
   it('leaves the untouched sample AUTHENTIC', async () => {
@@ -167,6 +167,6 @@ describe('Fake Letter Lab attacks', () => {
       .filter(([, name]) => name === 'jobTitle')
       .map(([, , value]) => value);
 
-    expect(jobTitles).toEqual(['Director of Operations']);
+    expect(jobTitles).toEqual(['Director de Operaciones']);
   });
 });

@@ -56,11 +56,11 @@ export async function createCv(
   deps: CvFlowDeps,
   args: { selections: CvSelection[]; aud: string; ttlSec: number },
 ): Promise<CreatedShare> {
-  if (args.selections.length === 0) throw new Error('Choose at least one certificate');
+  if (args.selections.length === 0) throw new Error('Elige al menos una constancia');
   const items = await Promise.all(
     args.selections.map(async ({ entry, reveal }) => {
       const holder = entry.keyName ? await deps.loadSigner(entry.keyName) : null;
-      if (!holder) throw new NoKeyError('The key for a certificate is not on this device');
+      if (!holder) throw new NoKeyError('La clave de una constancia no está en este dispositivo');
       return { credential: entry.sdJwt, holder, reveal };
     }),
   );

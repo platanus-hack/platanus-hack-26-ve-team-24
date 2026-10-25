@@ -22,7 +22,7 @@ export function AudienceAndExpiry({
 }) {
   return (
     <>
-      <Field label="Who is this for?" hint="A label the reader sees, for example Banco Demo.">
+      <Field label="¿Para quién es?" hint="Un nombre que verá quien lo reciba, por ejemplo Banco Demo.">
         <input
           value={aud}
           maxLength={MAX_AUDIENCE}
@@ -33,7 +33,7 @@ export function AudienceAndExpiry({
         />
       </Field>
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 font-bold text-small">The link works for</legend>
+        <legend className="mb-2 font-bold">El enlace funciona durante</legend>
         {EXPIRIES.map((option) => (
           <label key={option.ttlSec} className="flex min-h-12 items-center gap-3 text-body">
             <input
@@ -66,7 +66,7 @@ export function ShareResult({
   return (
     <div ref={focusOnMount} tabIndex={-1} className="outline-none">
       <Panel title={title}>
-        <QrBlock value={link} label="Link to this share" copy />
+        <QrBlock value={link} label="Enlace para compartir" copy />
         <div className="mt-4 flex flex-wrap gap-3">
           <Button
             variant="secondary"
@@ -74,11 +74,11 @@ export function ShareResult({
               downloadText(file.name, file.text);
             }}
           >
-            Download as a file
+            Descargar como archivo
           </Button>
         </div>
         <p className="mt-4 text-small text-ink-muted">
-          The key to open it is part of the link and never reaches our server.
+          La llave para abrirlo va dentro del enlace y nunca llega a nuestro servidor.
         </p>
       </Panel>
     </div>

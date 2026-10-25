@@ -5,8 +5,8 @@ export default function IssuedPage() {
   return (
     <>
       <PageHeader
-        title="Issued"
-        lead="Certificates issued from this device. Revoking one makes it fail the ledger check for everyone holding it."
+        title="Constancias emitidas"
+        lead="Constancias emitidas desde este dispositivo. Si revocas una, falla la comprobación del registro para quien la tenga."
       />
       <div className="mt-10">
         <IssuedList />

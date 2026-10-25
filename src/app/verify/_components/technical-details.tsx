@@ -20,30 +20,30 @@ export function TechnicalDetails({
   const { record, issuer } = verdict;
   const anchoredAt = new Date(record.anchoredAt * 1000).toISOString();
   return (
-    <Disclosure summary="Technical details">
+    <Disclosure summary="Detalles técnicos">
       <Receipt
-        title="Credential and anchor"
+        title="Credencial y anclaje"
         rows={[
-          { label: 'Header', value: JSON.stringify(decoded.header), mono: true },
-          { label: 'Issuer', value: issuer.did, mono: true },
-          { label: 'Signing key (kid)', value: String(decoded.header.kid), mono: true },
-          { label: 'Credential hash', value: record.credentialHash, mono: true },
+          { label: 'Encabezado', value: JSON.stringify(decoded.header), mono: true },
+          { label: 'Emisor', value: issuer.did, mono: true },
+          { label: 'Clave de firma (kid)', value: String(decoded.header.kid), mono: true },
+          { label: 'Huella de la credencial', value: record.credentialHash, mono: true },
           {
-            label: 'Anchored',
-            value: `block ${record.blockNumber} · ${anchoredAt}`,
+            label: 'Anclada',
+            value: `bloque ${record.blockNumber} · ${anchoredAt}`,
             mono: true,
           },
-          { label: 'Claim digests', value: digestsOf(decoded.payload).join(' '), mono: true },
+          { label: 'Resúmenes de los datos', value: digestsOf(decoded.payload).join(' '), mono: true },
           {
-            label: 'Standards',
+            label: 'Estándares',
             value: 'W3C Verifiable Credentials 2.0 · SD-JWT · ES256 · did:constancia',
             mono: true,
           },
         ]}
       />
-      <p className="mt-4 max-w-[65ch] text-small text-ink-muted">
-        Selective disclosure, not zero-knowledge: hidden claims are salted hashes. The ledger
-        proves who issued it and when, not that it is true.
+      <p className="mt-4 max-w-[65ch] text-body text-ink-muted">
+        Divulgación selectiva, no conocimiento cero: los datos ocultos son hashes con sal. El
+        registro prueba quién la emitió y cuándo, no que lo que dice sea verdad.
       </p>
     </Disclosure>
   );

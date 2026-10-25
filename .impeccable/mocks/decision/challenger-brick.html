@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Constancia · Instructivo de armado</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1440px; height: 900px; overflow: hidden; background: #9bd3ee; color: #0a0a0a;
+    font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+    background-image: radial-gradient(circle, rgba(10,10,10,.12) 2px, transparent 2.5px); background-size: 32px 32px; }
+  nav { height: 72px; display: flex; justify-content: space-between; align-items: center; padding: 0 48px; font: 700 16px Arial, sans-serif; }
+  nav .links { display: flex; gap: 36px; }
+  header { padding: 8px 48px 0; display: flex; align-items: end; justify-content: space-between; }
+  h1 { font-size: 72px; line-height: 1; letter-spacing: -.02em; max-width: 14ch; }
+  .lead { font: 400 21px/1.4 Arial, sans-serif; max-width: 34ch; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 40px 48px 0; }
+  .step { background: #fff; border: 4px solid #0a0a0a; height: 440px; padding: 24px; display: grid; grid-template-rows: auto 1fr auto; }
+  .num { font-size: 96px; line-height: 1; }
+  .piece { align-self: center; justify-self: center; width: 160px; height: 110px; border: 4px solid #0a0a0a; background: #e7ecef; position: relative; }
+  .piece.new { background: #d7261e; }
+  .piece::after { content: ""; position: absolute; left: 50%; top: -64px; width: 4px; height: 52px; background: #0a0a0a; border-bottom: 0; }
+  .label { font: 700 20px Arial, sans-serif; }
+  .callout { border: 4px dashed #0a0a0a; background: #ffd100; display: grid; place-content: center; text-align: center; height: 200px; align-self: center; font: 700 22px Arial, sans-serif; padding: 16px; }
+  .cta { position: absolute; left: 48px; bottom: 32px; display: flex; gap: 16px; align-items: center; font: 700 17px Arial, sans-serif; }
+  .btn { height: 56px; padding: 0 28px; display: grid; place-content: center; border: 4px solid #0a0a0a; background: #fff; }
+  .btn.primary { background: #0a0a0a; color: #fff; }
+</style>
+</head>
+<body>
+  <nav><span>CONSTANCIA</span><span class="links"><span>Verificar</span><span>Empleadores</span><span>Bóveda</span><span>Registro</span></span></nav>
+  <header>
+    <h1>Constancias que se prueban solas.</h1>
+    <p class="lead">Cuatro pasos. Tu banco comprueba un solo dato; el resto queda oculto.</p>
+  </header>
+  <section class="steps">
+    <div class="step"><span class="num">1</span><div class="piece"></div><span class="label">Pides tu constancia</span></div>
+    <div class="step"><span class="num">2</span><div class="piece"></div><span class="label">Llega a tu bóveda</span></div>
+    <div class="step"><span class="num">3</span><div class="piece new"></div><span class="label">Compartes un dato</span></div>
+    <div class="step"><span class="num">4</span><div class="callout">Suelta una constancia para verificarla</div><span class="label">El banco verifica</span></div>
+  </section>
+  <div class="cta"><span class="btn primary">Verificar una constancia</span><span class="btn">Abrir mi bóveda</span><span style="text-decoration:underline">Soy empleador</span></div>
+</body>
+</html>

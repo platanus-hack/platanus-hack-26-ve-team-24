@@ -7,7 +7,7 @@ export function GET(req: Request, { params }: { params: Promise<{ id: string }> 
   return respond(async () => {
     rateLimit(req, 'requests:poll', { limit: 120, windowMs: 60_000 });
     const { id } = await params;
-    const notFound = new HttpError(404, 'NOT_FOUND', 'Unknown request');
+    const notFound = new HttpError(404, 'NOT_FOUND', 'Solicitud desconocida');
     if (!isId(id)) throw notFound;
     const row = await getDb().certRequest.findUnique({ where: { id } });
     if (!row) throw notFound;

@@ -39,7 +39,7 @@ describe('runIssue', () => {
     expect(events.filter((e) => e.status === 'DONE').map((e) => e.step)).toEqual([
       'OPENED', 'SIGNED', 'ANCHORED', 'DELIVERED', 'DISCARDED',
     ]);
-    expect(events.find((e) => e.step === 'ANCHORED' && e.status === 'DONE')?.measured).toBe('Block 1,204 · fee 0');
+    expect(events.find((e) => e.step === 'ANCHORED' && e.status === 'DONE')?.measured).toMatch(/1[.,]204/);
   });
 
   it('delivers nothing when anchoring fails, and the retry resumes at the anchor', async () => {
@@ -47,14 +47,14 @@ describe('runIssue', () => {
     const { calls, run, events } = harness({
       anchor: async () => {
         calls.push('anchor');
-        if (failAnchor) throw new LedgerWriteError('The ledger is busy', 'network error');
+        if (failAnchor) throw new LedgerWriteError('El registro está ocupado', 'network error');
         return { blockNumber: 7 } as never;
       },
     });
     const progress: IssueProgress = {};
     await expect(run(progress)).rejects.toMatchObject({ step: 'ANCHORED' });
     expect(calls).not.toContain('deliver');
-    expect(events.at(-1)).toMatchObject({ step: 'ANCHORED', status: 'FAILED', detail: 'The ledger is busy' });
+    expect(events.at(-1)).toMatchObject({ step: 'ANCHORED', status: 'FAILED', detail: 'El registro está ocupado' });
 
     failAnchor = false;
     await run(progress);

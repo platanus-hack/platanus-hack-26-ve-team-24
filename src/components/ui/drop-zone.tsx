@@ -14,7 +14,7 @@ function accepts(file: File, accept: string): boolean {
     .some((entry) => (entry.startsWith('.') ? name.endsWith(entry) : file.type === entry));
 }
 
-// Meant to sit inside a LineField: the white gap cut into the band (see /dev/kit).
+// The working drop slot: a white field with a 4px black border (see /dev/kit).
 export function DropZone({
   onFile,
   onFiles,
@@ -23,6 +23,7 @@ export function DropZone({
   label,
   hint,
   disabled = false,
+  compact = false,
 }: {
   onFile?: (file: File) => void;
   onFiles?: (files: File[]) => void;
@@ -31,9 +32,10 @@ export function DropZone({
   label: string;
   hint?: string;
   disabled?: boolean;
+  compact?: boolean;
 }) {
-  // A file dragged anywhere over the page sets html[data-dragging]; globals.css locks every
-  // line field into alignment and inverts the drop slot. Drops outside the slot are swallowed
+  // A file dragged anywhere over the page sets html[data-dragging]; globals.css inverts
+  // the drop slot. Drops outside the slot are swallowed
   // so the browser never navigates away to the file.
   useEffect(() => {
     const root = document.documentElement;
@@ -99,9 +101,11 @@ export function DropZone({
       }}
       onDrop={handleDrop}
       data-disabled={disabled || undefined}
-      className="dropzone flex min-h-64 w-full cursor-pointer flex-col items-center justify-center gap-3 border-4 border-ink bg-white p-8 text-center transition-colors duration-150 has-focus-visible:outline-3 has-focus-visible:-outline-offset-8 has-focus-visible:outline-focus data-disabled:cursor-not-allowed data-disabled:opacity-40"
+      className={`dropzone flex w-full cursor-pointer flex-col items-center justify-center gap-3 border-4 border-ink bg-paper text-center transition-colors duration-150 has-focus-visible:outline-3 has-focus-visible:-outline-offset-8 has-focus-visible:outline-focus data-disabled:cursor-not-allowed data-disabled:border-dashed data-disabled:border-ink-muted data-disabled:text-ink-muted ${compact ? 'min-h-44 p-6' : 'min-h-64 p-8'}`}
     >
-      <span className="font-display text-headline font-extrabold font-stretch-expanded text-balance">
+      <span
+        className={`font-display font-extrabold text-balance ${compact ? 'text-[1.75rem] leading-tight tracking-[-0.02em]' : 'text-headline'}`}
+      >
         {label}
       </span>
       {hint ? <span className="max-w-[40ch] text-body">{hint}</span> : null}

@@ -1,8 +1,4 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import type { Verdict } from '@/lib/credential/verify';
-import { verifyInVault } from './browser';
 
 export type CertificateStatus =
   | { state: 'checking' }
@@ -17,19 +13,4 @@ export function statusOf(verdict: Verdict): CertificateStatus {
   return verdict.failedAt === 'LEDGER'
     ? { state: 'revoked', reason: verdict.reason }
     : { state: 'failed', reason: verdict.reason };
-}
-
-/** Live check of one certificate against the ledger. */
-export function useCertificateVerdict(sdJwt: string): Verdict | null {
-  const [verdict, setVerdict] = useState<Verdict | null>(null);
-  useEffect(() => {
-    let live = true;
-    void verifyInVault(sdJwt).then((result) => {
-      if (live) setVerdict(result);
-    });
-    return () => {
-      live = false;
-    };
-  }, [sdJwt]);
-  return verdict;
 }

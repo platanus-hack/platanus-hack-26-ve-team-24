@@ -20,8 +20,8 @@ const SYNTHETIC_RECORD: EmploymentRecord = {
   givenName: 'María Fernanda',
   familyName: 'Rojas',
   nationalId: 'V-24.567.890',
-  jobTitle: 'Logistics Analyst',
-  department: 'Operations',
+  jobTitle: 'Analista de logística',
+  department: 'Operaciones',
   employmentType: 'FULL_TIME',
   startDate: '2024-02-01',
   workCountry: 'VE',
@@ -36,7 +36,7 @@ export class SampleUnavailableError extends Error {}
  */
 async function buildLocalSample(): Promise<Sample> {
   const response = await fetch('/api/dev/ledger/identities', { cache: 'no-store' });
-  if (!response.ok) throw new SampleUnavailableError('The demo sample is not published yet');
+  if (!response.ok) throw new SampleUnavailableError('La muestra de demostración aún no está publicada');
   const { employers } = identitiesSchema.parse(await response.json());
   const issuer = await signerFromPrivateJwk(employers[0]!.jwk as P256PrivateJwk);
   const client = await createAccountClient({ signer: issuer });

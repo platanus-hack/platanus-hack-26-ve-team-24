@@ -10,8 +10,10 @@ import { signIn } from '@/lib/employer/session-client';
 import { useMe } from '@/lib/employer/use-me';
 import { fetchNetworkState } from '@/lib/ledger/gateway-client';
 import type { IssuerInfo } from '@/lib/ledger/types';
+import { ErrorText } from '@/components/ui/error-text';
 
 const SET_UP = '/employer/onboarding';
+const DIRECTORY = '/employer/directory';
 
 function SignedOut() {
   const [identities, setIdentities] = useState<EmployerIdentity[] | null>(null);
@@ -32,52 +34,48 @@ function SignedOut() {
     try {
       await signIn(identity);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Could not sign in');
+      setError(caught instanceof Error ? caught.message : 'No se pudo iniciar sesión');
     } finally {
       setBusy(null);
     }
   }
 
-  if (identities === null) return <p role="status">Looking for signing keys on this device…</p>;
+  if (identities === null) return <p role="status">Buscando claves de firma en este dispositivo…</p>;
 
   return (
     <div className="flex flex-col gap-6">
       {identities.length === 0 ? (
-        <Panel title="No organization on this device yet">
+        <Panel title="Aún no hay una organización en este dispositivo">
           <p className="mb-6 max-w-[65ch] text-body text-ink-muted">
-            Your signing key is made and kept on this device. There is nothing to remember and no
-            password.
+            Tu clave de firma se crea y se guarda en este dispositivo. No hay nada que recordar ni
+            contraseña.
           </p>
-          <LinkButton href={SET_UP}>Set up your organization</LinkButton>
+          <LinkButton href={SET_UP}>Configurar tu organización</LinkButton>
         </Panel>
       ) : (
-        <Panel title="Sign in with this device">
+        <Panel title="Inicia sesión con este dispositivo">
           <ul className="flex flex-col gap-4">
             {identities.map((identity) => (
-              <li key={identity.signerName} className="flex flex-wrap items-center gap-4">
+              <li key={identity.signerName}>
                 <Button
                   disabled={busy !== null}
                   onClick={() => {
                     void enter(identity);
                   }}
                 >
-                  {busy === identity.signerName ? 'Signing in…' : `Sign in as ${identity.orgName}`}
+                  {busy === identity.signerName ? 'Iniciando sesión…' : `Entrar como ${identity.orgName}`}
                 </Button>
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-small text-ink-muted">
-            <a href={SET_UP} className="font-bold">
-              Set up another organization
+          <p className="mt-6">
+            <a href={SET_UP} className="inline-flex min-h-12 items-center font-bold">
+              Configurar otra organización
             </a>
           </p>
         </Panel>
       )}
-      {error && (
-        <p role="alert" className="font-bold text-red-text">
-          {error}
-        </p>
-      )}
+      {error && <ErrorText>{error}</ErrorText>}
     </div>
   );
 }
@@ -87,32 +85,41 @@ interface Step {
   status: RowStatus;
   detail?: string;
   href: string;
+  action: string;
+}
+
+function accreditedStatus(issuer: IssuerInfo | undefined, applied: boolean): RowStatus {
+  if (issuer?.status === 'ACTIVE') return 'DONE';
+  if (issuer?.status === 'SUSPENDED') return 'FAILED';
+  return applied ? 'CHECKING' : 'PENDING';
 }
 
 function readinessSteps(issuer: IssuerInfo | undefined, directoryLoaded: boolean): Step[] {
   const applied = issuer !== undefined && issuer.status !== 'NONE';
-  const active = issuer?.status === 'ACTIVE';
-  const approvals = issuer ? `${issuer.approvals} of ${issuer.quorum} members approved` : undefined;
+  const approvals = issuer ? `${issuer.approvals} de ${issuer.quorum} miembros aprobaron` : undefined;
   return [
-    { label: 'Signing key on this device', status: 'DONE', href: SET_UP },
-    { label: 'Organization account', status: 'DONE', href: SET_UP },
+    { label: 'Clave de firma en este dispositivo', status: 'DONE', href: SET_UP, action: 'Continuar la configuración' },
+    { label: 'Cuenta de la organización', status: 'DONE', href: SET_UP, action: 'Continuar la configuración' },
     {
-      label: 'Applied to the consortium',
+      label: 'Acreditación solicitada al consorcio',
       status: applied ? 'DONE' : 'PENDING',
-      detail: applied ? undefined : 'Ask the consortium to accredit your organization.',
+      detail: applied ? undefined : 'Pide al consorcio que acredite a tu organización.',
       href: SET_UP,
+      action: 'Solicitar la acreditación',
     },
     {
-      label: 'Accredited',
-      status: active ? 'DONE' : issuer?.status === 'SUSPENDED' ? 'FAILED' : applied ? 'CHECKING' : 'PENDING',
-      detail: issuer?.status === 'SUSPENDED' ? 'The consortium has paused this organization.' : approvals,
+      label: 'Acreditada',
+      status: accreditedStatus(issuer, applied),
+      detail: issuer?.status === 'SUSPENDED' ? 'El consorcio puso en pausa a esta organización.' : approvals,
       href: SET_UP,
+      action: 'Ver la acreditación',
     },
     {
-      label: 'Employee directory loaded',
+      label: 'Directorio de empleados cargado',
       status: directoryLoaded ? 'DONE' : 'PENDING',
-      detail: 'Employee details stay in this browser and never reach a server.',
-      href: '/employer/directory',
+      detail: 'Los datos de los empleados se quedan en este navegador y nunca llegan a un servidor.',
+      href: DIRECTORY,
+      action: 'Cargar tu directorio de empleados',
     },
   ];
 }
@@ -123,11 +130,11 @@ function Readiness({ account, name }: { account: string; name: string }) {
   const [directoryLoaded, setDirectoryLoaded] = useState(false);
 
   useEffect(() => {
-    void listDirectory()
-      .then((entries) => {
-        setDirectoryLoaded(entries.length > 0);
-      })
-      .catch(() => undefined);
+    async function check() {
+      const entries = await listDirectory().catch(() => []);
+      setDirectoryLoaded(entries.length > 0);
+    }
+    void check();
   }, []);
 
   useEffect(() => {
@@ -157,28 +164,33 @@ function Readiness({ account, name }: { account: string; name: string }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <p className="text-body text-ink-muted">
-        Signed in as <strong className="text-ink">{name || 'your organization'}</strong>
+      <p className="text-body">
+        Sesión iniciada como <strong>{name || 'tu organización'}</strong>
       </p>
       {unreachable && (
         <p role="status" className="font-bold">
-          The ledger is not answering right now. This list refreshes on its own.
+          El registro no responde en este momento. Esta lista se actualiza sola.
         </p>
       )}
-      <CheckList title="Ready to issue">
+      <CheckList title="Lista para emitir">
         {steps.map((step, index) => (
-          <CheckRow key={step.label} index={index + 1} {...step} href={undefined} />
+          <CheckRow key={step.label} index={index + 1} label={step.label} status={step.status} detail={step.detail} />
         ))}
       </CheckList>
-      {next && <LinkButton href={next.href}>{next.label === 'Employee directory loaded' ? 'Load your employee directory' : 'Continue setup'}</LinkButton>}
-      {!next && <LinkButton href="/employer/requests">Open the request inbox</LinkButton>}
+      <div>
+        {next ? (
+          <LinkButton href={next.href}>{next.action}</LinkButton>
+        ) : (
+          <LinkButton href="/employer/requests">Abrir las solicitudes</LinkButton>
+        )}
+      </div>
     </div>
   );
 }
 
 export function EmployerHome() {
   const view = useMe();
-  if (view.status === 'loading') return <p role="status">Checking your session…</p>;
+  if (view.status === 'loading') return <p role="status">Comprobando tu sesión…</p>;
   if (view.status === 'out') return <SignedOut />;
   return <Readiness account={view.me.account} name={view.me.name} />;
 }

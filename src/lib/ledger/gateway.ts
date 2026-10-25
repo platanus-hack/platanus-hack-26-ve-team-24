@@ -22,7 +22,7 @@ export async function respondWithLedger(run: () => Promise<Response>): Promise<R
   } catch (error) {
     if (!(error instanceof LedgerUnreachableError)) throw error;
     return Response.json(
-      { error: 'LEDGER_UNREACHABLE', message: 'The ledger is not answering right now' },
+      { error: 'LEDGER_UNREACHABLE', message: 'El registro no responde en este momento' },
       { status: 503 },
     );
   }

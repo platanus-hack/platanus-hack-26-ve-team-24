@@ -1,264 +1,42 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-24T18:10:35+00:00",
+  "generatedAt": "2026-10-25T00:00:00+00:00",
   "title": "Design System: Constancia",
   "extensions": {
     "colorMeta": {
-      "paper": {
-        "role": "neutral",
-        "displayName": "Paper",
-        "canonical": "#F7F6F2",
-        "tonalRamp": [
-          "#4A4A49",
-          "#7C7B79",
-          "#ADACA9",
-          "#F7F6F2",
-          "#F9F8F5",
-          "#FAFAF7",
-          "#FCFBFA",
-          "#FDFDFC"
-        ]
-      },
-      "white": {
-        "role": "neutral",
-        "displayName": "White",
-        "canonical": "#FFFFFF",
-        "tonalRamp": [
-          "#4D4D4D",
-          "#808080",
-          "#B2B2B2",
-          "#FFFFFF",
-          "#FFFFFF",
-          "#FFFFFF",
-          "#FFFFFF",
-          "#FFFFFF"
-        ]
-      },
-      "ink": {
-        "role": "primary",
-        "displayName": "Ink",
-        "canonical": "#111111",
-        "tonalRamp": [
-          "#050505",
-          "#080808",
-          "#0C0C0C",
-          "#111111",
-          "#414141",
-          "#707070",
-          "#A0A0A0",
-          "#CFCFCF"
-        ]
-      },
-      "ink-muted": {
-        "role": "neutral",
-        "displayName": "Muted Ink",
-        "canonical": "#55534E",
-        "tonalRamp": [
-          "#1A1917",
-          "#2A2A27",
-          "#3B3A37",
-          "#55534E",
-          "#777571",
-          "#999895",
-          "#BBBAB8",
-          "#DDDDDC"
-        ]
-      },
-      "rule": {
-        "role": "neutral",
-        "displayName": "Rule",
-        "canonical": "#CFCCC2",
-        "tonalRamp": [
-          "#3E3D3A",
-          "#686661",
-          "#918F88",
-          "#CFCCC2",
-          "#D9D6CE",
-          "#E2E0DA",
-          "#ECEBE7",
-          "#F5F5F3"
-        ]
-      },
-      "line-red": {
-        "role": "secondary",
-        "displayName": "Signal Red",
-        "canonical": "#E4002B",
-        "tonalRamp": [
-          "#44000D",
-          "#720016",
-          "#A0001E",
-          "#E4002B",
-          "#E93355",
-          "#EF6680",
-          "#F499AA",
-          "#FACCD5"
-        ]
-      },
-      "line-blue": {
-        "role": "secondary",
-        "displayName": "Interference Blue",
-        "canonical": "#0047BB",
-        "tonalRamp": [
-          "#001538",
-          "#00245E",
-          "#003283",
-          "#0047BB",
-          "#336CC9",
-          "#6691D6",
-          "#99B5E4",
-          "#CCDAF1"
-        ]
-      },
-      "line-green": {
-        "role": "secondary",
-        "displayName": "Resolve Green",
-        "canonical": "#00A651",
-        "tonalRamp": [
-          "#003218",
-          "#005328",
-          "#007439",
-          "#00A651",
-          "#33B874",
-          "#66CA97",
-          "#99DBB9",
-          "#CCEDDC"
-        ]
-      },
-      "line-yellow": {
-        "role": "secondary",
-        "displayName": "Caution Yellow",
-        "canonical": "#FFD100",
-        "tonalRamp": [
-          "#4D3F00",
-          "#806800",
-          "#B29200",
-          "#FFD100",
-          "#FFDA33",
-          "#FFE366",
-          "#FFED99",
-          "#FFF6CC"
-        ]
-      },
-      "red-text": {
-        "role": "neutral",
-        "displayName": "Red Text",
-        "canonical": "#B0001F",
-        "tonalRamp": [
-          "#350009",
-          "#580010",
-          "#7B0016",
-          "#B0001F",
-          "#C0334C",
-          "#D06679",
-          "#DF99A5",
-          "#EFCCD2"
-        ]
-      },
-      "green-text": {
-        "role": "neutral",
-        "displayName": "Green Text",
-        "canonical": "#00703A",
-        "tonalRamp": [
-          "#002211",
-          "#00381D",
-          "#004E29",
-          "#00703A",
-          "#338D61",
-          "#66A989",
-          "#99C6B0",
-          "#CCE2D8"
-        ]
-      },
-      "focus": {
-        "role": "neutral",
-        "displayName": "Focus Blue",
-        "canonical": "#0047BB",
-        "tonalRamp": [
-          "#001538",
-          "#00245E",
-          "#003283",
-          "#0047BB",
-          "#336CC9",
-          "#6691D6",
-          "#99B5E4",
-          "#CCDAF1"
-        ]
-      }
+      "paper": { "role": "neutral", "displayName": "Paper White", "canonical": "#ffffff", "tonalRamp": ["#262626", "#474747", "#6b6b6b", "#919191", "#b5b5b5", "#d6d6d6", "#efefef", "#ffffff"] },
+      "ink": { "role": "neutral", "displayName": "Program Black", "canonical": "#0a0a0a", "tonalRamp": ["#0a0a0a", "#262626", "#3d3d3d", "#575757", "#7a7a7a", "#a3a3a3", "#cccccc", "#f0f0f0"] },
+      "ink-muted": { "role": "neutral", "displayName": "Secondary Grey", "canonical": "#4d4d4d", "tonalRamp": ["#1a1a1a", "#2e2e2e", "#4d4d4d", "#6b6b6b", "#8c8c8c", "#adadad", "#cfcfcf", "#efefef"] },
+      "rule": { "role": "neutral", "displayName": "Hairline", "canonical": "#d4d4d4", "tonalRamp": ["#262626", "#474747", "#6b6b6b", "#919191", "#b3b3b3", "#d4d4d4", "#e8e8e8", "#f7f7f7"] },
+      "marigold": { "role": "primary", "displayName": "Institutional Marigold", "canonical": "#f2b705", "tonalRamp": ["#3d2c00", "#5e4500", "#8a6600", "#b88a00", "#f2b705", "#f8cf55", "#fce49e", "#fff6dc"] },
+      "ok": { "role": "verdict", "displayName": "Verdict Green", "canonical": "#00703a", "tonalRamp": ["#00230f", "#003d1d", "#00572c", "#00703a", "#2e9460", "#6cb88f", "#aed8c0", "#e6f4ec"] },
+      "fail": { "role": "verdict", "displayName": "Verdict Red", "canonical": "#b0001f", "tonalRamp": ["#33000a", "#5c0011", "#870018", "#b0001f", "#d1394f", "#e47d8b", "#f1b8c0", "#fbe8eb"] },
+      "focus": { "role": "neutral", "displayName": "Focus Ring", "canonical": "#0a0a0a", "tonalRamp": ["#0a0a0a", "#262626", "#3d3d3d", "#575757", "#7a7a7a", "#a3a3a3", "#cccccc", "#f0f0f0"] }
     },
     "typographyMeta": {
-      "display": {
-        "displayName": "Display",
-        "purpose": "The landing hero and the verdict word (headline under 640px). Expanded (font-stretch: expanded), 800."
-      },
-      "headline": {
-        "displayName": "Headline",
-        "purpose": "PageHeader titles, section headings, the drop-slot label. Expanded, 800."
-      },
-      "title": {
-        "displayName": "Title",
-        "purpose": "Check labels (700, normal width); Panel, CheckList and Receipt titles (800, width 125)."
-      },
-      "body": {
-        "displayName": "Body",
-        "purpose": "Paragraphs and detail lines, 65ch max."
-      },
-      "small": {
-        "displayName": "Small",
-        "purpose": "Hints, footnotes, the issuer line (400). Field labels and status words are bold."
-      },
-      "mono": {
-        "displayName": "Mono",
-        "purpose": "IDs, hashes, DIDs and measured values only."
-      }
+      "display": { "displayName": "Display", "purpose": "Landing headline and the verdict word." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles, page headers, footer call, verdict word on small screens." },
+      "title": { "displayName": "Title", "purpose": "Check-row labels, panel and receipt titles, timeline employers." },
+      "lead": { "displayName": "Lead", "purpose": "The single paragraph under a display or headline." },
+      "body": { "displayName": "Body", "purpose": "Running text, 65ch max, never below 17px." },
+      "label": { "displayName": "Label", "purpose": "Field labels, legend entries, receipt keys; uppercase tracked only for status words." },
+      "wordmark": { "displayName": "Wordmark", "purpose": "CONSTANCIA beside the closed 24px seal, top-left of every nav." },
+      "mono": { "displayName": "Mono", "purpose": "Hashes, keys, DIDs and measured values only." }
     },
     "shadows": [],
     "motion": [
-      {
-        "name": "ease-resolve",
-        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "The only easing: exponential ease-out for the flood and layer convergence."
-      },
-      {
-        "name": "duration-resolve",
-        "value": "600ms",
-        "purpose": "Resolution of a line field into a flood or alignment."
-      },
-      {
-        "name": "duration-state",
-        "value": "150ms",
-        "purpose": "Colour inversion on buttons and copy chips."
-      },
-      {
-        "name": "drift",
-        "value": "steps(24) over 3s to 9s per layer",
-        "purpose": "Scanning drift in whole-pixel steps (no shimmer on a projector)."
-      }
+      { "name": "ease-resolve", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Exponential ease-out, no bounce, for seal segments and the verdict wipe." },
+      { "name": "seal-segment", "value": "240ms ease-resolve, delay index x stagger", "purpose": "Segment fill/border change; landing close uses 120ms stagger." },
+      { "name": "seal-blink", "value": "0.8s steps(2, jump-none) infinite, opacity 0.35 at 50%", "purpose": "CHECKING segment and chip: two hard steps, no shimmer." },
+      { "name": "verdict-wipe", "value": "clip-path inset(0 100% 0 0) to inset(0) over 600ms ease-resolve", "purpose": "Verdict colour wipes in once from the seal side." },
+      { "name": "control-hover", "value": "150ms colors", "purpose": "Button, copy and drop-slot colour inversions." },
+      { "name": "reduced-motion", "value": "transition: none; animation: none", "purpose": "Seal and verdict change instantly; nothing blinks." }
     ],
     "breakpoints": [
-      {
-        "name": "sm",
-        "value": "640px"
-      },
-      {
-        "name": "md",
-        "value": "768px"
-      },
-      {
-        "name": "lg",
-        "value": "1024px"
-      },
-      {
-        "name": "xl",
-        "value": "1280px"
-      },
-      {
-        "name": "2xl",
-        "value": "1536px"
-      },
-      {
-        "name": "receipt-stack",
-        "value": "480px"
-      }
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
     ]
   },
   "components": [
@@ -266,119 +44,118 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Ink-filled rectangle; inverts on hover.",
-      "html": "<button class=\"ds-btn-primary\">Check a certificate</button>",
-      "css": ".ds-btn-primary{font-family:'Archivo',system-ui,sans-serif;min-height:48px;padding:0 24px;border:3px solid #111;background:#111;color:#F7F6F2;font-weight:700;font-size:17px;border-radius:0;cursor:pointer;transition:background .15s,color .15s}.ds-btn-primary:hover{background:#F7F6F2;color:#111}.ds-btn-primary:focus-visible{outline:3px solid #0047BB;outline-offset:3px}"
+      "description": "Main action: ink fill, 3px ink border, inverts on hover.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Verificar una constancia</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border: 3px solid var(--color-ink, #0a0a0a); border-radius: 0; font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 1.0625rem; font-weight: 700; cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-btn-primary { background: var(--color-ink, #0a0a0a); color: var(--color-paper, #ffffff); } .ds-btn-primary:hover { background: var(--color-paper, #ffffff); color: var(--color-ink, #0a0a0a); } .ds-btn:focus-visible { outline: 3px solid var(--color-focus, #0a0a0a); outline-offset: 3px; }"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Outline rectangle; fills with ink on hover.",
-      "html": "<button class=\"ds-btn-secondary\">Issue credentials</button>",
-      "css": ".ds-btn-secondary{font-family:'Archivo',system-ui,sans-serif;min-height:48px;padding:0 24px;border:3px solid #111;background:#F7F6F2;color:#111;font-weight:700;font-size:17px;border-radius:0;cursor:pointer;transition:background .15s,color .15s}.ds-btn-secondary:hover{background:#111;color:#F7F6F2}.ds-btn-secondary:focus-visible{outline:3px solid #0047BB;outline-offset:3px}"
+      "description": "Second action: paper fill, 3px ink border, inverts to ink on hover.",
+      "html": "<button class=\"ds-btn-secondary\">Abrir mi bóveda</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border: 3px solid var(--color-ink, #0a0a0a); border-radius: 0; background: var(--color-paper, #ffffff); color: var(--color-ink, #0a0a0a); font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 1.0625rem; font-weight: 700; cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-btn-secondary:hover { background: var(--color-ink, #0a0a0a); color: var(--color-paper, #ffffff); } .ds-btn-secondary:focus-visible { outline: 3px solid var(--color-focus, #0a0a0a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Disabled Button",
+      "kind": "button",
+      "refersTo": "button-disabled",
+      "description": "Disabled is drawn open: dashed muted border, muted text.",
+      "html": "<button class=\"ds-btn-disabled\" disabled>Emitir constancia</button>",
+      "css": ".ds-btn-disabled { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border: 3px dashed var(--color-ink-muted, #4d4d4d); border-radius: 0; background: var(--color-paper, #ffffff); color: var(--color-ink-muted, #4d4d4d); font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 1.0625rem; font-weight: 700; cursor: not-allowed; }"
     },
     {
       "name": "Text Field",
       "kind": "input",
-      "refersTo": "field-input",
-      "description": "White box, 2px ink border, label above, muted placeholder.",
-      "html": "<label class=\"ds-field\"><span>Graduate name</span><input placeholder=\"María Fernanda Rojas (synthetic)\"></label>",
-      "css": ".ds-field{font-family:'Archivo',system-ui,sans-serif;display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:700}.ds-field input{min-height:48px;padding:8px 12px;border:2px solid #111;border-radius:0;background:#fff;color:#111;font:400 17px 'Archivo',system-ui,sans-serif}.ds-field input::placeholder{color:#55534E}.ds-field input:focus-visible{outline:3px solid #0047BB;outline-offset:3px}"
+      "refersTo": "input",
+      "description": "2px ink box, bold label above, muted hint below; error turns the border red.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Correo del empleado</span><input class=\"ds-input\" placeholder=\"nombre@empresa.com\" /><span class=\"ds-field-hint\">Solo para enviar la constancia.</span></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); } .ds-field-label { font-size: 0.9375rem; font-weight: 700; } .ds-field-hint { font-size: 0.9375rem; color: var(--color-ink-muted, #4d4d4d); } .ds-input { min-height: 48px; padding: 8px 12px; border: 2px solid var(--color-ink, #0a0a0a); border-radius: 0; background: var(--color-paper, #ffffff); color: var(--color-ink, #0a0a0a); font: inherit; font-size: 1.0625rem; } .ds-input::placeholder { color: var(--color-ink-muted, #4d4d4d); } .ds-input:focus-visible { outline: 3px solid var(--color-focus, #0a0a0a); outline-offset: 3px; } .ds-input[aria-invalid='true'] { border-color: var(--color-fail, #b0001f); }"
     },
     {
-      "name": "Line Field",
+      "name": "Site Navigation",
+      "kind": "nav",
+      "refersTo": "wordmark",
+      "description": "Wordmark lockup (closed seal + tracked CONSTANCIA) left, bold links right, 2px ink rule below.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-wordmark\" href=\"#\"><span class=\"ds-mini-seal\"><i style=\"grid-area:2/6/3/7\"></i><i style=\"grid-area:1/2/2/7\"></i><i style=\"grid-area:1/1/4/2\"></i><i style=\"grid-area:4/1/7/2\"></i><i style=\"grid-area:6/2/7/7\"></i></span>CONSTANCIA</a><nav><a href=\"#\">Verificar</a><a href=\"#\">Empleadores</a><a href=\"#\">Bóveda</a><a href=\"#\">Registro</a></nav></header>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 32px; border-bottom: 2px solid var(--color-ink, #0a0a0a); background: var(--color-paper, #ffffff); color: var(--color-ink, #0a0a0a); font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); } .ds-wordmark { display: inline-flex; align-items: center; gap: 12px; font-size: 1.0625rem; font-weight: 800; letter-spacing: 0.32em; color: inherit; text-decoration: none; } .ds-mini-seal { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 1px; width: 24px; height: 24px; } .ds-mini-seal i { background: currentColor; } .ds-nav nav { display: flex; gap: 32px; } .ds-nav nav a { display: inline-flex; align-items: center; min-height: 48px; font-size: 1.0625rem; font-weight: 700; color: inherit; text-decoration: none; } .ds-nav nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.2em; } .ds-nav a:focus-visible { outline: 3px solid var(--color-focus, #0a0a0a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Seal Region",
       "kind": "custom",
-      "refersTo": "",
-      "description": "Four layers of 3px lines on a 24px pitch that read as one field of alternating colours.",
-      "html": "<div class=\"ds-linefield\"></div>",
-      "css": ".ds-linefield{height:96px;border:2px solid #111;background:repeating-linear-gradient(90deg,#E4002B 0 3px,transparent 3px 24px) 0 0/auto,repeating-linear-gradient(90deg,#0047BB 0 3px,transparent 3px 24px) 6px 0/auto,repeating-linear-gradient(90deg,#00A651 0 3px,transparent 3px 24px) 12px 0/auto,repeating-linear-gradient(90deg,#111 0 3px,transparent 3px 24px) 18px 0/auto,#F7F6F2}"
+      "refersTo": "seal-region",
+      "description": "The signature: marigold column holding the five-segment C and its numbered legend. Segments 1-2 closed, 3 checking, 4-5 pending.",
+      "html": "<div class=\"ds-seal-region\"><div class=\"ds-seal\"><span class=\"ds-seg on\" style=\"grid-area:2/6/3/7\"></span><span class=\"ds-seg on\" style=\"grid-area:1/2/2/7\"></span><span class=\"ds-seg on ds-blink\" style=\"grid-area:1/1/4/2\"></span><span class=\"ds-seg\" style=\"grid-area:4/1/7/2\"></span><span class=\"ds-seg\" style=\"grid-area:6/2/7/7\"></span></div><ol class=\"ds-legend\"><li><b>1</b>Constancia<em>Listo</em></li><li><b>2</b>Acreditado<em>Listo</em></li><li><b>3</b>Firma<em>Comprobando…</em></li><li><b>4</b>Titular</li><li><b>5</b>Registro</li></ol></div>",
+      "css": ".ds-seal-region { display: flex; flex-direction: column; gap: 40px; align-items: stretch; padding: 40px 32px; background: var(--color-marigold, #f2b705); color: var(--color-ink, #0a0a0a); font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); } .ds-seal { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 4px; width: 160px; height: 160px; align-self: center; } .ds-seg { border: 5px solid currentColor; transition: background-color 240ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-seg.on { background: currentColor; } .ds-blink { animation: ds-blink 0.8s steps(2, jump-none) infinite; } @keyframes ds-blink { 50% { opacity: 0.35; } } .ds-legend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; font-size: 0.9375rem; } .ds-legend li { border-top: 4px solid currentColor; padding-top: 8px; font-weight: 700; } .ds-legend b, .ds-legend em { display: block; } .ds-legend em { font-style: normal; text-transform: uppercase; letter-spacing: 0.025em; font-weight: 400; } @media (prefers-reduced-motion: reduce) { .ds-seg { transition: none; } .ds-blink { animation: none; } }"
     },
     {
-      "name": "Check Row (verified)",
+      "name": "Verdict",
       "kind": "custom",
-      "refersTo": "check-chip-verified",
-      "description": "Index, solid green chip with a drawn check, label, status word and measured value.",
-      "html": "<div class=\"ds-row\"><span class=\"ds-idx\">3</span><span class=\"ds-chip\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\"><path d=\"M4 10.5 8.5 15 16 5.5\" stroke-linecap=\"square\"/></svg></span><div><div class=\"ds-label\">Signature matches</div></div><div class=\"ds-word\">VERIFIED<code>3.1 ms</code></div></div>",
-      "css": ".ds-row{font-family:'Archivo',system-ui,sans-serif;display:grid;grid-template-columns:2rem 2.25rem 1fr auto;gap:16px;align-items:start;border-top:2px solid #111;padding:16px 0}.ds-idx{font:400 14px 'Geist Mono',monospace;color:#55534E;padding-top:6px}.ds-chip{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:2px solid #111;background:#00A651}.ds-label{font-size:24px;font-weight:700}.ds-word{font-size:14px;font-weight:700;letter-spacing:.025em;color:#00703A;text-align:right}.ds-word code{display:block;font:400 14px 'Geist Mono',monospace;color:#55534E;letter-spacing:0}"
+      "refersTo": "verdict-valid",
+      "description": "4px ink frame; green field wipes in once from the seal side, closed seal and display-size word.",
+      "html": "<section class=\"ds-verdict\"><div class=\"ds-verdict-field\"><div class=\"ds-vseal\"><i style=\"grid-area:2/6/3/7\"></i><i style=\"grid-area:1/2/2/7\"></i><i style=\"grid-area:1/1/4/2\"></i><i style=\"grid-area:4/1/7/2\"></i><i style=\"grid-area:6/2/7/7\"></i></div><h2>VÁLIDA</h2></div><p class=\"ds-verdict-reason\">Las cinco comprobaciones pasaron.</p></section>",
+      "css": ".ds-verdict { border: 4px solid var(--color-ink, #0a0a0a); background: var(--color-paper, #ffffff); font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); } .ds-verdict-field { display: flex; align-items: center; gap: 40px; padding: 40px 32px; background: var(--color-ok, #00703a); color: var(--color-paper, #ffffff); animation: ds-wipe 600ms cubic-bezier(0.16, 1, 0.3, 1) both; } @keyframes ds-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } } .ds-vseal { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 3px; width: 112px; height: 112px; flex-shrink: 0; } .ds-vseal i { background: currentColor; } .ds-verdict-field h2 { margin: 0; font-size: clamp(3.25rem, 1.75rem + 4.6vw, 6rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.035em; } .ds-verdict-reason { margin: 0; padding: 24px; border-top: 4px solid var(--color-ink, #0a0a0a); font-size: 1.0625rem; } @media (prefers-reduced-motion: reduce) { .ds-verdict-field { animation: none; } }"
     },
     {
-      "name": "Verdict Band (authentic)",
+      "name": "Check Row",
       "kind": "custom",
-      "refersTo": "verdict-mark",
-      "description": "Flooded green band with a white mark square and the huge word, reason below on white.",
-      "html": "<section class=\"ds-verdict\"><div class=\"ds-band\"><span class=\"ds-mark\"><svg viewBox=\"0 0 20 20\" width=\"67\" height=\"67\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.5\"><path d=\"M4 10.5 8.5 15 16 5.5\" stroke-linecap=\"square\"/></svg></span><h2>AUTHENTIC</h2></div><p>Signed by Universidad Waraira (demo institution). Every check passed.</p></section>",
-      "css": ".ds-verdict{font-family:'Archivo',system-ui,sans-serif;border:4px solid #111;background:#fff}.ds-band{background:#00A651;padding:40px 32px;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center}.ds-mark{display:flex;align-items:center;justify-content:center;width:112px;height:112px;border:4px solid #111;background:#fff}.ds-band h2{margin:0;font-weight:800;font-stretch:125%;font-size:64px;line-height:.95;letter-spacing:-.03em;color:#111}.ds-verdict p{margin:0;padding:24px;border-top:4px solid #111;font-size:17px;line-height:1.55}"
+      "refersTo": "chip",
+      "description": "Numbered row on 2px ink rules: index, 36px square chip with drawn mark, label, status word and measured value in mono.",
+      "html": "<ol class=\"ds-checks\"><li><span class=\"ds-idx\">3</span><span class=\"ds-chip ok\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\"><path d=\"M4 10.5 8.5 15 16 5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"square\" stroke-linejoin=\"miter\"/></svg></span><p class=\"ds-check-label\">Firma</p><div class=\"ds-check-status\"><p>Verificado</p><code>did:web:ejemplo-andino.ve#key-1</code></div></li></ol>",
+      "css": ".ds-checks { margin: 0; padding: 0; list-style: none; border-bottom: 2px solid var(--color-ink, #0a0a0a); font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); color: var(--color-ink, #0a0a0a); } .ds-checks li { display: grid; grid-template-columns: 2rem 2.25rem 1fr auto; gap: 4px 16px; align-items: start; padding: 16px 0; border-top: 2px solid var(--color-ink, #0a0a0a); } .ds-idx { padding-top: 4px; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-chip { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 2px solid var(--color-ink, #0a0a0a); background: var(--color-paper, #ffffff); } .ds-chip.ok { border-color: var(--color-ok, #00703a); background: var(--color-ok, #00703a); color: var(--color-paper, #ffffff); } .ds-check-label { margin: 0; font-size: 1.5rem; font-weight: 700; } .ds-check-status { text-align: right; } .ds-check-status p { margin: 0; font-size: 0.9375rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; color: var(--color-ok, #00703a); } .ds-check-status code { font-family: var(--font-mono, 'Red Hat Mono', ui-monospace, monospace); font-size: 0.9375rem; color: var(--color-ink-muted, #4d4d4d); }"
     },
     {
-      "name": "Receipt",
+      "name": "Drop Slot",
       "kind": "custom",
-      "refersTo": "",
-      "description": "Ledger of label and value rows separated by hairlines; mono for identifiers.",
-      "html": "<section class=\"ds-receipt\"><h2>What left your browser</h2><dl><div><dt>DID</dt><dd>did:web:waraira-university.onrender.com</dd></div><div><dt>Document</dt><dd class=\"ds-muted\">Never sent</dd></div></dl></section>",
-      "css": ".ds-receipt{font-family:'Archivo',system-ui,sans-serif;border-top:4px solid #111;padding-top:16px}.ds-receipt h2{margin:0 0 16px;font-weight:800;font-stretch:125%;font-size:24px}.ds-receipt dl{margin:0}.ds-receipt dl>div{display:grid;grid-template-columns:minmax(7rem,12rem) 1fr;gap:24px;border-top:2px solid #CFCCC2;padding:12px 0}.ds-receipt dt{font-size:14px;font-weight:700}.ds-receipt dd{margin:0;font:400 17px 'Geist Mono',monospace;word-break:break-all}.ds-receipt dd.ds-muted{font-family:'Archivo',system-ui,sans-serif;color:#55534E}"
+      "refersTo": "drop-slot",
+      "description": "Paper field in a 4px ink border; inverts to ink with a marigold outline while a file is dragged over the page.",
+      "html": "<label class=\"ds-drop\"><span class=\"ds-drop-label\">Suelta una constancia para verificarla</span><span class=\"ds-drop-hint\">El archivo no sale de tu navegador.</span><input type=\"file\" hidden /></label>",
+      "css": ".ds-drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 176px; padding: 24px; border: 4px solid var(--color-ink, #0a0a0a); background: var(--color-paper, #ffffff); color: var(--color-ink, #0a0a0a); text-align: center; cursor: pointer; font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); transition: background-color 150ms, color 150ms; } .ds-drop-label { font-size: 1.75rem; font-weight: 800; line-height: 1.25; letter-spacing: -0.02em; } .ds-drop-hint { max-width: 40ch; font-size: 1.0625rem; } .ds-drop:hover { background: var(--color-ink, #0a0a0a); color: var(--color-paper, #ffffff); outline: 4px solid var(--color-marigold, #f2b705); outline-offset: 6px; } .ds-drop:focus-within { outline: 3px solid var(--color-focus, #0a0a0a); outline-offset: -8px; }"
     },
     {
-      "name": "Panel",
-      "kind": "card",
-      "refersTo": "panel",
-      "description": "White box with a 2px ink border and 24px padding. Never nested in another panel.",
-      "html": "<section class=\"ds-panel\"><h2>Default panel</h2><p>A bordered white panel for a single block of content.</p></section>",
-      "css": ".ds-panel{font-family:'Archivo',system-ui,sans-serif;border:2px solid #111;background:#fff;padding:24px;color:#111}.ds-panel h2{margin:0 0 16px;font-weight:800;font-stretch:125%;font-size:24px;line-height:1.2}.ds-panel p{margin:0;font-size:17px;line-height:1.55}"
-    },
-    {
-      "name": "Drop Zone",
+      "name": "Claim List",
       "kind": "custom",
-      "refersTo": "",
-      "description": "A white gap cut into a line field with a 4px ink border: the primary action.",
-      "html": "<div class=\"ds-dz-field\"><label class=\"ds-dz\"><span>Drop a certificate</span><small>The file never leaves your browser.</small></label></div>",
-      "css": ".ds-dz-field{padding:48px;border:2px solid #111;background:repeating-linear-gradient(90deg,#E4002B 0 3px,transparent 3px 24px) 0 0/auto,repeating-linear-gradient(90deg,#0047BB 0 3px,transparent 3px 24px) 6px 0/auto,repeating-linear-gradient(90deg,#00A651 0 3px,transparent 3px 24px) 12px 0/auto,repeating-linear-gradient(90deg,#111 0 3px,transparent 3px 24px) 18px 0/auto,#F7F6F2}.ds-dz{font-family:'Archivo',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:256px;border:4px solid #111;background:#fff;padding:32px;text-align:center;cursor:pointer;color:#111}.ds-dz span{font-weight:800;font-stretch:125%;font-size:44px;line-height:1;letter-spacing:-.025em}.ds-dz small{font-size:17px}.ds-dz:focus-visible{outline:3px solid #0047BB;outline-offset:-8px}"
+      "refersTo": "claim-hidden",
+      "description": "Selective disclosure: shown values in a 2px ink box, hidden values as a solid ink OCULTO bar.",
+      "html": "<ul class=\"ds-claims\"><li><span>Situación</span><span class=\"ds-claim-shown\">Empleado activo</span></li><li><span>Salario</span><span class=\"ds-claim-hidden\">Oculto</span></li></ul>",
+      "css": ".ds-claims { margin: 0; padding: 0; list-style: none; border-bottom: 2px solid var(--color-ink, #0a0a0a); font-family: var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif); color: var(--color-ink, #0a0a0a); } .ds-claims li { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; padding: 12px 0; border-top: 2px solid var(--color-ink, #0a0a0a); } .ds-claims li > span:first-child { font-weight: 700; } .ds-claim-shown { padding: 8px 12px; border: 2px solid var(--color-ink, #0a0a0a); background: var(--color-paper, #ffffff); } .ds-claim-hidden { padding: 8px 12px; background: var(--color-ink, #0a0a0a); color: var(--color-paper, #ffffff); text-align: center; font-size: 0.9375rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; }"
     }
   ],
   "narrative": {
-    "northStar": "Chromatic Interference",
-    "overview": "Caracas kinetic op-art as a grammar, never a copy of a piece. Fields of fine pure-colour vertical lines interfere at rest and resolve into one solid colour when a credential is examined. White modernist ground, ink rules, square corners, flat surfaces, one authored motion.",
+    "northStar": "Programa de identidad",
+    "overview": "Constancia is drawn as an institution with an identity manual, in the lineage of Venezuelan modernist identity programs of the 1960s and 70s: banks, museums, the Caracas Metro. The whole system rests on one geometric mark, a C built from five segments on a 6x6 module grid, and that mark is not decoration: it is the verifier. Each segment is one check, in fixed order (Constancia, Acreditado, Firma, Titular, Registro), and it changes state in place. It never moves, never reorders.\n\nThe palette is two values plus one colour. Pure white paper and near-black ink carry everything; an institutional marigold owns whole regions (the seal column, the closing footer band, the \"no se puede verificar ahora\" verdict) and is never used for small text. Green and red exist only to report a verdict. Structure comes from black rules at 2, 3 and 4px, a strict 12-column grid and square corners everywhere. There are no shadows, no gradients and no rounded corners; the Tailwind theme resets `--radius-*`, `--shadow-*` and the default colour palette so they cannot be reached for.\n\nDensity is calm and projector-safe: body text never below 17px, targets at least 48px, one focal piece per screen. Operate surfaces (`/verify`, `/vault`, `/cv`, `/employer`, `/ledger`) inherit the same world with more restraint: the marigold seal column appears where a check result is the subject, and white with black rules elsewhere.",
     "keyCharacteristics": [
-      "Four pure inks appear only as vertical line fields, flooded bands, chips and the unavailable plate; blue is also the focus ring. Text is ink or a text-safe dark.",
-      "Every state is a word plus a drawn mark plus colour. Never colour alone.",
-      "Square corners, flat surfaces, hairline and ink rules. No shadows, no gradients as decoration, no glass.",
-      "One motion family, owned by the line field: parallax at rest, stepped drift or check-by-check convergence while scanning, then the 600ms exponential ease-out flood, no bounce. Elsewhere only 150ms colour inversions."
+      "One mark, five segments, one check per segment; state changes in place.",
+      "White, black, one marigold; verdict green and red only on states.",
+      "Square corners, black rules of 2 / 3 / 4px, no shadows, no gradients.",
+      "Heavy neo-grotesk display, mono only for hashes and IDs.",
+      "State is never colour alone: every state carries a word and a drawn mark."
     ],
     "rules": [
-      {
-        "name": "The Pure Ink Rule",
-        "body": "Pure red, green and yellow are lines and floods. Text uses ink, muted ink or the two dark variants. Yellow is never text and never a thin line on paper.",
-        "section": "colors"
-      },
-      {
-        "name": "The Resolution Rule",
-        "body": "Colour is the last thing that arrives. A resolved state always carries its word and its drawn mark (check, cross, bang, dash); a colour-blind reader loses nothing.",
-        "section": "colors"
-      },
-      {
-        "name": "The Data Is Mono Rule",
-        "body": "Mono appears only on values a person might copy or compare. Prose never goes mono.",
-        "section": "typography"
-      },
-      {
-        "name": "The Flat Rule",
-        "body": "Surfaces never lift. A state change is a colour inversion (ink to paper) or a flood, never a shadow.",
-        "section": "elevation"
-      }
+      { "name": "The Two Values and One Colour Rule", "body": "Paper, ink and marigold are the world. Green and red appear only where a result is being reported; there are no decorative greys, tints or extra accents, and the theme does not expose any.", "section": "colors" },
+      { "name": "The Marigold Region Rule", "body": "Marigold owns areas, not details: a column, a band, a verdict field, a status notice, a state chip. It never colours text, rules or icons, and text set on it is always ink.", "section": "colors" },
+      { "name": "The Status Word Rule", "body": "Uppercase, bold, tracked small text is reserved for a state word printed next to its chip or segment (VERIFICADO, FALLÓ, NO DISPONIBLE). It never sits above a heading as a label.", "section": "typography" },
+      { "name": "The Mono Is Data Rule", "body": "Red Hat Mono appears only on machine values. Headings, buttons and prose never use it.", "section": "typography" },
+      { "name": "The Fixed Position Rule", "body": "Rows, segments and checks keep their position through every state. Results replace in place; nothing reorders or slides to announce a change.", "section": "layout" },
+      { "name": "The Rule Weight Rule", "body": "Depth is drawn, not cast: a heavier black rule means a more important boundary. A section starts with a 4px top rule; rows inside it divide with 2px.", "section": "elevation" }
     ],
     "dos": [
-      "Do use the four inks only as lines, floods, chips and the unavailable plate (blue is also the focus ring), and text only in ink, muted ink, red-text or green-text.",
-      "Do pair every resolved state with its word and its mark.",
-      "Do keep line offsets on whole pixels and use `steps()` for any drift: `steps(24)` on the layers, `steps(8)` on the chip (no shimmer at 1280x720).",
-      "Do keep targets at 48px or more and body text at 17px or more; this is read from across a room.",
-      "Do put the line field behind the one thing being decided (the drop slot, the verdict), and leave the rest on paper."
+      "Do keep every surface on paper, ink and marigold; use ok and fail only on verdicts, chips and status words.",
+      "Do give marigold whole regions (the 5/12 seal column, a band, a verdict field) and set only ink on it.",
+      "Do frame and divide with black rules: 4px for frames and section breaks, 3px for controls, 2px for rows.",
+      "Do print every state as a word plus a drawn mark, and keep it in its fixed position.",
+      "Do use the resolve ease (cubic-bezier(0.16, 1, 0.3, 1)) for the seal and the verdict wipe, and make both instant under reduced motion.",
+      "Do keep body text at 17px or more and every target at 48px or more.",
+      "Do set hashes, keys and IDs in Red Hat Mono with tabular numerals, shortened in the middle when long."
     ],
     "donts": [
-      "Don't use shadows, rounded corners, gradient text, glass or glow.",
-      "Don't use yellow as text, or pure red or green as small text on paper.",
-      "Don't put wallpaper-density line fields behind running text.",
-      "Don't animate anything outside the line field beyond 150ms colour changes. No bounce, no entrance animation on every section.",
-      "Don't show wallet, gas or seed-phrase words outside a \"Technical details\" disclosure."
+      "Don't use rounded corners, shadows or gradients; the theme deliberately does not provide them.",
+      "Don't set marigold as text, rule or icon colour, or put white text on marigold.",
+      "Don't introduce greys beyond ink-muted (secondary text) and rule (hairlines), or use either as a fill.",
+      "Don't place an uppercase label or kicker above a heading; uppercase tracking is for status words only.",
+      "Don't reorder, slide or reflow checks to show progress; segments and rows change state in place.",
+      "Don't show a state through colour alone, or a disabled control through opacity alone on buttons.",
+      "Don't use glyph or icon-font icons; marks are drawn square-capped SVG strokes."
     ]
   }
 }

@@ -11,11 +11,11 @@ async function requireActiveEmployer(account: `0x${string}`) {
   try {
     const issuer = await getLedgerReader().issuer(account);
     if (issuer.status !== 'ACTIVE') {
-      throw new HttpError(422, 'EMPLOYER_NOT_ACCREDITED', 'This employer is not accredited');
+      throw new HttpError(422, 'EMPLOYER_NOT_ACCREDITED', 'Este empleador no está acreditado');
     }
   } catch (error) {
     if (error instanceof LedgerUnreachableError) {
-      throw new HttpError(503, 'LEDGER_UNREACHABLE', 'The ledger cannot be reached right now');
+      throw new HttpError(503, 'LEDGER_UNREACHABLE', 'El registro no responde en este momento');
     }
     throw error;
   }

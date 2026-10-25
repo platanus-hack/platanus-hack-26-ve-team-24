@@ -29,7 +29,7 @@ function AddEmployee({ onSaved }: { onSaved: () => void }) {
   async function save() {
     const ref = employeeRefSchema.safeParse(employeeRef);
     const record = recordFromFields(fields);
-    setRefError(ref.success ? undefined : 'Use 1 to 40 characters');
+    setRefError(ref.success ? undefined : 'Usa entre 1 y 40 caracteres');
     setErrors(record.ok ? {} : record.errors);
     if (!ref.success || !record.ok) return;
     await saveEntry({ employeeRef: ref.data, record: record.record });
@@ -39,7 +39,7 @@ function AddEmployee({ onSaved }: { onSaved: () => void }) {
   }
 
   return (
-    <Panel title="Add an employee">
+    <Panel title="Agregar un empleado">
       <form
         className="flex flex-col gap-6"
         onSubmit={(event) => {
@@ -48,7 +48,11 @@ function AddEmployee({ onSaved }: { onSaved: () => void }) {
         }}
       >
         <div className="max-w-sm">
-          <Field label="Employee number" hint="The number the employee types when they ask" error={refError}>
+          <Field
+            label="Número de empleado"
+            hint="El número que el empleado escribe al pedir su constancia"
+            error={refError}
+          >
             <input
               name="employeeRef"
               autoComplete="off"
@@ -61,7 +65,7 @@ function AddEmployee({ onSaved }: { onSaved: () => void }) {
         </div>
         <RecordForm fields={fields} errors={errors} onChange={setFields} />
         <div>
-          <Button type="submit">Add to directory</Button>
+          <Button type="submit">Agregar al directorio</Button>
         </div>
       </form>
     </Panel>
@@ -81,20 +85,19 @@ export function DirectoryView() {
 
   return (
     <div className="flex flex-col gap-10">
-      <p className="max-w-[65ch] text-small font-bold">This list never leaves this browser.</p>
       {entries === null ? (
-        <p role="status">Opening the directory…</p>
+        <p role="status">Abriendo el directorio…</p>
       ) : entries.length === 0 ? (
-        <Panel title="No employees yet">
-          <p className="mb-6 max-w-[65ch] text-body text-ink-muted">
-            Load four fictional employees to try the flow, or add your own below.
+        <Panel title="Aún no hay empleados">
+          <p className="mb-6 max-w-[65ch] text-body">
+            Carga cuatro empleados ficticios para probar el flujo, o agrega los tuyos abajo.
           </p>
           <Button
             onClick={() => {
               void loadDemoDirectory().then(refresh);
             }}
           >
-            Load demo directory
+            Cargar el directorio de prueba
           </Button>
         </Panel>
       ) : (
@@ -110,16 +113,17 @@ export function DirectoryView() {
                 </p>
                 <p className="text-body text-ink-muted">
                   <code>{employeeRef}</code> · {record.jobTitle} ·{' '}
-                  {record.endDate ? `until ${record.endDate}` : 'current'}
+                  {record.endDate ? `hasta ${record.endDate}` : 'empleo actual'}
                 </p>
               </div>
               <Button
                 variant="quiet"
+                aria-label={`Quitar a ${record.givenName} ${record.familyName} del directorio`}
                 onClick={() => {
                   void removeEntry(employeeRef).then(refresh);
                 }}
               >
-                Remove
+                Quitar
               </Button>
             </li>
           ))}

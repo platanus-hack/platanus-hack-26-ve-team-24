@@ -60,6 +60,6 @@ function cookieValue(req: Request, name: string): string | null {
 export async function requireEmployer(req: Request): Promise<EmployerSession> {
   const token = cookieValue(req, SESSION_COOKIE);
   const session = token ? await read('session', token) : null;
-  if (!session) throw new HttpError(401, 'UNAUTHENTICATED', 'Sign in first');
+  if (!session) throw new HttpError(401, 'UNAUTHENTICATED', 'Inicia sesión primero');
   return session;
 }

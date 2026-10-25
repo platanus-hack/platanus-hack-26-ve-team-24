@@ -1,24 +1,23 @@
 import Link from 'next/link';
+import { Wordmark } from '@/components/ui/wordmark';
 import type { Metadata } from 'next';
 import { EmployerNav } from './_components/employer-nav';
 
-export const metadata: Metadata = { title: 'Employer · Constancia' };
-
-// The thin strip is the line-field ink, used as this world's only accent.
-const INK_STRIP =
-  'h-1.5 bg-[linear-gradient(90deg,var(--color-line-blue)_0_25%,var(--color-line-red)_25%_50%,var(--color-line-yellow)_50%_75%,var(--color-line-green)_75%_100%)]';
+export const metadata: Metadata = { title: 'Empleador · Constancia' };
 
 export default function EmployerLayout({ children }: LayoutProps<'/employer'>) {
   return (
     <>
-      <div aria-hidden="true" className={INK_STRIP} />
-      <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-gutter py-4">
-        <Link href="/employer" className="font-display text-title font-extrabold font-stretch-expanded">
-          Constancia
-        </Link>
+      <header className="flex flex-wrap items-center justify-between gap-x-8 gap-y-2 border-b-2 border-ink px-gutter py-5">
+        <p className="flex flex-wrap items-baseline gap-x-4">
+          <Wordmark />
+          <Link href="/employer" className="font-bold no-underline hover:underline">
+            Empleador
+          </Link>
+        </p>
         <EmployerNav />
       </header>
-      <main className="mx-auto w-full max-w-6xl px-gutter pb-16 pt-6">{children}</main>
+      <main className="mx-auto w-full max-w-6xl px-gutter pt-12 pb-24">{children}</main>
     </>
   );
 }

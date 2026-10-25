@@ -23,19 +23,21 @@ import {
   emptyFields,
   fieldsFromRecord,
   recordFromFields,
+  REQUEST_KIND_LABELS,
   type RecordErrors,
   type RecordFields,
 } from '@/lib/employer/record-fields';
 import { fetchPendingRequest, SignedOutError } from '@/lib/employer/requests-client';
 import { useMe } from '@/lib/employer/use-me';
 import { RecordForm } from '../../_components/record-form';
+import { SignInFirst } from '../../_components/sign-in-first';
 
 const ROWS: { step: IssueStepId; label: string }[] = [
-  { step: 'OPENED', label: 'Request opened' },
-  { step: 'SIGNED', label: 'Certificate signed' },
-  { step: 'ANCHORED', label: 'Written to the ledger' },
-  { step: 'DELIVERED', label: 'Delivered, encrypted' },
-  { step: 'DISCARDED', label: 'Data discarded' },
+  { step: 'OPENED', label: 'Solicitud abierta' },
+  { step: 'SIGNED', label: 'Constancia firmada' },
+  { step: 'ANCHORED', label: 'Escrita en el registro' },
+  { step: 'DELIVERED', label: 'Entregada, cifrada' },
+  { step: 'DISCARDED', label: 'Datos descartados' },
 ];
 
 type Load =
@@ -58,33 +60,33 @@ function IssuedReceipt({ request, account, progress }: { request: IssueRequest; 
   return (
     <div className="flex flex-col gap-6">
       <Receipt
-        title="What Constancia stored"
+        title="Lo que guardó Constancia"
         rows={[
-          { label: 'Request', value: request.id, mono: true },
-          { label: 'Employer', value: account, mono: true },
-          { label: 'Employee number', value: request.employeeRef, mono: true },
-          { label: 'Kind', value: request.kind },
-          { label: 'Status', value: 'ISSUED' },
-          { label: 'Encrypted certificate', value: `${cipherKb} KB, until the holder collects it` },
-          { label: 'Never stored', value: 'name, national ID, job title, salary, the certificate itself', muted: true },
+          { label: 'Solicitud', value: request.id, mono: true },
+          { label: 'Empleador', value: account, mono: true },
+          { label: 'Número de empleado', value: request.employeeRef, mono: true },
+          { label: 'Tipo', value: REQUEST_KIND_LABELS[request.kind] },
+          { label: 'Estado', value: 'Emitida' },
+          { label: 'Constancia cifrada', value: `${cipherKb} KB, hasta que el titular la recoja` },
+          { label: 'Nunca guardó', value: 'nombre, cédula, cargo, salario ni la constancia en sí', muted: true },
         ]}
       />
-      <Disclosure summary="Technical details">
+      <Disclosure summary="Detalles técnicos">
         <dl className="flex flex-col gap-3 text-small">
           <div>
-            <dt className="font-bold">Credential hash</dt>
+            <dt className="font-bold">Huella de la constancia</dt>
             <dd className="break-all font-mono">{credential.credentialHash}</dd>
           </div>
           <div>
-            <dt className="font-bold">Signing key</dt>
+            <dt className="font-bold">Clave de firma</dt>
             <dd className="break-all font-mono">{credential.keyId}</dd>
           </div>
           <div>
-            <dt className="font-bold">Ledger block</dt>
-            <dd className="font-mono">{anchor?.blockNumber ?? 'recorded by an earlier attempt'}</dd>
+            <dt className="font-bold">Bloque del registro</dt>
+            <dd className="font-mono">{anchor?.blockNumber ?? 'registrado en un intento anterior'}</dd>
           </div>
           <div>
-            <dt className="font-bold">JWS header</dt>
+            <dt className="font-bold">Encabezado JWS</dt>
             <dd>
               <pre className="overflow-x-auto font-mono">{describeHeader(credential.issuerJwt)}</pre>
             </dd>
@@ -92,9 +94,9 @@ function IssuedReceipt({ request, account, progress }: { request: IssueRequest; 
         </dl>
       </Disclosure>
       <div className="flex flex-wrap gap-3">
-        <LinkButton href="/employer/requests">Back to requests</LinkButton>
+        <LinkButton href="/employer/requests">Volver a las solicitudes</LinkButton>
         <LinkButton variant="secondary" href="/employer/issued">
-          See issued certificates
+          Ver las constancias emitidas
         </LinkButton>
       </div>
     </div>
@@ -142,20 +144,14 @@ export function IssueFlow({ requestId }: { requestId: string }) {
     };
   }, [accountReady, requestId]);
 
-  if (me.status === 'loading') return <p role="status">Checking your session…</p>;
-  if (me.status === 'out' || load.status === 'signed-out') {
-    return (
-      <Panel title="Sign in first">
-        <LinkButton href="/employer">Sign in with this device</LinkButton>
-      </Panel>
-    );
-  }
-  if (load.status === 'loading') return <p role="status">Opening the request…</p>;
+  if (me.status === 'loading') return <p role="status">Comprobando tu sesión…</p>;
+  if (me.status === 'out' || load.status === 'signed-out') return <SignInFirst />;
+  if (load.status === 'loading') return <p role="status">Abriendo la solicitud…</p>;
   if (load.status === 'missing' && !done) {
     return (
-      <Panel title="This request is no longer waiting">
-        <p className="mb-6 text-body text-ink-muted">It may have been issued, declined or expired.</p>
-        <LinkButton href="/employer/requests">Back to requests</LinkButton>
+      <Panel title="Esta solicitud ya no está pendiente">
+        <p className="mb-6 text-body text-ink-muted">Puede que ya se haya emitido, rechazado o vencido.</p>
+        <LinkButton href="/employer/requests">Volver a las solicitudes</LinkButton>
       </Panel>
     );
   }
@@ -166,14 +162,14 @@ export function IssueFlow({ requestId }: { requestId: string }) {
   const endDateMode = request.kind === 'CURRENT' ? 'hidden' : 'required';
 
   async function execute() {
-    if (submitted.current) return; // double submit
+    if (submitted.current) return; // evita el doble envío
     submitted.current = true;
     setBusy(true);
     setStarted(true);
     try {
       let record = recordFromFields({ ...fields, endDate: request.kind === 'CURRENT' ? '' : fields.endDate });
       if (record.ok && request.kind === 'PAST' && !record.record.endDate) {
-        record = { ok: false, errors: { endDate: 'A past job needs an end date' } };
+        record = { ok: false, errors: { endDate: 'Un empleo anterior necesita fecha de egreso' } };
       }
       if (!record.ok) {
         setErrors(record.errors);
@@ -185,7 +181,7 @@ export function IssueFlow({ requestId }: { requestId: string }) {
       const identity = identities.find((item) => item.account === account);
       const signer = identity ? await loadSigner(identity.signerName) : null;
       if (!signer) {
-        setEvents({ SIGNED: { step: 'SIGNED', status: 'FAILED', detail: 'The signing key for this organization is not on this device.' } });
+        setEvents({ SIGNED: { step: 'SIGNED', status: 'FAILED', detail: 'La clave de firma de esta organización no está en este dispositivo.' } });
         return;
       }
       const deps = browserIssueDeps({
@@ -201,7 +197,7 @@ export function IssueFlow({ requestId }: { requestId: string }) {
       setDone(true);
     } catch (caught) {
       if (!(caught instanceof IssueFailure)) {
-        setEvents((current) => ({ ...current, SIGNED: { step: 'SIGNED', status: 'FAILED', detail: 'Something went wrong. Try again.' } }));
+        setEvents((current) => ({ ...current, SIGNED: { step: 'SIGNED', status: 'FAILED', detail: 'Algo salió mal. Inténtalo de nuevo.' } }));
       }
     } finally {
       submitted.current = false;
@@ -215,12 +211,12 @@ export function IssueFlow({ requestId }: { requestId: string }) {
     <div className="flex flex-col gap-8">
       {!started && (
         <p className="max-w-[65ch] text-small font-bold">
-          This data never leaves your browser except inside the encrypted certificate.
+          Estos datos solo salen de tu navegador dentro de la constancia cifrada.
         </p>
       )}
       {!inDirectory && !started && (
         <p role="status" className="max-w-[65ch] text-body text-ink-muted">
-          This employee number is not in your directory. Fill in the details by hand.
+          Este número de empleado no está en tu directorio. Completa los datos a mano.
         </p>
       )}
       {!done && (
@@ -240,13 +236,13 @@ export function IssueFlow({ requestId }: { requestId: string }) {
           />
           {!started && (
             <p className="max-w-[65ch] text-small text-ink-muted">
-              Issuing writes a permanent record: a hash. It contains no personal data.
+              Emitir deja una huella permanente en el registro. La huella no contiene datos personales.
             </p>
           )}
           {!failed && (
             <div>
               <Button type="submit" disabled={busy}>
-                {busy ? 'Issuing…' : 'Issue certificate'}
+                {busy ? 'Emitiendo…' : 'Emitir la constancia'}
               </Button>
             </div>
           )}
@@ -254,7 +250,7 @@ export function IssueFlow({ requestId }: { requestId: string }) {
       )}
       {started && (
         <div aria-live="polite">
-          <CheckList title={done ? 'Certificate issued' : 'Issuing'}>
+          <CheckList title={done ? 'Constancia emitida' : 'Emitiendo'}>
             {ROWS.map(({ step, label }, index) => (
               <CheckRow
                 key={step}
@@ -275,7 +271,7 @@ export function IssueFlow({ requestId }: { requestId: string }) {
               void execute();
             }}
           >
-            Retry from here
+            Reintentar desde aquí
           </Button>
         </div>
       )}

@@ -7,8 +7,8 @@ export default function ImportPage() {
   return (
     <>
       <PageHeader
-        title="Import demo certificates"
-        lead="Demo mode only. Choose demo-pack/vault.json from the seed script."
+        title="Importar constancias de demostración"
+        lead="Solo en modo demostración. Elige demo-pack/vault.json, generado por el script de siembra. Todos los datos son ficticios."
       />
       <div className="mt-10 max-w-xl">
         <DemoImport />

@@ -26,7 +26,7 @@ export async function importDemoPack(json: string): Promise<number> {
       sdJwt,
       credentialHash: hash,
       employer: verdict.kind === 'AUTHENTIC' ? verdict.issuer.account : '',
-      employerName: verdict.kind === 'AUTHENTIC' ? verdict.issuer.name : 'Demo employer',
+      employerName: verdict.kind === 'AUTHENTIC' ? verdict.issuer.name : 'Empleador de demostración (ficticio)',
       kind: decodePresentation(sdJwt).claims.employedNow === true ? 'CURRENT' : 'PAST',
       keyName,
       receivedAt: Date.now(),

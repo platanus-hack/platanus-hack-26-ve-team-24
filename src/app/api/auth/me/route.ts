@@ -11,7 +11,7 @@ export function GET(req: Request) {
       return Response.json({ account, name, status });
     } catch (error) {
       if (!(error instanceof LedgerUnreachableError)) throw error;
-      throw new HttpError(503, 'LEDGER_UNREACHABLE', 'The ledger cannot be reached right now');
+      throw new HttpError(503, 'LEDGER_UNREACHABLE', 'El registro no responde en este momento');
     }
   });
 }

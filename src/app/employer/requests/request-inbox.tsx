@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Button, LinkButton } from '@/components/ui/button';
-import { Panel } from '@/components/ui/panel';
 import { listDirectory, type DirectoryEntry } from '@/lib/employer/directory';
+import { REQUEST_KIND_LABELS } from '@/lib/employer/record-fields';
 import {
   declineRequest,
   fetchPendingRequests,
@@ -11,6 +11,7 @@ import {
   type PendingRequest,
 } from '@/lib/employer/requests-client';
 import { formatAge } from '@/lib/ledger/format';
+import { SignInFirst } from '../_components/sign-in-first';
 
 const POLL_MS = 3000;
 
@@ -20,7 +21,7 @@ type Inbox =
   | { status: 'error' }
   | { status: 'ready'; requests: PendingRequest[] };
 
-function RequestCard({
+function RequestRow({
   request,
   person,
   now,
@@ -35,17 +36,17 @@ function RequestCard({
     <li className="flex flex-wrap items-center justify-between gap-6 border-t-2 border-ink py-5">
       <div>
         <p className="text-title font-bold">
-          {person ? `${person.record.givenName} ${person.record.familyName}` : 'Not in your directory'}
+          {person ? `${person.record.givenName} ${person.record.familyName}` : 'No está en tu directorio'}
         </p>
         <p className="text-body text-ink-muted">
-          <code>{request.employeeRef}</code> · {request.kind} ·{' '}
+          <code>{request.employeeRef}</code> · {REQUEST_KIND_LABELS[request.kind]} ·{' '}
           {formatAge(new Date(request.createdAt).getTime() / 1000, now)}
         </p>
       </div>
       <div className="flex flex-wrap gap-3">
-        <LinkButton href={`/employer/issue/${request.id}`}>Review and issue</LinkButton>
+        <LinkButton href={`/employer/issue/${request.id}`}>Revisar y emitir</LinkButton>
         <Button variant="secondary" onClick={onDecline}>
-          Decline
+          Rechazar
         </Button>
       </div>
     </li>
@@ -77,25 +78,27 @@ export function RequestInbox() {
     };
   }, [refresh]);
 
-  if (inbox.status === 'loading') return <p role="status">Loading requests…</p>;
-  if (inbox.status === 'signed-out') {
+  if (inbox.status === 'loading') return <p role="status">Cargando las solicitudes…</p>;
+  if (inbox.status === 'signed-out') return <SignInFirst />;
+  if (inbox.status === 'error') {
     return (
-      <Panel title="Sign in first">
-        <LinkButton href="/employer">Sign in with this device</LinkButton>
-      </Panel>
+      <p role="status" className="font-bold">
+        No se pudieron cargar las solicitudes. Reintentando…
+      </p>
     );
   }
-  if (inbox.status === 'error') {
-    return <p role="status" className="font-bold">Could not load requests. Trying again…</p>;
-  }
   if (inbox.requests.length === 0) {
-    return <p role="status" className="text-body text-ink-muted">No requests waiting. This page refreshes on its own.</p>;
+    return (
+      <p role="status" className="text-body">
+        No hay solicitudes pendientes. Esta página se actualiza sola.
+      </p>
+    );
   }
 
   return (
     <ul className="border-b-2 border-ink" aria-live="polite">
       {inbox.requests.map((request) => (
-        <RequestCard
+        <RequestRow
           key={request.id}
           request={request}
           now={now}

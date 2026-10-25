@@ -7,6 +7,9 @@ import type { P256Jwk } from '@/lib/credential/types';
 import type { CheckCode, Verdict } from '@/lib/credential/verify';
 import { CHECK_LABELS } from './claims';
 
+export const PRESENT = 'actualidad';
+export const DATES_HIDDEN = 'fechas ocultas';
+
 export const MAX_FILE_BYTES = 256 * 1024;
 
 export type EntryStatus = 'VERIFIED' | 'FAILED' | 'UNAVAILABLE' | 'UNBOUND';
@@ -34,11 +37,11 @@ export interface AttachDeps {
 const text = (value: unknown) => (typeof value === 'string' ? value : undefined);
 
 export function failedEntry(id: string, reason: string): CvEntry {
-  return { id, sdJwt: '', keyName: null, employer: 'Unreadable file', status: 'FAILED', reason };
+  return { id, sdJwt: '', keyName: null, employer: 'Archivo ilegible', status: 'FAILED', reason };
 }
 
 function statusFrom(verdict: Verdict, keyName: string | null): Pick<CvEntry, 'status' | 'failedAt' | 'reason'> {
-  if (!keyName) return { status: 'UNBOUND', reason: 'Issued to a different vault: it can’t be joined here' };
+  if (!keyName) return { status: 'UNBOUND', reason: 'Se emitió para otra bóveda: no se puede unir aquí' };
   if (verdict.kind === 'AUTHENTIC') return { status: 'VERIFIED' };
   if (verdict.kind === 'UNAVAILABLE') return { status: 'UNAVAILABLE', failedAt: verdict.failedAt, reason: verdict.reason };
   return { status: 'FAILED', failedAt: verdict.failedAt, reason: verdict.reason };
@@ -51,7 +54,7 @@ export async function attachCertificate(deps: AttachDeps, sdJwt: string, knownKe
   try {
     decoded = decodePresentation(input);
   } catch (caught) {
-    return failedEntry(`bad:${input.slice(0, 24)}`, caught instanceof TokenError ? caught.message : 'This is not a certificate');
+    return failedEntry(`bad:${input.slice(0, 24)}`, caught instanceof TokenError ? caught.message : 'Esto no es una constancia');
   }
   const jwk = (decoded.payload.cnf as { jwk?: P256Jwk } | undefined)?.jwk;
   const keyName = knownKeyName ?? (jwk ? await deps.findKeyName(jwk) : null);
@@ -61,7 +64,7 @@ export async function attachCertificate(deps: AttachDeps, sdJwt: string, knownKe
     id: credentialHashOf(decoded.issuerJwt),
     sdJwt: input,
     keyName,
-    employer: verdict.kind === 'AUTHENTIC' ? verdict.issuer.name : 'Unknown employer',
+    employer: verdict.kind === 'AUTHENTIC' ? verdict.issuer.name : 'Empleador desconocido',
     jobTitle: text(claims.jobTitle),
     startDate: text(claims.startDate),
     endDate: text(claims.endDate),
@@ -86,7 +89,7 @@ export const ENTRY_ROW_STATUS: Record<EntryStatus, RowStatus> = {
 
 export function entryNote(entry: CvEntry): string | undefined {
   if (entry.status === 'FAILED' && entry.failedAt) {
-    return `Failed at “${CHECK_LABELS[entry.failedAt]}”. ${entry.reason ?? ''}`.trim();
+    return `Falló en «${CHECK_LABELS[entry.failedAt]}». ${entry.reason ?? ''}`.trim();
   }
   return entry.reason;
 }
@@ -110,8 +113,8 @@ export function timelineItems(timeline: CareerTimeline): TimelineItem[] {
     employer: item.employer,
     title: item.jobTitle,
     start: item.startDate,
-    end: item.endDate ?? (item.employedNow ? 'present' : undefined),
+    end: item.endDate ?? (item.employedNow ? PRESENT : undefined),
     status: 'VERIFIED',
-    note: item.datesHidden ? 'dates hidden' : undefined,
+    note: item.datesHidden ? DATES_HIDDEN : undefined,
   }));
 }

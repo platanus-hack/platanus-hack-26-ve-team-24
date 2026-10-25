@@ -47,6 +47,7 @@ Work letters ("constancias de trabajo") are forged in minutes and trusted anyway
 - The Fake Letter Lab: four forgeries, each failing at a named check.
 - A public `/ledger` page showing blocks, members, accredited employers and anchored hashes.
 - A database holding only public keys, an opaque employee number and ciphertext.
+- **PWA support**: the app can be installed from the browser to the home screen. Still open: whether anything works offline (the vault, the verifier) and which surfaces get an install prompt. It stays a web app, not a native one.
 
 **Out of the MVP (decided)**
 - Identity proofing of employees; HRIS, payroll or bank integrations.
@@ -56,15 +57,16 @@ Work letters ("constancias de trabajo") are forged in minutes and trusted anyway
 - A printable PDF letter and verifier-challenge mode (stretch goals).
 - Pricing, subscriptions, billing.
 
-**Stack:** Next.js 16.4 App Router, React 19.3, Tailwind CSS 4, TypeScript strict, pnpm, oxlint and oxfmt, PostgreSQL with Prisma 7 (mailbox only), public Sepolia, Solidity 0.8.28 with Foundry, viem (including its account-abstraction module), jose, SD-JWT, WebCrypto ES256 (P-256) device keys. App on Render through the existing CD workflow. UI entirely in English.
+**Stack:** Next.js 16.4 App Router, React 19.3, Tailwind CSS 4, TypeScript strict, pnpm, oxlint and oxfmt, PostgreSQL with Prisma 7 (mailbox only), public Sepolia, Solidity 0.8.28 with Foundry, viem (including its account-abstraction module), jose, SD-JWT, WebCrypto ES256 (P-256) device keys. App on Render through the existing CD workflow. UI entirely in Spanish; code stays in English.
 
-**Terminology:** Employer, Holder, Verifier, Certificate (an employment certificate), Verified CV, Consortium, Ledger, Accreditation, Vault, Share link, Claim. Humans never see "wallet", "gas", "seed phrase", "transaction" or "UserOp" outside an optional technical-details disclosure.
+**Terminology (UI, Spanish):** Empleador (Employer), Titular (Holder), Verificador (Verifier), Constancia (an employment certificate), CV verificado (Verified CV), Consorcio (Consortium), Registro (Ledger), Acreditación (Accreditation), Bóveda (Vault), Enlace para compartir (Share link), Dato (Claim). Humans never see "wallet", "gas", "seed phrase", "transacción" or "UserOp" outside an optional "Detalles técnicos" disclosure.
 
 ## Brand Commitments
 
 - Name: **Constancia**, from "constancia de trabajo" (work certificate) and "constancy".
 - Must not feel like: the crypto/Web3 look (neon on black, gradients, coins, chain imagery), HR or government bureaucracy (gray form portals, stamp overload, legalese), or a generic SaaS template (purple gradients, icon-tile grids, glass cards).
-- English UI for global reach.
+- Spanish UI (decided 2026-10-24, replacing English). Only the name **Constancia** carries over from the previous visual identity; nothing else of the op-art world is binding.
+- Must read as clear and trustworthy at a glance: the previous op-art world was judged too artsy, unclear and not credible enough for banks and consulates.
 
 ## Evidence on Hand
 

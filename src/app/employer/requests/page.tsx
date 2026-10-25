@@ -5,8 +5,8 @@ export default function RequestsPage() {
   return (
     <>
       <PageHeader
-        title="Requests"
-        lead="Employees asking for a certificate. Review each one against your directory before issuing."
+        title="Solicitudes"
+        lead="Empleados que piden una constancia. Revisa cada una contra tu directorio antes de emitir."
       />
       <div className="mt-10">
         <RequestInbox />

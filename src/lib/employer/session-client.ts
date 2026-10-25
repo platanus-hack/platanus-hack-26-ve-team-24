@@ -22,14 +22,14 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   });
   if (!response.ok) {
     const { message } = (await response.json().catch(() => ({}))) as { message?: string };
-    throw new Error(message ?? 'Could not sign in');
+    throw new Error(message ?? 'No se pudo iniciar sesión');
   }
   return (await response.json()) as T;
 }
 
 export async function signIn(identity: EmployerIdentity): Promise<void> {
   const signer = await loadSigner(identity.signerName);
-  if (!signer) throw new Error('The signing key for this organization is not on this device');
+  if (!signer) throw new Error('La clave de firma de esta organización no está en este dispositivo');
   const { challenge } = await post<{ challenge: string }>('/api/auth/challenge', {
     account: identity.account,
     keyId: signer.keyId,

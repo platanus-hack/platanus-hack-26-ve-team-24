@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useVerification } from '@/app/verify/_lib/use-verification';
+import { failureReason, statusesOf, unavailableReason, VERDICT_TITLE } from '@/app/verify/_lib/verdict-copy';
+import { SealLayout } from '@/app/verify/_components/seal-layout';
 import { Button, LinkButton } from '@/components/ui/button';
 import { CheckList, CheckRow } from '@/components/ui/check-list';
-import { Panel } from '@/components/ui/panel';
-import type { AttackId, Sample } from '@/lib/credential/attacks';
+import { Verdict } from '@/components/ui/verdict';
+import { ATTACK_TITLES, runAttack, type AttackId, type Sample } from '@/lib/credential/attacks';
+import type { Verdict as VerdictResult } from '@/lib/credential/verify';
 import { downloadText } from '@/lib/vault/certificate-info';
 import { ATTACK_CARDS, presentOriginal } from '@/lib/vault/lab';
 import { loadSample } from '@/lib/vault/lab-sample';
@@ -18,43 +21,56 @@ interface Run {
   presentation: string;
 }
 
+function reasonOf(verdict: VerdictResult): string {
+  if (verdict.kind === 'NOT_AUTHENTIC') return failureReason(verdict.failedAt, verdict.reason);
+  if (verdict.kind === 'UNAVAILABLE') return unavailableReason(verdict.reason);
+  return 'Pasa las cinco comprobaciones.';
+}
+
 function Result({ run, verification }: { run: Run; verification: ReturnType<typeof useVerification> }) {
-  const { verdict } = verification;
+  const { rows, verdict } = verification;
+  const statuses = statusesOf(rows);
   return (
-    <Panel title={run.title}>
-      {run.changed && <p className="mb-4 max-w-[65ch] text-body">{run.changed}</p>}
-      <CheckList>
-        {verification.rows.map((row, index) => (
-          <CheckRow
-            key={row.code}
-            index={index + 1}
-            label={row.label}
-            status={row.status}
-            measured={row.measured}
-            detail={row.detail}
+    <section aria-label={`Resultado: ${run.title}`} className="border-t-4 border-ink">
+      <SealLayout statuses={statuses}>
+        <div>
+          <h2 className="font-display text-headline font-extrabold text-balance">{run.title}</h2>
+          {run.changed ? <p className="mt-4 max-w-[55ch] text-lead">{run.changed}</p> : null}
+        </div>
+        <CheckList>
+          {rows.map((row, index) => (
+            <CheckRow
+              key={row.code}
+              index={index + 1}
+              label={row.label}
+              status={row.status}
+              measured={row.measured}
+              detail={row.detail}
+            />
+          ))}
+        </CheckList>
+      </SealLayout>
+      {verdict ? (
+        <div className="px-gutter py-12">
+          <Verdict
+            kind={verdict.kind}
+            title={VERDICT_TITLE[verdict.kind]}
+            reason={reasonOf(verdict)}
+            statuses={statuses}
           />
-        ))}
-      </CheckList>
-      {verdict && (
-        <p role="status" className="mt-4 text-title font-bold">
-          {verdict.kind === 'AUTHENTIC'
-            ? 'Authentic: this letter passes every check.'
-            : verdict.kind === 'NOT_AUTHENTIC'
-              ? `Rejected: ${verdict.reason}`
-              : 'The ledger could not be reached. Try again.'}
-        </p>
-      )}
-      <div className="mt-6 flex flex-wrap gap-3">
+        </div>
+      ) : null}
+      <div className="flex flex-wrap gap-4 px-gutter pb-16">
         <Button
           variant="secondary"
           onClick={() => {
-            downloadText('forgery.sdjwt', run.presentation);
+            downloadText('constancia-falsa.sdjwt', run.presentation);
           }}
         >
-          Download the forgery
+          Descargar el archivo
         </Button>
       </div>
-    </Panel>
+    </section>
   );
 }
 
@@ -65,21 +81,31 @@ export function LabView() {
   const { run: verify } = verification;
 
   useEffect(() => {
-    loadSample()
-      .then((sample) => {
-        setLoad({ status: 'ready', sample });
-      })
-      .catch(() => {
+    const prepare = async () => {
+      try {
+        setLoad({ status: 'ready', sample: await loadSample() });
+      } catch {
         setLoad({ status: 'error' });
-      });
+      }
+    };
+    void prepare();
   }, []);
 
-  if (load.status === 'loading') return <p role="status">Preparing the sample letter…</p>;
+  if (load.status === 'loading') {
+    return (
+      <p role="status" className="px-gutter pb-16 text-body">
+        Preparando la constancia de ejemplo…
+      </p>
+    );
+  }
   if (load.status === 'error') {
     return (
-      <Panel title="The sample letter is not available yet">
-        <p className="text-body">Try again in a moment.</p>
-      </Panel>
+      <section className="mx-gutter mb-16 border-4 border-ink bg-marigold p-6 text-ink">
+        <h2 className="font-display text-title font-extrabold">
+          La constancia de ejemplo todavía no está disponible
+        </h2>
+        <p className="mt-2 text-body">Inténtalo de nuevo en un momento.</p>
+      </section>
     );
   }
   const { sample } = load;
@@ -90,69 +116,80 @@ export function LabView() {
   }
 
   async function runOriginal() {
-    await start({ title: 'The original letter', presentation: await presentOriginal(sample) });
+    await start({ title: 'La constancia original', presentation: await presentOriginal(sample) });
   }
 
-  async function runAttackCard(id: AttackId, title: string) {
-    const { runAttack } = await import('@/lib/credential/attacks');
+  async function runAttackCard(id: AttackId) {
     const { presentation, attack } = await runAttack(id, sample);
-    await start({ title, changed: attack.changed, presentation });
+    await start({ title: attack.title, changed: attack.changed, presentation });
   }
 
   return (
-    <div className="flex flex-col gap-10">
-      <Panel title="The original" tone="quiet">
-        <p className="mb-4 max-w-[65ch] text-body">
-          This sample letter is synthetic, and its holder key is public on purpose so anyone can run the
-          lab. It passes every check.
-        </p>
-        <Button variant="secondary" onClick={() => void runOriginal()}>
-          Check the original
-        </Button>
-      </Panel>
+    <>
+      <section className="grid gap-10 border-t-4 border-ink px-gutter py-12 md:grid-cols-2">
+        <div>
+          <h2 className="font-display text-headline font-extrabold">La original</h2>
+          <p className="mt-4 max-w-[55ch] text-body">
+            Esta constancia de ejemplo es ficticia, y la clave de su titular es pública a propósito
+            para que cualquiera pueda usar el laboratorio. Pasa las cinco comprobaciones.
+          </p>
+        </div>
+        <div className="md:self-end">
+          <Button
+            variant="secondary"
+            disabled={verification.running}
+            onClick={() => void runOriginal()}
+          >
+            Verificar la original
+          </Button>
+        </div>
+      </section>
 
-      <ul className="grid gap-6 md:grid-cols-2">
+      <ul className="grid border-t-4 border-ink md:grid-cols-2">
         {ATTACK_CARDS.map((card) => (
-          <li key={card.id} className="flex flex-col gap-4 border-2 border-ink bg-white p-6">
-            <h2 className="font-display text-title font-extrabold font-stretch-expanded">{card.title}</h2>
-            <Button
-              disabled={verification.running}
-              onClick={() => void runAttackCard(card.id, card.title)}
-            >
-              Try it
-            </Button>
+          <li
+            key={card.id}
+            className="flex flex-col justify-between gap-6 border-b-2 border-ink px-gutter py-8 md:odd:border-r-2"
+          >
+            <h2 className="font-display text-title font-extrabold">{ATTACK_TITLES[card.id]}</h2>
+            <div>
+              <Button disabled={verification.running} onClick={() => void runAttackCard(card.id)}>
+                Probar
+              </Button>
+            </div>
           </li>
         ))}
-        <li className="flex flex-col gap-4 border-2 border-dashed border-ink p-6">
-          <h2 className="font-display text-title font-extrabold font-stretch-expanded">
-            Revoke the letter
-          </h2>
-          <p className="text-body">
-            Revoking fails the ledger record. Ask the employer to revoke it, then check again.
-          </p>
+        <li className="flex flex-col justify-between gap-6 bg-marigold px-gutter py-8 text-ink md:col-span-2">
+          <div>
+            <h2 className="font-display text-title font-extrabold">Revocar la constancia</h2>
+            <p className="mt-2 max-w-[60ch] text-body">
+              Una constancia revocada falla en la comprobación «Registro». Pídele al empleador que
+              la revoque y verifícala de nuevo.
+            </p>
+          </div>
           <div>
             <LinkButton variant="secondary" href="/employer/issued">
-              Open the employer’s issued list
+              Abrir las constancias emitidas del empleador
             </LinkButton>
           </div>
         </li>
       </ul>
 
-      {run && (
-        <div className="flex flex-col gap-4">
+      {run ? (
+        <>
           <Result run={run} verification={verification} />
-          <div>
+          <div className="px-gutter pb-16">
             <Button
               variant="quiet"
               onClick={() => {
                 setRun(null);
               }}
             >
-              Reset
+              Empezar de nuevo
             </Button>
           </div>
-        </div>
-      )}
-    </div>
+        </>
+      ) : null}
+    </>
   );
 }

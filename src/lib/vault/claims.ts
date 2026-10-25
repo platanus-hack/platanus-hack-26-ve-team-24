@@ -4,30 +4,30 @@ import type { ClaimName, DisclosedClaims } from '@/lib/credential/types';
 import type { CheckCode } from '@/lib/credential/verify';
 
 export const CHECK_LABELS: Record<CheckCode, string> = {
-  TOKEN: 'Certificate',
-  ISSUER: 'Employer accredited',
-  SIGNATURE: 'Employer’s signature',
-  HOLDER: 'Bound to its holder',
-  LEDGER: 'Ledger record',
+  TOKEN: 'Constancia',
+  ISSUER: 'Acreditado',
+  SIGNATURE: 'Firma',
+  HOLDER: 'Titular',
+  LEDGER: 'Registro',
 };
 
 export const CLAIM_LABELS: Record<ClaimName, string> = {
-  givenName: 'Given name',
-  familyName: 'Family name',
-  nationalId: 'National ID',
-  jobTitle: 'Job title',
-  department: 'Department',
-  employmentType: 'Employment type',
-  startDate: 'Start date',
-  endDate: 'End date',
-  employedNow: 'Employed now',
-  workCountry: 'Country of work',
-  salaryMonthlyUsd: 'Monthly salary (USD)',
-  salaryBand: 'Salary band (USD/month)',
+  givenName: 'Nombre',
+  familyName: 'Apellido',
+  nationalId: 'Cédula de identidad',
+  jobTitle: 'Cargo',
+  department: 'Departamento',
+  employmentType: 'Tipo de empleo',
+  startDate: 'Fecha de ingreso',
+  endDate: 'Fecha de egreso',
+  employedNow: 'Trabaja actualmente',
+  workCountry: 'País de trabajo',
+  salaryMonthlyUsd: 'Salario mensual (USD)',
+  salaryBand: 'Rango salarial (USD/mes)',
 };
 
 export const formatClaim = (value: DisclosedClaims[ClaimName]): string =>
-  typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value);
+  typeof value === 'boolean' ? (value ? 'Sí' : 'No') : String(value);
 
 /** Every claim the certificate holds, read-only: the holder may see all of them. */
 export function ownClaimViews(claims: DisclosedClaims): ClaimView[] {

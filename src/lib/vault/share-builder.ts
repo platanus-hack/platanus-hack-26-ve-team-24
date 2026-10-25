@@ -6,17 +6,17 @@ import { CLAIM_LABELS, formatClaim } from './claims';
 export type TemplateName = keyof typeof REVEAL_TEMPLATES;
 
 export const TEMPLATE_LABELS: Record<TemplateName, string> = {
-  employment: 'Proof of employment',
-  income: 'Proof of income',
-  role: 'Role',
-  identity: 'Identity',
-  full: 'Everything',
+  employment: 'Prueba de empleo',
+  income: 'Prueba de ingresos',
+  role: 'Cargo',
+  identity: 'Identidad',
+  full: 'Todo',
 };
 
 export const EXPIRIES = [
-  { label: '1 hour', ttlSec: 3600 },
-  { label: '24 hours', ttlSec: 86_400 },
-  { label: '7 days', ttlSec: 604_800 },
+  { label: '1 hora', ttlSec: 3600 },
+  { label: '24 horas', ttlSec: 86_400 },
+  { label: '7 días', ttlSec: 604_800 },
 ] as const;
 
 export const MAX_AUDIENCE = 40;
@@ -45,7 +45,7 @@ export function claimViews(
         mode === 'toggle' ? (on ? 'on' : 'off') : on ? 'shown' : 'hidden';
       return {
         name,
-        label: mode === 'preview' && !on ? 'Not shown' : CLAIM_LABELS[name],
+        label: mode === 'preview' && !on ? 'No se muestra' : CLAIM_LABELS[name],
         value: on ? formatClaim(claims[name]) : undefined,
         state,
       };

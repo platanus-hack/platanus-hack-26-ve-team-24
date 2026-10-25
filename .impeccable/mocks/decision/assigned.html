@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Constancia · Programa de identidad</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1440px; height: 900px; overflow: hidden; background: #fff; color: #0a0a0a;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; display: grid;
+    grid-template-columns: 560px 1fr; grid-template-rows: 72px 1fr; }
+  nav { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 56px; border-bottom: 2px solid #0a0a0a; font-size: 15px; font-weight: 700; }
+  nav .links { display: flex; gap: 40px; }
+  nav .word { letter-spacing: 0.32em; font-size: 16px; }
+  .block { background: #f2b705; display: grid; grid-template-rows: 1fr auto; padding: 56px; }
+  .mark { width: 360px; height: 360px; display: grid; grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr); gap: 8px; align-self: center; }
+  .seg { background: #0a0a0a; }
+  .s1 { grid-area: 1 / 2 / 2 / 7; }
+  .s2 { grid-area: 1 / 1 / 4 / 2; }
+  .s3 { grid-area: 4 / 1 / 7 / 2; }
+  .s4 { grid-area: 6 / 2 / 7 / 7; }
+  .s5 { grid-area: 2 / 6 / 3 / 7; background: transparent; outline: 4px solid #0a0a0a; outline-offset: -4px; }
+  .legend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 13px; font-weight: 700; }
+  .legend span { border-top: 4px solid #0a0a0a; padding-top: 8px; }
+  main { padding: 72px 72px 56px; display: grid; grid-template-rows: auto auto 1fr; gap: 32px; }
+  .kicker { font-size: 14px; font-weight: 700; letter-spacing: 0.2em; }
+  h1 { font-size: 92px; line-height: 0.95; letter-spacing: -0.035em; font-weight: 800; max-width: 11ch; }
+  .lead { font-size: 22px; line-height: 1.4; max-width: 40ch; }
+  .act { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-self: end; }
+  .drop { border: 4px solid #0a0a0a; height: 168px; display: grid; place-content: center; text-align: center; gap: 8px; }
+  .drop strong { font-size: 28px; letter-spacing: -0.01em; }
+  .drop small { font-size: 15px; }
+  .btns { display: grid; gap: 12px; align-content: end; }
+  .btn { height: 56px; display: grid; place-content: center; font-weight: 700; font-size: 17px; border: 3px solid #0a0a0a; }
+  .btn.primary { background: #0a0a0a; color: #fff; }
+  .link { font-size: 16px; text-decoration: underline; text-underline-offset: 4px; }
+</style>
+</head>
+<body>
+  <nav>
+    <span class="word">CONSTANCIA</span>
+    <span class="links"><span>Verificar</span><span>Empleadores</span><span>Bóveda</span><span>Registro</span></span>
+  </nav>
+  <section class="block" aria-label="Marca">
+    <div class="mark" aria-hidden="true">
+      <div class="seg s1"></div><div class="seg s2"></div><div class="seg s3"></div><div class="seg s4"></div><div class="seg s5"></div>
+    </div>
+    <div class="legend"><span>1 Constancia</span><span>2 Acreditado</span><span>3 Firma</span><span>4 Titular</span><span>5 Registro</span></div>
+  </section>
+  <main>
+    <p class="kicker">CONSTANCIAS DE TRABAJO VERIFICABLES</p>
+    <div>
+      <h1>Constancias que se prueban solas.</h1>
+      <p class="lead" style="margin-top:28px">Un banco o un consulado comprueba un solo dato en segundos. Todo lo demás queda oculto.</p>
+    </div>
+    <div class="act">
+      <div class="drop"><strong>Suelta una constancia para verificarla</strong><small>o elige un archivo .sdjwt</small></div>
+      <div class="btns">
+        <span class="btn primary">Verificar una constancia</span>
+        <span class="btn">Abrir mi bóveda</span>
+        <span class="link">Soy empleador</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

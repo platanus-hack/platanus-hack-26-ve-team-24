@@ -19,15 +19,15 @@ export async function readJson<S extends z.ZodType>(
   maxBytes: number,
 ): Promise<z.output<S>> {
   const text = await req.text();
-  if (text.length > maxBytes) throw new HttpError(413, 'TOO_LARGE', 'Request body too large');
+  if (text.length > maxBytes) throw new HttpError(413, 'TOO_LARGE', 'La solicitud es demasiado grande');
   let body: unknown;
   try {
     body = JSON.parse(text);
   } catch {
-    throw new HttpError(400, 'BAD_REQUEST', 'Body must be JSON');
+    throw new HttpError(400, 'BAD_REQUEST', 'El cuerpo debe ser JSON');
   }
   const parsed = schema.safeParse(body);
-  if (!parsed.success) throw new HttpError(400, 'BAD_REQUEST', 'Invalid request');
+  if (!parsed.success) throw new HttpError(400, 'BAD_REQUEST', 'Solicitud no válida');
   return parsed.data;
 }
 
@@ -39,6 +39,6 @@ export async function respond(handler: () => Promise<Response>): Promise<Respons
     if (error instanceof HttpError) {
       return Response.json({ error: error.code, message: error.message }, { status: error.status });
     }
-    return Response.json({ error: 'INTERNAL', message: 'Something went wrong' }, { status: 500 });
+    return Response.json({ error: 'INTERNAL', message: 'Algo salió mal' }, { status: 500 });
   }
 }

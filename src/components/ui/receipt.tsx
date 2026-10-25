@@ -12,7 +12,7 @@ export function Receipt({
 }) {
   return (
     <section className="border-t-4 border-ink pt-4">
-      <h2 className="font-display font-stretch-expanded font-extrabold text-title mb-4">{title}</h2>
+      <h2 className="font-display font-extrabold text-title mb-4">{title}</h2>
       <dl>
         {rows.map((row) => (
           <div

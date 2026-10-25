@@ -5,12 +5,12 @@ import type { VaultStore } from './store';
 import type { VaultRequest } from './types';
 
 export const requestInputSchema = z.object({
-  employer: z.string().regex(/^0x[0-9a-fA-F]{40}$/, 'Pick an employer'),
+  employer: z.string().regex(/^0x[0-9a-fA-F]{40}$/, 'Elige un empleador'),
   employeeRef: z
     .string()
     .trim()
-    .min(1, 'Enter your employee number')
-    .max(40, 'At most 40 characters'),
+    .min(1, 'Escribe tu número de empleado')
+    .max(40, 'Máximo 40 caracteres'),
   kind: z.enum(['CURRENT', 'PAST']),
 });
 export type RequestInput = z.input<typeof requestInputSchema>;

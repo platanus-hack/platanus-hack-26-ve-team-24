@@ -1,55 +1,51 @@
-import { CHECK_LABELS } from '@/app/verify/_lib/types';
 import { Button, LinkButton } from '@/components/ui/button';
+import type { RowStatus } from '@/components/ui/check-list';
 import { ClaimList, type ClaimView } from '@/components/ui/claim-list';
 import { Mono } from '@/components/ui/mono';
 import { Panel } from '@/components/ui/panel';
 import { Verdict as VerdictBand } from '@/components/ui/verdict';
 import type { ClaimName, DisclosedClaims } from '@/lib/credential/types';
 import type { Verdict } from '@/lib/credential/verify';
+import { failureReason, unavailableReason, VERDICT_TITLE } from '../_lib/verdict-copy';
 
 type AuthenticVerdict = Extract<Verdict, { kind: 'AUTHENTIC' }>;
 
-const TITLE: Record<Verdict['kind'], string> = {
-  AUTHENTIC: 'Authentic',
-  NOT_AUTHENTIC: 'Not authentic',
-  UNAVAILABLE: 'Cannot verify right now',
+export const CLAIM_LABELS: Record<ClaimName, string> = {
+  givenName: 'Nombre',
+  familyName: 'Apellido',
+  nationalId: 'Documento de identidad',
+  jobTitle: 'Cargo',
+  department: 'Departamento',
+  employmentType: 'Tipo de empleo',
+  startDate: 'Fecha de ingreso',
+  endDate: 'Fecha de egreso',
+  employedNow: 'Trabaja actualmente',
+  workCountry: 'País de trabajo',
+  salaryMonthlyUsd: 'Salario mensual (USD)',
+  salaryBand: 'Rango salarial (USD/mes)',
 };
 
-export const CLAIM_LABELS: Record<ClaimName, string> = {
-  givenName: 'Given name',
-  familyName: 'Family name',
-  nationalId: 'National ID',
-  jobTitle: 'Job title',
-  department: 'Department',
-  employmentType: 'Employment type',
-  startDate: 'Start date',
-  endDate: 'End date',
-  employedNow: 'Employed now',
-  workCountry: 'Country of work',
-  salaryMonthlyUsd: 'Monthly salary (USD)',
-  salaryBand: 'Salary band (USD/month)',
+const EMPLOYMENT_TYPES: Record<string, string> = {
+  FULL_TIME: 'Tiempo completo',
+  PART_TIME: 'Medio tiempo',
+  CONTRACT: 'Por contrato',
 };
 
 function reasonOf(verdict: Verdict): string | undefined {
-  switch (verdict.kind) {
-    case 'AUTHENTIC':
-      return undefined;
-    case 'NOT_AUTHENTIC':
-      return `Failed at "${CHECK_LABELS[verdict.failedAt]}". ${verdict.reason}`;
-    case 'UNAVAILABLE':
-      return `${verdict.reason} Try again.`;
-  }
+  if (verdict.kind === 'NOT_AUTHENTIC') return failureReason(verdict.failedAt, verdict.reason);
+  if (verdict.kind === 'UNAVAILABLE') return unavailableReason(verdict.reason);
+  return undefined;
 }
 
 function formatValue(value: DisclosedClaims[ClaimName]): string {
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  return String(value);
+  if (typeof value === 'boolean') return value ? 'Sí' : 'No';
+  return EMPLOYMENT_TYPES[String(value)] ?? String(value);
 }
 
 function hiddenCaption(count: number): string {
   return count === 1
-    ? '1 more claim stays hidden by the holder'
-    : `${count} more claims stay hidden by the holder`;
+    ? 'El titular mantiene 1 dato más oculto'
+    : `El titular mantiene ${count} datos más ocultos`;
 }
 
 function claimRows(claims: DisclosedClaims, hiddenCount: number): ClaimView[] {
@@ -63,7 +59,7 @@ function claimRows(claims: DisclosedClaims, hiddenCount: number): ClaimView[] {
   );
   const hidden = Array.from(
     { length: hiddenCount },
-    (_, index): ClaimView => ({ name: `hidden-${index}`, label: 'Not shown', state: 'hidden' }),
+    (_, index): ClaimView => ({ name: `hidden-${index}`, label: 'No se muestra', state: 'hidden' }),
   );
   return [...shown, ...hidden];
 }
@@ -72,13 +68,15 @@ function HolderLines({ verdict }: { verdict: AuthenticVerdict }) {
   const { claims, keyBound, validUntil } = verdict;
   const namesDisclosed = claims.givenName !== undefined || claims.familyName !== undefined;
   return (
-    <div className="mt-6 flex flex-col gap-1 text-small">
+    <div className="mt-6 flex flex-col gap-1 text-body">
       {keyBound ? (
         <p>
-          {namesDisclosed ? 'Holder: bound to a key' : 'Holder: bound to a key, not a name'}
+          {namesDisclosed
+            ? 'Titular: vinculado a una clave'
+            : 'Titular: vinculado a una clave, no a un nombre'}
         </p>
       ) : null}
-      {validUntil ? <p>Valid until {validUntil.slice(0, 10)}</p> : null}
+      {validUntil ? <p>Válida hasta el {validUntil.slice(0, 10)}</p> : null}
     </div>
   );
 }
@@ -86,7 +84,7 @@ function HolderLines({ verdict }: { verdict: AuthenticVerdict }) {
 export function IssuerPanel({ verdict }: { verdict: AuthenticVerdict }) {
   const { claims, hiddenCount, issuer } = verdict;
   return (
-    <Panel title="Read from the signed certificate">
+    <Panel title="Leído de la constancia firmada">
       <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <span className="text-title font-bold">{issuer.name}</span>
         <Mono value={issuer.account} shorten />
@@ -102,27 +100,40 @@ export function IssuerPanel({ verdict }: { verdict: AuthenticVerdict }) {
   );
 }
 
+export function VerdictActions({ checking, onCheckAgain }: { checking: boolean; onCheckAgain: () => void }) {
+  return (
+    <div className="flex flex-wrap gap-4">
+      <Button variant="secondary" disabled={checking} onClick={onCheckAgain}>
+        Verificar de nuevo
+      </Button>
+      <LinkButton variant="quiet" href="/verify/lab">
+        Intenta falsificarla
+      </LinkButton>
+    </div>
+  );
+}
+
 export function VerdictPanel({
   verdict,
+  statuses,
   onCheckAgain,
   checking,
 }: {
   verdict: Verdict;
+  statuses: readonly RowStatus[];
   onCheckAgain: () => void;
   checking: boolean;
 }) {
   return (
     <div className="flex flex-col gap-12">
-      <VerdictBand kind={verdict.kind} title={TITLE[verdict.kind]} reason={reasonOf(verdict)} />
+      <VerdictBand
+        kind={verdict.kind}
+        title={VERDICT_TITLE[verdict.kind]}
+        reason={reasonOf(verdict)}
+        statuses={statuses}
+      />
       {verdict.kind === 'AUTHENTIC' ? <IssuerPanel verdict={verdict} /> : null}
-      <div className="flex flex-wrap gap-4">
-        <Button variant="secondary" disabled={checking} onClick={onCheckAgain}>
-          Check again
-        </Button>
-        <LinkButton variant="quiet" href="/verify/lab">
-          Try to forge it →
-        </LinkButton>
-      </div>
+      <VerdictActions checking={checking} onCheckAgain={onCheckAgain} />
     </div>
   );
 }

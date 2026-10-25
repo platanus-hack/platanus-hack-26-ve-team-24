@@ -75,7 +75,7 @@ describe('verifier against the memory ledger', () => {
     expect(revoked).toMatchObject({
       kind: 'NOT_AUTHENTIC',
       failedAt: 'LEDGER',
-      reason: 'The employer revoked this certificate',
+      reason: 'El empleador revocó esta constancia',
     });
   });
 

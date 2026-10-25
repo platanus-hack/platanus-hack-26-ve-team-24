@@ -12,11 +12,11 @@ export default function SharePage({ params }: PageProps<'/vault/c/[id]/share'>) 
   return (
     <>
       <PageHeader
-        title="Share one fact at a time"
-        lead="Choose what a reader may see. What you leave out cannot be read or guessed."
+        title="Comparte un dato a la vez"
+        lead="Elige qué puede ver quien la reciba. Lo que dejes fuera no se puede leer ni adivinar."
       />
       <div className="mt-10">
-        <Suspense fallback={<p role="status">Opening the certificate…</p>}>
+        <Suspense fallback={<p role="status">Abriendo la constancia…</p>}>
           <ShareForId params={params} />
         </Suspense>
       </div>

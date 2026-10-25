@@ -25,7 +25,7 @@ describe('onboarding', () => {
 
   it('describes each accreditation state', () => {
     expect(accreditationView(undefined).tone).toBe('idle');
-    expect(accreditationView(issuer('PENDING', 1)).detail).toBe('1 of 2 members have approved');
+    expect(accreditationView(issuer('PENDING', 1)).detail).toBe('1 de 2 miembros han aprobado');
     expect(accreditationView(issuer('ACTIVE')).tone).toBe('active');
     expect(accreditationView(issuer('SUSPENDED')).tone).toBe('paused');
   });

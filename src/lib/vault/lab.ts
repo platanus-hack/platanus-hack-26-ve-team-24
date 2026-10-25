@@ -1,4 +1,4 @@
-import type { AttackId, Sample } from '@/lib/credential/attacks';
+import { ATTACK_TITLES, type AttackId, type Sample } from '@/lib/credential/attacks';
 import { presentCredential, REVEAL_TEMPLATES } from '@/lib/credential/present';
 import { signerFromPrivateJwk } from '@/lib/credential/keys';
 import type { CheckCode } from '@/lib/credential/verify';
@@ -11,10 +11,10 @@ export interface AttackCard {
 
 /** In the order the lab shows them: each stops at a different check. */
 export const ATTACK_CARDS: AttackCard[] = [
-  { id: 'edit-claim', title: 'Edit a claim', stopsAt: 'TOKEN' },
-  { id: 'forge-signature', title: 'Forge the employer’s signature', stopsAt: 'SIGNATURE' },
-  { id: 'fake-employer', title: 'Pretend to be an employer', stopsAt: 'ISSUER' },
-  { id: 'stolen-certificate', title: 'Use someone else’s certificate', stopsAt: 'HOLDER' },
+  { id: 'edit-claim', title: ATTACK_TITLES['edit-claim'], stopsAt: 'TOKEN' },
+  { id: 'forge-signature', title: ATTACK_TITLES['forge-signature'], stopsAt: 'SIGNATURE' },
+  { id: 'fake-employer', title: ATTACK_TITLES['fake-employer'], stopsAt: 'ISSUER' },
+  { id: 'stolen-certificate', title: ATTACK_TITLES['stolen-certificate'], stopsAt: 'HOLDER' },
 ];
 
 /** The untouched sample, presented fresh with its published holder key. */

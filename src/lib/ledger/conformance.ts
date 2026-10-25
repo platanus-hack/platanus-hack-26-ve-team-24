@@ -99,7 +99,7 @@ export const conformanceCases: ConformanceCase[] = [
       await employer.client.anchor(hash);
       await rejects(() => other.client.revoke(hash), 'another issuer cannot revoke');
       await employer.client.revoke(hash);
-      check((await world.reader.record(employer.account, hash))?.revokedAt != null, 'revokedAt set');
+      check(((await world.reader.record(employer.account, hash))?.revokedAt ?? null) !== null, 'revokedAt set');
       await rejects(() => employer.client.revoke(hash), 'a second revoke must fail');
       await rejects(() => employer.client.revoke(randomHash()), 'revoking nothing must fail');
     },
@@ -115,7 +115,7 @@ export const conformanceCases: ConformanceCase[] = [
       check(added !== null && added.removedAt === null && added.addedAt > 0, 'second key is live');
       await employer.client.removeKey(second.keyId);
       const removed = await world.reader.key(employer.account, second.keyId);
-      check(removed?.removedAt != null, 'removed keys stay in the history with removedAt');
+      check((removed?.removedAt ?? null) !== null, 'removed keys stay in the history with removedAt');
       await rejects(() => employer.client.removeKey(employer.signer.keyId), 'the last owner stays');
       await rejects(
         async () => (await world.clientFor(second, employer.account)).anchor(randomHash()),

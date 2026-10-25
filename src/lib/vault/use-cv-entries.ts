@@ -21,7 +21,7 @@ export function useCvEntries() {
       for (const file of files) {
         if (file.size > MAX_FILE_BYTES) {
           setEntries((current) =>
-            addEntry(current, failedEntry(`big:${file.name}`, 'This file is too large to be a certificate (limit 256 KB)')),
+            addEntry(current, failedEntry(`big:${file.name}`, 'Este archivo es demasiado grande para ser una constancia (límite 256 KB)')),
           );
         } else {
           await add(await file.text());

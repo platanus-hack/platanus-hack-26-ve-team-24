@@ -1,5 +1,6 @@
 'use client';
 
+import { ErrorText } from '@/components/ui/error-text';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
@@ -13,11 +14,9 @@ import { useEmployers } from '@/lib/vault/use-employers';
 import type { RequestKind } from '@/lib/vault/types';
 
 const KINDS: { value: RequestKind; label: string }[] = [
-  { value: 'CURRENT', label: 'I work here now' },
-  { value: 'PAST', label: 'I used to work here' },
+  { value: 'CURRENT', label: 'Trabajo aquí actualmente' },
+  { value: 'PAST', label: 'Trabajé aquí antes' },
 ];
-
-const shortAccount = (account: string) => `${account.slice(0, 6)}…${account.slice(-4)}`;
 
 export function RequestForm() {
   const router = useRouter();
@@ -47,14 +46,14 @@ export function RequestForm() {
       );
       router.push('/vault');
     } catch {
-      setFailure('Could not send the request. Check your connection and try again.');
+      setFailure('No se pudo enviar la solicitud. Revisa tu conexión e inténtalo de nuevo.');
       setBusy(false);
     }
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-6" noValidate>
-      <Field label="Employer" error={errors.employer}>
+    <form onSubmit={(event) => void submit(event)} className="flex flex-col gap-6" noValidate>
+      <Field label="Empleador" error={errors.employer}>
         <select
           value={employer}
           onChange={(event) => {
@@ -63,22 +62,22 @@ export function RequestForm() {
           disabled={employers.status !== 'ready'}
         >
           <option value="">
-            {employers.status === 'loading' ? 'Loading employers…' : 'Choose your employer'}
+            {employers.status === 'loading' ? 'Cargando empleadores…' : 'Elige a tu empleador'}
           </option>
           {employers.status === 'ready' &&
             employers.issuers.map((issuer) => (
               <option key={issuer.account} value={issuer.account}>
-                {issuer.name} · {shortAccount(issuer.account)}
+                {issuer.name}
               </option>
             ))}
         </select>
       </Field>
       {employers.status === 'error' && (
         <p role="status" className="font-bold">
-          Could not load the list of employers. Reload the page to try again.
+          No se pudo cargar la lista de empleadores. Recarga la página para intentarlo de nuevo.
         </p>
       )}
-      <Field label="Employee number" hint="The number your employer knows you by." error={errors.employeeRef}>
+      <Field label="Número de empleado" hint="El número con el que te identifica tu empleador." error={errors.employeeRef}>
         <input
           value={employeeRef}
           maxLength={40}
@@ -89,7 +88,7 @@ export function RequestForm() {
         />
       </Field>
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-2 font-bold text-small">Your situation</legend>
+        <legend className="mb-2 font-bold text-small">Tu situación</legend>
         {KINDS.map((option) => (
           <label key={option.value} className="flex min-h-12 items-center gap-3 text-body">
             <input
@@ -106,13 +105,11 @@ export function RequestForm() {
         ))}
       </fieldset>
       {failure && (
-        <p role="alert" className="font-bold text-red-text">
-          {failure}
-        </p>
+        <ErrorText>{failure}</ErrorText>
       )}
       <div>
         <Button type="submit" disabled={busy}>
-          {busy ? 'Sending…' : 'Send request'}
+          {busy ? 'Enviando…' : 'Enviar solicitud'}
         </Button>
       </div>
     </form>

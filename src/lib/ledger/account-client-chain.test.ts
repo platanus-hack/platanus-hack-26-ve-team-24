@@ -140,7 +140,7 @@ describe('chain account client', () => {
     const client = await createChainAccountClient({ signer });
     const error = await client.revoke(`0x${'ab'.repeat(32)}`).catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(LedgerWriteError);
-    expect((error as LedgerWriteError).message).toBe('Your signing key is not an owner of this account');
+    expect((error as LedgerWriteError).message).toBe('Tu clave de firma no está autorizada en esta cuenta');
     expect((error as LedgerWriteError).technical).toContain('AA24');
   });
 });

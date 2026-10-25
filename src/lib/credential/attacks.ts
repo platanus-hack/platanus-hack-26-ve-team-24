@@ -6,7 +6,7 @@ import { issueCredential } from './sdjwt';
 import type { CheckCode } from './verify';
 import type { EmploymentRecord, Hex, P256PrivateJwk } from './types';
 
-// The Fake Letter Lab
+// Laboratorio de constancias falsas
 export type AttackId = 'edit-claim' | 'forge-signature' | 'fake-employer' | 'stolen-certificate';
 export interface Attack {
   id: AttackId;
@@ -19,9 +19,16 @@ export interface Sample {
   holderJwk: P256PrivateJwk;
 } // public/demo/sample.json
 
+export const ATTACK_TITLES: Record<AttackId, string> = {
+  'edit-claim': 'Editar un dato',
+  'forge-signature': 'Falsificar la firma del empleador',
+  'fake-employer': 'Hacerse pasar por empleador',
+  'stolen-certificate': 'Usar la constancia de otra persona',
+};
+
 const SHARE_TTL_SEC = 3600;
 const LAB_AUDIENCE = 'Fake Letter Lab';
-const FAKE_TITLE = 'Director of Operations';
+const FAKE_TITLE = 'Director de Operaciones';
 
 type Presented = { presentation: string; attack: Attack };
 
@@ -58,8 +65,8 @@ async function editClaim(sample: Sample): Promise<Presented> {
     presentation: await present(edited.join('~'), holder, 'role'),
     attack: {
       id: 'edit-claim',
-      title: 'Edit a claim',
-      changed: `jobTitle changed from "${original}" to "${FAKE_TITLE}"`,
+      title: ATTACK_TITLES['edit-claim'],
+      changed: `El cargo cambió de «${original}» a «${FAKE_TITLE}»`,
       expectedFailure: 'TOKEN',
     },
   };
@@ -76,8 +83,8 @@ async function forgeSignature(sample: Sample): Promise<Presented> {
     presentation: await present([forged, ...rest].join('~'), holder, 'employment'),
     attack: {
       id: 'forge-signature',
-      title: 'Forge the signature',
-      changed: 'The employer’s signature was replaced by one made with a different key',
+      title: ATTACK_TITLES['forge-signature'],
+      changed: 'La firma del empleador se reemplazó por una hecha con otra clave',
       expectedFailure: 'SIGNATURE',
     },
   };
@@ -118,8 +125,8 @@ async function fakeEmployer(sample: Sample): Promise<Presented> {
     presentation: await present(issued.sdJwt, holder, 'employment'),
     attack: {
       id: 'fake-employer',
-      title: 'Invent an employer',
-      changed: `A new employer account ${account.slice(0, 8)}… issued a perfectly valid certificate`,
+      title: ATTACK_TITLES['fake-employer'],
+      changed: `Un empleador nuevo (${account.slice(0, 8)}…) emitió una constancia perfectamente válida`,
       expectedFailure: 'ISSUER',
     },
   };
@@ -132,8 +139,8 @@ async function stolenCertificate(sample: Sample): Promise<Presented> {
     presentation: await present(sample.credential, attacker, 'employment'),
     attack: {
       id: 'stolen-certificate',
-      title: 'Use a stolen certificate',
-      changed: 'The holder’s signature was replaced by one from the attacker’s own key',
+      title: ATTACK_TITLES['stolen-certificate'],
+      changed: 'La firma del titular se reemplazó por una hecha con la clave del atacante',
       expectedFailure: 'HOLDER',
     },
   };

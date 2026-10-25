@@ -20,7 +20,7 @@ async function call(path: string, init?: RequestInit): Promise<Response> {
 
 export async function fetchPendingRequests(): Promise<PendingRequest[]> {
   const response = await call('/api/employer/requests');
-  if (!response.ok) throw new Error('Could not load requests');
+  if (!response.ok) throw new Error('No se pudieron cargar las solicitudes');
   return ((await response.json()) as { requests: PendingRequest[] }).requests;
 }
 
@@ -30,7 +30,7 @@ export async function fetchPendingRequest(id: string): Promise<PendingRequest | 
 
 export async function declineRequest(id: string): Promise<void> {
   const response = await call(`/api/employer/requests/${id}/decline`, { method: 'POST' });
-  if (!response.ok) throw new Error('Could not decline this request');
+  if (!response.ok) throw new Error('No se pudo rechazar esta solicitud');
 }
 
 export async function deliverRequest(id: string, jwe: string): Promise<void> {
@@ -40,5 +40,5 @@ export async function deliverRequest(id: string, jwe: string): Promise<void> {
     body: JSON.stringify({ jwe }),
   });
   if (response.ok || response.status === 409) return; // 409: already delivered counts as done
-  throw new Error('Could not deliver the certificate');
+  throw new Error('No se pudo entregar la constancia');
 }
