@@ -19,7 +19,7 @@ import {
 } from '../_lib/load-input';
 import type { LoadedInput, RowView } from '../_lib/types';
 import { useVerification } from '../_lib/use-verification';
-import { statusesOf } from '../_lib/verdict-copy';
+import { statusesOf, visibleRows } from '../_lib/verdict-copy';
 import { CvView } from './cv-view';
 import { ReceiptPanel } from './receipt-panel';
 import { SealLayout } from './seal-layout';
@@ -170,7 +170,7 @@ export function VerifyView() {
           {liveMessage(rows)}
         </p>
         <CheckList>
-          {rows.map((row, index) => (
+          {visibleRows(rows).map((row, index) => (
             <CheckRow
               key={row.code}
               index={index + 1}

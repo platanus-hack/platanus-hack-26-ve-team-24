@@ -63,8 +63,9 @@ export function credentialPdf(args: {
   credential: IssuedCredential;
   holderKey: P256PrivateJwk;
   issuerName: string;
+  verifyUrl: string;
 }): Promise<Uint8Array> {
-  const { credential, holderKey, issuerName } = args;
+  const { credential, holderKey, issuerName, verifyUrl } = args;
   const { claims } = credential;
   const issuedOn = longDate(new Date());
   const text = letterText(claims, issuerName, issuedOn);
@@ -88,6 +89,7 @@ export function credentialPdf(args: {
       ],
       signer: { name: issuerName, detail: `Clave ES256 ${credential.keyId.slice(0, 10)}…${credential.keyId.slice(-4)}` },
       seal: ['Verificable', 'en línea', 'Cargue este PDF en', 'la página Verificar'],
+      verifyUrl,
       footer: [
         `huella  ${credential.credentialHash}`,
         `clave   ${credential.keyId}`,
@@ -98,7 +100,7 @@ export function credentialPdf(args: {
   );
 }
 
-export function presentationPdf(args: { presentation: string; aud: string }): Promise<Uint8Array> {
+export function presentationPdf(args: { presentation: string; aud: string; verifyUrl: string }): Promise<Uint8Array> {
   const decoded = decodePresentation(args.presentation);
   const { claims, hiddenCount, payload, keyBinding } = decoded;
   const shown = Object.keys(claims).length;
@@ -118,6 +120,7 @@ export function presentationPdf(args: { presentation: string; aud: string }): Pr
         `Presentada para: ${args.aud}. ${typeof exp === 'number' ? `Vence el ${new Date(exp * 1000).toISOString().slice(0, 16).replace('T', ' ')} UTC.` : ''}`,
       ],
       footer: [`sd_hash  ${decoded.sdHash}`, `emisor   ${issuer}`],
+      verifyUrl: args.verifyUrl,
     },
     { type: 'presentation', presentation: args.presentation },
   );
@@ -128,6 +131,7 @@ export function historyPdf(args: {
   subject: string;
   entries: { employer: string; claims: DisclosedClaims }[];
   aud: string;
+  verifyUrl: string;
 }): Promise<Uint8Array> {
   const entries: HistoryEntry[] = args.entries.map(({ employer, claims }) => ({
     employer,
@@ -146,6 +150,7 @@ export function historyPdf(args: {
         `${count} ${count === 1 ? 'constancia' : 'constancias'} de la misma persona, cada una firmada por su empleador y selladas juntas: nadie puede agregar ni quitar una después. Presentado para: ${args.aud}.`,
       ],
       footer: [],
+      verifyUrl: args.verifyUrl,
     },
     { type: 'cv', cv: args.cv },
   );

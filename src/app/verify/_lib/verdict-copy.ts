@@ -16,3 +16,7 @@ export const unavailableReason = (reason: string): string => `${reason}.`;
 
 /** Un segmento del sello por comprobación, en orden. */
 export const statusesOf = (rows: readonly RowView[]): RowStatus[] => rows.map((row) => row.status);
+
+/** The Titular check still runs, but its row is not listed unless it is the one that failed. */
+export const visibleRows = (rows: readonly RowView[]): RowView[] =>
+  rows.filter((row) => row.code !== 'HOLDER' || row.status === 'FAILED');

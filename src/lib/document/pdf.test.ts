@@ -18,6 +18,7 @@ describe('constancia pdf', () => {
         ],
         notes: ['nota'],
         footer: ['hash 0x1'],
+        verifyUrl: 'http://localhost:3000/verify',
       },
       { type: 'credential', sdJwt, holderKey },
     );
@@ -32,6 +33,7 @@ describe('constancia pdf', () => {
         entries: [{ employer: 'X', jobTitle: 'Y', period: '2020 - 2021' }],
         footer: [],
         notes: [],
+        verifyUrl: 'http://localhost:3000/verify',
       },
       { type: 'cv', cv: '{"type":"constancia-cv"}' },
     );

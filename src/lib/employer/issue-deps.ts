@@ -27,7 +27,7 @@ export function browserIssueDeps(args: {
       }),
     anchor: async (hash) => (await createAccountClient({ signer, account })).anchor(hash),
     packageCredential: (credential, holderKey) =>
-      credentialPdf({ credential, holderKey, issuerName }),
+      credentialPdf({ credential, holderKey, issuerName, verifyUrl: `${appUrl.replace(/\/$/, '')}/verify` }),
     record: appendIssued,
   };
 }

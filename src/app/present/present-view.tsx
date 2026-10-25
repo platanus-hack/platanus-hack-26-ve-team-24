@@ -21,6 +21,7 @@ import { downloadPdf } from '@/lib/document/download';
 import { presentationPdf } from '@/lib/document/documents';
 import { setHandoffFile, takeHandoffFile } from '@/lib/handoff';
 import {
+  appUrl,
   claimViews,
   EXPIRIES,
   MAX_AUDIENCE,
@@ -87,7 +88,7 @@ export function PresentView() {
         aud: audience,
         ttlSec,
       });
-      const bytes = await presentationPdf({ presentation, aud: audience });
+      const bytes = await presentationPdf({ presentation, aud: audience, verifyUrl: `${appUrl()}/verify` });
       const file = new File([bytes as BlobPart], 'datos-compartidos.pdf', {
         type: 'application/pdf',
       });

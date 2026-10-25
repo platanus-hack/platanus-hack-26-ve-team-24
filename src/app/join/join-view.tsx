@@ -21,7 +21,7 @@ import { buildHistory, checkSamePerson, dedupe, HISTORY_DEFAULT_REVEAL } from '@
 import { periodOf } from '@/lib/document/documents';
 import { setHandoffFile } from '@/lib/handoff';
 import { drainVerdict } from '@/lib/vault/drain-verdict';
-import { claimViews, EXPIRIES, MAX_AUDIENCE, toggleClaim } from '@/lib/vault/share-builder';
+import { appUrl, claimViews, EXPIRIES, MAX_AUDIENCE, toggleClaim } from '@/lib/vault/share-builder';
 import { createRecordingLookup } from '../verify/_lib/lookup-client';
 import { failureReason, unavailableReason } from '../verify/_lib/verdict-copy';
 
@@ -104,6 +104,7 @@ export function JoinView() {
         reveal,
         aud: aud.trim() || 'Quien lo reciba',
         ttlSec: EXPIRIES[2].ttlSec,
+        verifyUrl: `${appUrl()}/verify`,
       });
       const file = new File([pdf as BlobPart], 'historial-laboral.pdf', {
         type: 'application/pdf',

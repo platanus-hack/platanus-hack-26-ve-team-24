@@ -5,6 +5,7 @@ import {
   PDFDict,
   PDFHexString,
   PDFName,
+  PDFString,
   StandardFonts,
   rgb,
   type PDFFont,
@@ -35,6 +36,7 @@ export interface Sheet {
   rows: SheetRow[];
   notes: string[];
   footer: string[];
+  verifyUrl: string;
 }
 
 export interface HistoryEntry {
@@ -153,17 +155,38 @@ function paragraph(
   return y;
 }
 
-function footer(page: PDFPage, fonts: Fonts, lines: string[]): void {
+/** A clickable URL: the text, an underline, and a PDF link annotation over both. */
+function drawLink(doc: PDFDocument, page: PDFPage, font: PDFFont, url: string, at: { x: number; y: number }): void {
+  const size = 10;
+  const text = safe(font, url);
+  const width = font.widthOfTextAtSize(text, size);
+  page.drawText(text, { x: at.x, y: at.y, size, font, color: INK });
+  page.drawRectangle({ x: at.x, y: at.y - 2, width, height: 1, color: INK });
+  const annotation = doc.context.register(
+    doc.context.obj({
+      Type: 'Annot',
+      Subtype: 'Link',
+      Rect: [at.x, at.y - 4, at.x + width, at.y + size],
+      Border: [0, 0, 0],
+      A: { Type: 'Action', S: 'URI', URI: PDFString.of(url) },
+    }),
+  );
+  page.node.set(PDFName.of('Annots'), doc.context.obj([annotation]));
+}
+
+function footer(doc: PDFDocument, page: PDFPage, fonts: Fonts, lines: string[], verifyUrl: string): void {
   page.drawRectangle({ x: MARGIN, y: 150, width: PAGE.width - 2 * MARGIN, height: 2, color: INK });
   let y = 134;
   for (const line of lines)
     y = paragraph(page, fonts.mono, line, { y, size: 7.5, color: MUTED }) - 2;
-  paragraph(
+  const note = paragraph(
     page,
     fonts.regular,
-    'Esta página es solo la capa visual. La prueba está en el token firmado que lleva el archivo: cárgalo en /verify para comprobarlo. Si el texto de esta página y el token no coinciden, vale el token.',
-    { y: 78, size: 8, color: MUTED },
+    'Esta página es solo la capa visual; la prueba es el token firmado que lleva el archivo. Para comprobarlo, abra el enlace y cargue este PDF: la página revisa la firma del emisor y su registro en el consorcio dentro de su propio navegador, y el archivo no sale de él. Si el texto de esta página y el token no coinciden, vale el token.',
+    { y: 92, size: 8, color: MUTED },
   );
+  page.drawText('Verificar esta constancia:', { x: MARGIN, y: note - 6, size: 8, font: fonts.bold, color: INK });
+  drawLink(doc, page, fonts.bold, verifyUrl, { x: MARGIN + 118, y: note - 6 });
 }
 
 // pdf-lib keeps getInfoDict private; the trailer's Info entry is the same dictionary.
@@ -236,7 +259,7 @@ export async function buildSheetPdf(sheet: Sheet, payload: DocPayload): Promise<
   for (const note of sheet.notes)
     y = paragraph(page, fonts.regular, note, { y, size: 9.5, color: MUTED }) - 4;
 
-  footer(page, fonts, sheet.footer);
+  footer(doc, page, fonts, sheet.footer, sheet.verifyUrl);
   return finish(doc, payload);
 }
 
@@ -254,6 +277,7 @@ export interface Letter {
   signer: { name: string; detail: string };
   seal: string[];
   footer: string[];
+  verifyUrl: string;
 }
 
 
@@ -317,12 +341,12 @@ export async function buildLetterPdf(letter: Letter, payload: DocPayload): Promi
     page.drawText(safe(font, line), { x: sealX + 10, y: signY + sealH - 48 - SEAL_OFFSETS[i], size, font, color: INK });
   }
 
-  footer(page, fonts, letter.footer);
+  footer(doc, page, fonts, letter.footer, letter.verifyUrl);
   return finish(doc, payload);
 }
 
 export async function buildHistoryPdf(
-  history: { subject: string; entries: HistoryEntry[]; footer: string[]; notes: string[] },
+  history: { subject: string; entries: HistoryEntry[]; footer: string[]; notes: string[]; verifyUrl: string },
   payload: DocPayload,
 ): Promise<Uint8Array> {
   const { doc, page, fonts } = await start();
@@ -373,7 +397,7 @@ export async function buildHistoryPdf(
   for (const note of history.notes)
     y = paragraph(page, fonts.regular, note, { y, size: 9.5, color: MUTED }) - 4;
 
-  footer(page, fonts, history.footer);
+  footer(doc, page, fonts, history.footer, history.verifyUrl);
   return finish(doc, payload);
 }
 

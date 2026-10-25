@@ -59,6 +59,7 @@ export async function buildHistory(args: {
   reveal: ClaimName[];
   aud: string;
   ttlSec: number;
+  verifyUrl: string;
 }): Promise<{ pdf: Uint8Array; entries: number }> {
   const sorted = args.files.toSorted((a, b) => startOf(a.file).localeCompare(startOf(b.file)));
   if (sorted.length > MAX_ENTRIES)
@@ -89,6 +90,7 @@ export async function buildHistory(args: {
         : 'Titular reservado',
     entries: sorted.map(({ file, employer }) => ({ employer, claims: shown(file.claims) })),
     aud: args.aud,
+    verifyUrl: args.verifyUrl,
   });
   return { pdf, entries: sorted.length };
 }

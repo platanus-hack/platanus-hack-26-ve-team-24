@@ -16,6 +16,7 @@ import { readPdfPayload } from './pdf';
 
 const ACCOUNT: Address = '0x1f9a000000000000000000000000000000000001';
 const DID = `did:constancia:11155111:${ACCOUNT}`;
+const URL = 'http://localhost:3000/verify';
 const nowSec = () => Math.floor(Date.now() / 1000);
 
 const record = (over: Partial<EmploymentRecord>): EmploymentRecord => ({
@@ -71,7 +72,7 @@ async function world() {
       return { blockNumber: 11 } as never;
     },
     packageCredential: (credential: IssuedCredential, holderKey) =>
-      credentialPdf({ credential, holderKey, issuerName: 'Empresa Demo A' }),
+      credentialPdf({ credential, holderKey, issuerName: 'Empresa Demo A', verifyUrl: URL }),
     record: async () => undefined,
   });
   const issue = async (rec: EmploymentRecord) => {
@@ -104,7 +105,7 @@ describe('the demo flow', () => {
       aud: 'Banco Demo',
       ttlSec: 3600,
     });
-    const shared = await presentationPdf({ presentation, aud: 'Banco Demo' });
+    const shared = await presentationPdf({ presentation, aud: 'Banco Demo', verifyUrl: URL });
     const sharedPayload = await readPdfPayload(shared);
     expect(sharedPayload?.type).toBe('presentation');
     const verdict = await drainVerdict(
@@ -134,6 +135,7 @@ describe('the demo flow', () => {
       reveal: ['givenName', 'familyName', 'jobTitle', 'startDate', 'endDate', 'employedNow'],
       aud: 'Banco Demo',
       ttlSec: 3600,
+      verifyUrl: URL,
     });
     expect(entries).toBe(2);
     const history = await readPdfPayload(pdf);
