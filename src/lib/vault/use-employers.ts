@@ -14,15 +14,16 @@ export function useEmployers(): EmployerList {
   const [list, setList] = useState<EmployerList>({ status: 'loading' });
   useEffect(() => {
     let live = true;
-    fetchNetworkState()
-      .then((state) => {
+    void (async () => {
+      try {
+        const state = await fetchNetworkState();
         if (live) {
           setList({ status: 'ready', issuers: state.issuers.filter((i) => i.status === 'ACTIVE') });
         }
-      })
-      .catch(() => {
+      } catch {
         if (live) setList({ status: 'error' });
-      });
+      }
+    })();
     return () => {
       live = false;
     };

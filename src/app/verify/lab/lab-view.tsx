@@ -65,13 +65,13 @@ export function LabView() {
   const { run: verify } = verification;
 
   useEffect(() => {
-    loadSample()
-      .then((sample) => {
-        setLoad({ status: 'ready', sample });
-      })
-      .catch(() => {
+    void (async () => {
+      try {
+        setLoad({ status: 'ready', sample: await loadSample() });
+      } catch {
         setLoad({ status: 'error' });
-      });
+      }
+    })();
   }, []);
 
   if (load.status === 'loading') return <p role="status">Preparing the sample letter…</p>;

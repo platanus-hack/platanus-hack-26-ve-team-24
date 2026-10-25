@@ -24,9 +24,10 @@ export function useCertificateVerdict(sdJwt: string): Verdict | null {
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   useEffect(() => {
     let live = true;
-    void verifyInVault(sdJwt).then((result) => {
+    void (async () => {
+      const result = await verifyInVault(sdJwt);
       if (live) setVerdict(result);
-    });
+    })();
     return () => {
       live = false;
     };

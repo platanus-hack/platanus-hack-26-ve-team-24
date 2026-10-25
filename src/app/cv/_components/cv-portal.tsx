@@ -91,16 +91,15 @@ export function CvPortal() {
   const { add } = cv;
 
   useEffect(() => {
-    void vaultStore()
-      .listCertificates()
-      .then((certificates) => {
-        setVaultCertificates(certificates);
-        const requested = certificates.find((certificate) => certificate.id === addParam);
-        if (requested && !handledParam.current) {
-          handledParam.current = true;
-          void add(requested.sdJwt, requested.keyName);
-        }
-      });
+    void (async () => {
+      const certificates = await vaultStore().listCertificates();
+      setVaultCertificates(certificates);
+      const requested = certificates.find((certificate) => certificate.id === addParam);
+      if (requested && !handledParam.current) {
+        handledParam.current = true;
+        void add(requested.sdJwt, requested.keyName);
+      }
+    })();
   }, [addParam, add]);
 
   const timeline = timelineOf(cv.included);

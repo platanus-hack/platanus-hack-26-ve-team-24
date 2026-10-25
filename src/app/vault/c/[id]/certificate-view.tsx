@@ -63,11 +63,10 @@ export function CertificateView({ id }: { id: string }) {
   const [loaded, setLoaded] = useState<Loaded>({ status: 'loading' });
 
   useEffect(() => {
-    void vaultStore()
-      .getCertificate(id)
-      .then((certificate) => {
-        setLoaded(certificate ? { status: 'ready', certificate } : { status: 'missing' });
-      });
+    void (async () => {
+      const certificate = await vaultStore().getCertificate(id);
+      setLoaded(certificate ? { status: 'ready', certificate } : { status: 'missing' });
+    })();
   }, [id]);
 
   if (loaded.status === 'loading') return <p role="status">Opening the certificate…</p>;
