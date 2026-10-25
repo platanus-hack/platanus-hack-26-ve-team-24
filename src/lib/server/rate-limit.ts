@@ -9,8 +9,12 @@ interface Window {
 // shortcut: in-memory fixed window per instance; move to Redis if we ever run two instances.
 const windows = new Map<string, Window>();
 
+// Behind one trusted proxy the last entry is the address that proxy saw; the first is whatever the
+// caller decided to write, so trusting it let any client pick a fresh bucket per request.
 const clientIp = (req: Request) =>
-  req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  req.headers.get('x-forwarded-for')?.split(',').pop()?.trim() ||
+  req.headers.get('x-real-ip')?.trim() ||
+  'unknown';
 
 export function rateLimit(
   req: Request,

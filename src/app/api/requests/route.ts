@@ -26,7 +26,7 @@ export function POST(req: Request) {
     rateLimit(req, 'requests:create', { limit: 20, windowMs: 60_000 });
     const body = await readJson(req, createRequestSchema, MAX_BODY_BYTES);
     if (!(await isOnCurve(body.signJwk, 'ECDSA')) || !(await isOnCurve(body.encJwk, 'ECDH'))) {
-      throw new HttpError(400, 'BAD_REQUEST', 'Invalid key');
+      throw new HttpError(400, 'BAD_REQUEST', 'Clave inválida');
     }
     await requireActiveEmployer(body.employer as `0x${string}`);
     const id = newId();

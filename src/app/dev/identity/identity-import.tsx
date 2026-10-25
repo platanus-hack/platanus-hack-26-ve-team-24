@@ -34,6 +34,8 @@ async function fetchServerPack(): Promise<IdentityPack> {
 
 export function IdentityImport() {
   const [outcome, setOutcome] = useState<Outcome | null>(null);
+  // el servidor solo entrega estas claves con el registro en memoria; en modo cadena la ruta responde 404
+  const fromServer = process.env.NEXT_PUBLIC_LEDGER_MODE === 'memory';
 
   async function run(load: () => Promise<IdentityPack>) {
     setOutcome(null);
@@ -46,15 +48,22 @@ export function IdentityImport() {
 
   return (
     <div className="mt-12 flex flex-col gap-8">
-      <Button
-        className="self-start"
-        onClick={() => {
-          void run(fetchServerPack);
-        }}
-      >
-        Importar desde este servidor
-      </Button>
-      <Field label="O sube demo-pack/identities.json">
+      {fromServer ? (
+        <Button
+          className="self-start"
+          onClick={() => {
+            void run(fetchServerPack);
+          }}
+        >
+          Importar desde este servidor
+        </Button>
+      ) : (
+        <p className="max-w-[65ch] text-body text-ink-muted">
+          Este despliegue usa el registro en vivo, así que las claves de demostración no se sirven
+          desde aquí. Sube el archivo del paquete.
+        </p>
+      )}
+      <Field label={`${fromServer ? 'O sube' : 'Sube'} demo-pack/identities.json`}>
         <input
           type="file"
           accept=".json"

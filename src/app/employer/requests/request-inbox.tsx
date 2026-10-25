@@ -30,8 +30,23 @@ function RequestRow({
   request: PendingRequest;
   person: DirectoryEntry | undefined;
   now: number;
-  onDecline: () => void;
+  onDecline: () => Promise<void>;
 }) {
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function decline() {
+    setBusy(true);
+    setError(null);
+    try {
+      await onDecline();
+    } catch {
+      setError('No se pudo rechazar la solicitud. Revisa tu conexión e inténtalo de nuevo.');
+      setBusy(false);
+    }
+  }
+
   return (
     <li className="flex flex-wrap items-center justify-between gap-6 border-t-2 border-ink py-5">
       <div>
@@ -42,12 +57,47 @@ function RequestRow({
           <code>{request.employeeRef}</code> · {REQUEST_KIND_LABELS[request.kind]} ·{' '}
           {formatAge(new Date(request.createdAt).getTime() / 1000, now)}
         </p>
+        {error && (
+          <p role="alert" className="mt-2 font-bold text-red-text">
+            {error}
+          </p>
+        )}
       </div>
-      <div className="flex flex-wrap gap-3">
-        <LinkButton href={`/employer/issue/${request.id}`}>Revisar y emitir</LinkButton>
-        <Button variant="secondary" onClick={onDecline}>
-          Rechazar
-        </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        {confirming ? (
+          <>
+            <p className="text-small font-bold">¿Rechazar definitivamente?</p>
+            <Button
+              variant="secondary"
+              disabled={busy}
+              onClick={() => {
+                void decline();
+              }}
+            >
+              {busy ? 'Rechazando…' : 'Sí, rechazar'}
+            </Button>
+            <Button
+              variant="quiet"
+              onClick={() => {
+                setConfirming(false);
+              }}
+            >
+              Conservarla
+            </Button>
+          </>
+        ) : (
+          <>
+            <LinkButton href={`/employer/issue/${request.id}`}>Revisar y emitir</LinkButton>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setConfirming(true);
+              }}
+            >
+              Rechazar
+            </Button>
+          </>
+        )}
       </div>
     </li>
   );
@@ -103,8 +153,9 @@ export function RequestInbox() {
           request={request}
           now={now}
           person={directory.find((entry) => entry.employeeRef === request.employeeRef)}
-          onDecline={() => {
-            void declineRequest(request.id).then(refresh).catch(() => undefined);
+          onDecline={async () => {
+            await declineRequest(request.id);
+            await refresh();
           }}
         />
       ))}

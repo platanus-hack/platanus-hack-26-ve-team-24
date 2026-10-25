@@ -17,6 +17,11 @@ describe('directory', () => {
     expect(() => parseEntry({ ...first!, record: { ...first!.record, endDate: '2000-01-01' } })).toThrow();
     expect(() => parseEntry({ ...first!, employeeRef: ' ' })).toThrow();
   });
+
+  it('stores the employee number upper case so a typed lower case still matches', () => {
+    const [first] = DEMO_DIRECTORY;
+    expect(parseEntry({ ...first!, employeeRef: ' e-1042 ' }).employeeRef).toBe('E-1042');
+  });
 });
 
 describe('record fields', () => {

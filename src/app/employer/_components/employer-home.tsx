@@ -14,18 +14,32 @@ import { ErrorText } from '@/components/ui/error-text';
 
 const SET_UP = '/employer/onboarding';
 const DIRECTORY = '/employer/directory';
+const SET_UP_ANOTHER = '/employer/onboarding?create=1';
+
+type Identities =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'ready'; list: EmployerIdentity[] };
 
 function SignedOut() {
-  const [identities, setIdentities] = useState<EmployerIdentity[] | null>(null);
+  const [identities, setIdentities] = useState<Identities>({ status: 'loading' });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
-    void listIdentities()
-      .then(setIdentities)
-      .catch(() => {
-        setIdentities([]);
-      });
+    let active = true;
+    async function load() {
+      try {
+        const list = await listIdentities();
+        if (active) setIdentities({ status: 'ready', list });
+      } catch {
+        if (active) setIdentities({ status: 'error' });
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   async function enter(identity: EmployerIdentity) {
@@ -40,11 +54,29 @@ function SignedOut() {
     }
   }
 
-  if (identities === null) return <p role="status">Buscando claves de firma en este dispositivo…</p>;
+  if (identities.status === 'loading') return <p role="status">Buscando claves de firma en este dispositivo…</p>;
+
+  if (identities.status === 'error') {
+    return (
+      <Panel title="Este navegador no pudo leer sus claves de firma">
+        <p className="mb-6 max-w-[65ch] text-body text-ink-muted">
+          No es lo mismo que no tener ninguna. Revisa que este sitio pueda guardar datos y recarga
+          la página.
+        </p>
+        <Button
+          onClick={() => {
+            window.location.reload();
+          }}
+        >
+          Intentar de nuevo
+        </Button>
+      </Panel>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      {identities.length === 0 ? (
+      {identities.list.length === 0 ? (
         <Panel title="Aún no hay una organización en este dispositivo">
           <p className="mb-6 max-w-[65ch] text-body text-ink-muted">
             Tu clave de firma se crea y se guarda en este dispositivo. No hay nada que recordar ni
@@ -55,8 +87,8 @@ function SignedOut() {
       ) : (
         <Panel title="Inicia sesión con este dispositivo">
           <ul className="flex flex-col gap-4">
-            {identities.map((identity) => (
-              <li key={identity.signerName}>
+            {identities.list.map((identity) => (
+              <li key={identity.signerName} className="flex flex-wrap items-center gap-4">
                 <Button
                   disabled={busy !== null}
                   onClick={() => {
@@ -69,7 +101,7 @@ function SignedOut() {
             ))}
           </ul>
           <p className="mt-6">
-            <a href={SET_UP} className="inline-flex min-h-12 items-center font-bold">
+            <a href={SET_UP_ANOTHER} className="inline-flex min-h-12 items-center font-bold">
               Configurar otra organización
             </a>
           </p>
@@ -130,11 +162,19 @@ function Readiness({ account, name }: { account: string; name: string }) {
   const [directoryLoaded, setDirectoryLoaded] = useState(false);
 
   useEffect(() => {
-    async function check() {
-      const entries = await listDirectory().catch(() => []);
-      setDirectoryLoaded(entries.length > 0);
+    let active = true;
+    async function load() {
+      try {
+        const entries = await listDirectory();
+        if (active) setDirectoryLoaded(entries.length > 0);
+      } catch {
+        // The row simply stays pending; the directory page reports its own trouble.
+      }
     }
-    void check();
+    void load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {

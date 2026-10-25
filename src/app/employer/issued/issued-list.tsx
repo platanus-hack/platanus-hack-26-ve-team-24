@@ -32,6 +32,8 @@ function statusView(status: Status): { chip: RowStatus; word: string; tone: stri
       return { chip: 'UNAVAILABLE', word: 'El registro no responde', tone: 'text-ink' };
     case 'LOADING':
       return { chip: 'CHECKING', word: 'Comprobando…', tone: 'text-ink' };
+    default:
+      return { chip: 'CHECKING', word: 'Comprobando…', tone: 'text-ink' };
   }
 }
 
@@ -54,15 +56,19 @@ function IssuedRow({ entry, account }: { entry: IssuedLogEntry; account: `0x${st
 
   useEffect(() => {
     let active = true;
-    async function check() {
+    async function load() {
       try {
-        const response = await lookupLedger({ issuer: account, keyId: entry.keyId, credentialHash: entry.credentialHash });
+        const response = await lookupLedger({
+          issuer: account,
+          keyId: entry.keyId,
+          credentialHash: entry.credentialHash,
+        });
         if (active) setStatus(certificateStatus(response));
       } catch {
         if (active) setStatus({ kind: 'UNKNOWN' });
       }
     }
-    void check();
+    void load();
     return () => {
       active = false;
     };

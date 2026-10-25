@@ -3,7 +3,7 @@ import { hexToBytes, toHex, type Address, type Hex } from 'viem';
 import { entryPoint07Address, getUserOperationHash } from 'viem/account-abstraction';
 import type { Es256Signer } from '../credential/keys';
 
-const RECEIPT_TIMEOUT_MS = 60_000; // Sepolia blocks take ~12 s
+const RECEIPT_TIMEOUT_MS = 90_000; // must outlast the bundler's own 60 s receipt wait, or we give up on an op it is still resubmitting
 const POLL_MS = 3000;
 const QUANTITY_FIELDS = [
   'nonce',
@@ -60,11 +60,19 @@ export async function bundlerRpc<T>(method: string, params: unknown[]): Promise<
     throw new BundlerRpcError(`${method}: network error (${String(error)})`);
   }
   if (response.status === 429) throw new BundlerRpcError(`${method}: rate limited`);
-  const body = (await response.json().catch(() => ({}))) as {
+  const body = (await response.json().catch(() => null)) as {
     result?: T;
-    error?: { message: string };
-  };
-  if (body.error) throw new BundlerRpcError(`${method}: ${body.error.message}`);
+    error?: { message?: string } | string;
+  } | null;
+  // A proxy, a crash or a non-JSON error page must never read as a successful call: without this,
+  // the caller gets `undefined` and fails later with a TypeError that names nothing.
+  if (!response.ok) throw new BundlerRpcError(`${method}: the bundler answered ${response.status}`);
+  if (body === null) throw new BundlerRpcError(`${method}: the bundler sent no reply`);
+  if (body.error !== undefined) {
+    const detail = typeof body.error === 'string' ? body.error : body.error.message;
+    throw new BundlerRpcError(`${method}: ${detail ?? 'unknown error'}`);
+  }
+  if (!('result' in body)) throw new BundlerRpcError(`${method}: the bundler sent no result`);
   return body.result as T;
 }
 
@@ -122,5 +130,5 @@ export async function submitAndWait(
     }
     return receipt;
   }
-  throw new BundlerRpcError('not confirmed within 60 s');
+  throw new BundlerRpcError('not confirmed within 90 s');
 }

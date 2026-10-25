@@ -57,6 +57,17 @@ describe('schemas', () => {
     expect(createShareSchema.safeParse({ ciphertext: 'a', ttlSec: 604801 }).success).toBe(false);
   });
 
+  it('normalizes the employee number so it matches the employer directory', async () => {
+    const parsed = createRequestSchema.parse({
+      employer: `0x${'ab'.repeat(20)}`,
+      employeeRef: '  e-1042 ',
+      kind: 'CURRENT',
+      signJwk: await p256Jwk('ECDSA'),
+      encJwk: await p256Jwk('ECDH'),
+    });
+    expect(parsed.employeeRef).toBe('E-1042');
+  });
+
   it('rejects a point that is not on the curve', async () => {
     const jwk = await p256Jwk('ECDSA');
     expect(await isOnCurve(jwk, 'ECDSA')).toBe(true);

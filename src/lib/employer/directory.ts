@@ -9,7 +9,12 @@ export interface DirectoryEntry {
   record: EmploymentRecord;
 }
 
-export const employeeRefSchema = z.string().trim().min(1).max(40);
+export const employeeRefSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(40)
+  .transform((value) => value.toUpperCase());
 
 export function parseEntry(entry: DirectoryEntry): DirectoryEntry {
   return {
@@ -17,6 +22,9 @@ export function parseEntry(entry: DirectoryEntry): DirectoryEntry {
     record: employmentRecordSchema.parse(entry.record),
   };
 }
+
+/** El directorio usa el número en mayúsculas como clave, así que una búsqueda en minúsculas igual encuentra a la persona. */
+const employeeRefKey = (employeeRef: string): string => employeeRef.trim().toUpperCase();
 
 // Personas ficticias de un empleador ficticio.
 export const DEMO_DIRECTORY: DirectoryEntry[] = [
@@ -111,11 +119,14 @@ export async function listDirectory(): Promise<DirectoryEntry[]> {
 }
 
 export async function findEntry(employeeRef: string): Promise<DirectoryEntry | null> {
-  return (await withStore<DirectoryEntry | undefined>('readonly', (store) => store.get(employeeRef))) ?? null;
+  const found = await withStore<DirectoryEntry | undefined>('readonly', (store) =>
+    store.get(employeeRefKey(employeeRef)),
+  );
+  return found ?? null;
 }
 
 export async function removeEntry(employeeRef: string): Promise<void> {
-  await withStore('readwrite', (store) => store.delete(employeeRef));
+  await withStore('readwrite', (store) => store.delete(employeeRefKey(employeeRef)));
 }
 
 export async function loadDemoDirectory(): Promise<void> {

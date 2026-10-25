@@ -49,8 +49,12 @@ type Load =
 const rowStatus = (event: StepEvent | undefined): RowStatus => event?.status ?? 'PENDING';
 
 function describeHeader(issuerJwt: string): string {
-  const [header = ''] = issuerJwt.split('.');
-  return JSON.stringify(JSON.parse(new TextDecoder().decode(fromB64u(header))), null, 2);
+  try {
+    const [header = ''] = issuerJwt.split('.');
+    return JSON.stringify(JSON.parse(new TextDecoder().decode(fromB64u(header))), null, 2);
+  } catch {
+    return 'Header unavailable';
+  }
 }
 
 function IssuedReceipt({ request, account, progress }: { request: IssueRequest; account: string; progress: IssueProgress }) {

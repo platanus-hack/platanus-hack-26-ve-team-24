@@ -30,23 +30,43 @@ async function lookupAccount(jwk: P256Jwk, salt: bigint): Promise<AccountLookup>
   const query = new URLSearchParams({ x: jwk.x, y: jwk.y, salt: salt.toString() });
   const response = await fetch(`${appBase()}/api/ledger/account?${query}`).catch(() => null);
   if (!response?.ok) {
-    throw new LedgerWriteError('El registro está ocupado. Inténtalo de nuevo en un momento', 'account lookup failed');
+    // A 4xx means this device's key was refused; anything else is the server's fault. Calling both
+    // "the ledger is busy" told people to retry a request that could never succeed.
+    const status = response?.status;
+    throw new LedgerWriteError(
+      status !== undefined && status >= 400 && status < 500
+        ? 'Este dispositivo no pudo demostrar su cuenta'
+        : 'El registro está ocupado. Inténtalo de nuevo en un momento',
+      `account lookup failed (${status ?? 'no reply'})`,
+    );
   }
   return (await response.json()) as AccountLookup;
 }
 
 // Technical text from the bundler or the EntryPoint becomes a sentence a person can act on.
+// Every EntryPoint error code names a different broken piece; collapsing them into one sentence
+// is what made a missing paymaster deposit look like a rejected application.
 function explain(error: BundlerRpcError): LedgerWriteError {
   const technical = error.message;
-  const human = /AA24|signature/i.test(technical)
-    ? 'Tu clave de firma no está autorizada en esta cuenta'
-    : /gas price|above the cap/i.test(technical)
-      ? 'La red está saturada. Inténtalo de nuevo en unos minutos'
-      : /rate limited/i.test(technical)
-        ? 'Demasiadas solicitudes. Espera un momento e inténtalo de nuevo'
-        : /network error|not confirmed/i.test(technical)
-          ? 'El registro está ocupado. Inténtalo de nuevo en un momento'
-          : 'El registro no aceptó la operación';
+  const human = /AA31|deposit too low/i.test(technical)
+    ? 'El consorcio se quedó sin fondos para cubrir las operaciones'
+    : /AA33|reverted/i.test(technical)
+      ? 'El registro rechazó la operación'
+      : /AA21|prefund/i.test(technical)
+        ? 'Esta cuenta no tiene fondos para la operación'
+        : /AA25|nonce/i.test(technical)
+          ? 'Dos operaciones de este dispositivo chocaron'
+          : /AA34|paymaster signature/i.test(technical)
+            ? 'El consorcio rechazó cubrir esta operación'
+            : /AA24|invalid signature|signature error/i.test(technical)
+              ? 'Tu clave de firma no está autorizada en esta cuenta'
+              : /gas price|above the cap/i.test(technical)
+                ? 'La red está saturada. Inténtalo de nuevo en unos minutos'
+                : /rate limited/i.test(technical)
+                  ? 'Demasiadas solicitudes. Espera un momento e inténtalo de nuevo'
+                  : /network error|not confirmed/i.test(technical)
+                    ? 'El registro está ocupado. Inténtalo de nuevo en un momento'
+                    : 'El registro no aceptó la operación';
   return new LedgerWriteError(human, technical);
 }
 

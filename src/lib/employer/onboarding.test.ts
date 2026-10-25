@@ -12,15 +12,24 @@ const issuer = (status: IssuerInfo['status'], approvals = 0): IssuerInfo => ({
 });
 
 describe('onboarding', () => {
-  it('names the device key after the organization', () => {
-    expect(signerNameFor('Orinoco Logística (demo)')).toBe('employer:orinoco-logistica-demo');
-    expect(signerNameFor('!!!')).toBe('employer:organization');
+  it('names the device key after the organization, with a stable suffix', () => {
+    expect(signerNameFor('Orinoco Logística (demo)')).toMatch(/^employer:orinoco-logistica-demo-[0-9a-f]{8}$/);
+    expect(signerNameFor('!!!')).toMatch(/^employer:organization-[0-9a-f]{8}$/);
+    expect(signerNameFor('Demo Org')).toBe(signerNameFor('  Demo Org  '));
   });
 
-  it('validates the organization name length', () => {
+  it('never gives two different organization names the same key', () => {
+    const sameSlug = ['Acme S.A.', 'Acme SA', 'ACME S.A'].map(signerNameFor);
+    expect(new Set(sameSlug).size).toBe(3);
+  });
+
+  it('validates the organization name against the ledger byte limit', () => {
     expect(orgNameSchema.safeParse('A').success).toBe(false);
     expect(orgNameSchema.safeParse('  Demo Org  ').data).toBe('Demo Org');
-    expect(orgNameSchema.safeParse('x'.repeat(81)).success).toBe(false);
+    expect(orgNameSchema.safeParse('x'.repeat(64)).success).toBe(true);
+    expect(orgNameSchema.safeParse('x'.repeat(65)).success).toBe(false);
+    // Every accented character is two bytes on chain.
+    expect(orgNameSchema.safeParse('á'.repeat(33)).success).toBe(false);
   });
 
   it('describes each accreditation state', () => {

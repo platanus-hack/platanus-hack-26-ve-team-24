@@ -26,7 +26,12 @@ export async function isOnCurve(jwk: z.output<typeof p256Jwk>, usage: 'ECDSA' | 
 
 export const createRequestSchema = z.object({
   employer: z.string().regex(/^0x[0-9a-fA-F]{40}$/).transform((s) => s.toLowerCase()),
-  employeeRef: z.string().trim().min(1).max(40),
+  employeeRef: z
+    .string()
+    .trim()
+    .min(1)
+    .max(40)
+    .transform((value) => value.toUpperCase()),
   kind: z.enum(['CURRENT', 'PAST']),
   signJwk: p256Jwk,
   encJwk: p256Jwk,

@@ -93,7 +93,11 @@ function ApplyStep({ identity, issuer }: { identity: EmployerIdentity; issuer?: 
       if (!signer) throw new Error('missing signer');
       const client = await createAccountClient({ signer });
       setResult(await client.applyForAccreditation(identity.orgName));
-      await signIn(identity).catch(() => undefined);
+      try {
+        await signIn(identity);
+      } catch {
+        setError('El registro ya tiene tu solicitud, pero este dispositivo no pudo iniciar sesión. Vuelve a entrar desde esta página.');
+      }
     } catch (caught) {
       setError(
         caught instanceof LedgerWriteError
@@ -166,16 +170,29 @@ function useIssuer(account: string | undefined): IssuerInfo | undefined {
   return issuer;
 }
 
+/** Read from the URL on the client: the page itself stays static and prerenderable. */
+const wantsANewOrganization = () =>
+  new URLSearchParams(window.location.search).get('create') === '1';
+
 export function Onboarding() {
   const [identity, setIdentity] = useState<EmployerIdentity | null | undefined>(undefined);
   const issuer = useIssuer(identity?.account);
 
   useEffect(() => {
-    async function find() {
-      const all = await listIdentities().catch(() => []);
-      setIdentity(all[0] ?? null);
+    const createNew = wantsANewOrganization();
+    let active = true;
+    async function load() {
+      try {
+        const all = await listIdentities();
+        if (active) setIdentity(createNew ? null : (all[0] ?? null));
+      } catch {
+        if (active) setIdentity(null);
+      }
     }
-    void find();
+    void load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (identity === undefined) return <p role="status">Buscando claves de firma en este dispositivo…</p>;
@@ -195,7 +212,8 @@ export function Onboarding() {
         </>
       )}
       <p className="max-w-[65ch] text-small text-ink-muted">
-        Esta clave de firma vive solo en este dispositivo: si lo pierdes, pierdes el acceso.
+        Esta clave de firma vive solo en este dispositivo y todavía no tiene respaldo. Si borras los
+        datos de este navegador, pide al consorcio que acredite un dispositivo nuevo.
       </p>
     </div>
   );

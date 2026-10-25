@@ -143,4 +143,49 @@ describe('chain account client', () => {
     expect((error as LedgerWriteError).message).toBe('Tu clave de firma no está autorizada en esta cuenta');
     expect((error as LedgerWriteError).technical).toContain('AA24');
   });
+
+  // The EntryPoint's own error codes each name a different broken piece. A single generic sentence
+  // for every one of them is what made the accreditation failure unreadable.
+  test.each([
+    ['AA31 paymaster deposit too low', 'El consorcio se quedó sin fondos para cubrir las operaciones'],
+    ['AA33 reverted (or OOG)', 'El registro rechazó la operación'],
+    ['AA21 didn\u2019t pay prefund', 'Esta cuenta no tiene fondos para la operación'],
+    ['AA25 invalid account nonce', 'Dos operaciones de este dispositivo chocaron'],
+  ])('the technical text %s becomes its own sentence', async (technical, expected) => {
+    const { signer } = await generateSigner();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) =>
+        url.includes('/api/ledger/account')
+          ? Response.json({ address: ACCOUNT, deployed: true, ledger: LEDGER })
+          : Response.json({ jsonrpc: '2.0', id: 1, error: { code: -32500, message: technical } }),
+      ),
+    );
+    const client = await createChainAccountClient({ signer });
+    const error = await client.revoke(`0x${'ab'.repeat(32)}`).catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(LedgerWriteError);
+    expect((error as LedgerWriteError).message).toBe(expected);
+    expect((error as LedgerWriteError).technical).toContain(technical);
+  }, 15_000);
+
+  test('a paymaster signature fault does not blame the organisation key', async () => {
+    const { signer } = await generateSigner();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) =>
+        url.includes('/api/ledger/account')
+          ? Response.json({ address: ACCOUNT, deployed: true, ledger: LEDGER })
+          : Response.json({
+              jsonrpc: '2.0',
+              id: 1,
+              error: { code: -32500, message: 'AA34 invalid paymaster signature' },
+            }),
+      ),
+    );
+    const client = await createChainAccountClient({ signer });
+    const error = await client.revoke(`0x${'ab'.repeat(32)}`).catch((caught: unknown) => caught);
+    expect((error as LedgerWriteError).message).not.toBe(
+      'Your signing key is not an owner of this account',
+    );
+  });
 });
